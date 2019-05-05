@@ -23,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
 
     TextView pageTitle;
     List<Budget> budgets = new ArrayList<>();
+    List<LinearLayout> budgetLayouts = new ArrayList<>();
     List<TextView> budgetTitles = new ArrayList<>();
     List<TextView> budgetDisplays = new ArrayList<>();
     List<Button> budgetPlusButtons = new ArrayList<>();
@@ -30,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
     List<ImageButton> renameButtons = new ArrayList<>();
     List<ImageButton> deleteButtons = new ArrayList<>();
 
-    private ViewGroup verticalLayout;
+    private LinearLayout verticalLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,15 +49,18 @@ public class MainActivity extends AppCompatActivity {
 //            }
 //        });
 
-        verticalLayout = (ViewGroup)findViewById(R.id.verticalLayout);
+        verticalLayout = (LinearLayout)findViewById(R.id.verticalLayout);
 
         Button addButton = (Button) findViewById(R.id.addBudgetButton);
         addButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-                verticalLayout.addView((Button)findViewById(R.id.addBudgetButton));
+                //verticalLayout.addView((Button)findViewById(R.id.addBudgetButton));
                 //makeBudget(view);
                 //deposit(view);
+                LayoutInflater inflater = getLayoutInflater();
+                View budgetDisplay = inflater.inflate(R.layout.budget_layout, verticalLayout);
+                //verticalLayout.addView(budgetDisplay);
             }
         });
     }
@@ -72,7 +76,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void addBudget(Budget newBudget){
-        View budgetDisplay = LayoutInflater.from(this).inflate(R.layout.budget_layout, verticalLayout, false);
+        LayoutInflater inflater = getLayoutInflater();
+        View budgetDisplay = inflater.inflate(R.layout.budget_layout, null);
 
         //TODO figure out how to get these buttons and stuff to work; maybe a separate class for the budgetDisplay?
         final TextView budgetName = (TextView)budgetDisplay.findViewById(R.id.nameDisplay);
@@ -82,6 +87,22 @@ public class MainActivity extends AppCompatActivity {
         ImageButton deleteButton = (ImageButton)budgetDisplay.findViewById(R.id.deleteButton);
         Button depositButton = (Button)budgetDisplay.findViewById(R.id.addButton);
         Button withdrawButton = (Button)budgetDisplay.findViewById(R.id.subtractButton);
+
+        budgetName.setText(newBudget.getBudgetName());
+        currentBudget.setText(String.format("%.2f",newBudget.getBudget()));
+        if(newBudget.isPartitioned()){
+            String temp = "";
+            if(newBudget.isAmountBased()){
+                temp += "$";
+            }
+            temp += String.format("%.2f", newBudget.getPartitionValue());
+            if(!newBudget.isAmountBased()){
+                temp += "%";
+            }
+            temp += " of P.C.";
+            partitionDisplay.setText(temp);
+        }
+
 
         budgetTitles.add(budgetName);
         budgetDisplays.add(currentBudget);
@@ -121,21 +142,6 @@ public class MainActivity extends AppCompatActivity {
                 //TODO Make "withdraw" pop-up
             }
         });
-
-        budgetName.setText(newBudget.getBudgetName());
-        currentBudget.setText(String.format("%.2f",newBudget.getAmount()));
-        if(newBudget.isPartitioned()){
-            String temp = "";
-            if(newBudget.isAmountBased()){
-                temp += "$";
-            }
-            temp += String.format("%.2f", newBudget.getPartitionValue());
-            if(!newBudget.isAmountBased()){
-                temp += "%";
-            }
-            temp += " of P.C.";
-            partitionDisplay.setText(temp);
-        }
 
         verticalLayout.addView(budgetDisplay);
     }

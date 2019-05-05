@@ -25,10 +25,6 @@ public class Budget {
         money -= withdrawal;
     }
 
-    public double getAmount(){
-        return money;
-    }
-
     public void setName(String newName){
         budgetName = newName;
     }
@@ -41,7 +37,7 @@ public class Budget {
         return budgetName;
     }
 
-    public double getBudget(){
+    public Double getBudget(){
         return money;
     }
 
