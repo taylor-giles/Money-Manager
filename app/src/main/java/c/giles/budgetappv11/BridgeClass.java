@@ -15,6 +15,7 @@ public class BridgeClass {
     static List<Budget> budgetList = new ArrayList<>();
     static List<LinearLayout> budgetLayouts = new ArrayList<>();
     static ViewGroup budgetDisplayWindow;
+    static int placeholder = -1;
 
     public static void addBudget(Budget newBudget){
         budgetList.add(newBudget);
@@ -36,18 +37,12 @@ public class BridgeClass {
         budgetDisplayWindow = layout;
     }
 
-
-    public static void setNewBudget(Budget budget){
-        newBudget = budget;
-    }
-    public static Budget getNewBudget(){
-        return newBudget;
+    public static void setPlaceholder(int i){
+        placeholder = i;
     }
 
-    public static void setDeposit(double value){
-        deposit = value;
+    public static int getPlaceholder(){
+        return placeholder;
     }
-    public static double getDeposit(){
-        return deposit;
-    }
+
 }

@@ -67,13 +67,22 @@ public class Budget {
     public boolean isPartitioned(){
         return partition;
     }
+    public void setPartitioned(boolean partitioned){
+        partition = partitioned;
+    }
 
     public boolean isAmountBased(){
         return amountBased;
     }
+    public void setAmountBased(boolean isAmountBased){
+        amountBased = isAmountBased;
+    }
 
     public Double getPartitionValue(){
         return partitionValue;
+    }
+    public void setPartitionValue(Double value){
+        partitionValue = value;
     }
 
     public void setNameDisplay(TextView view){
@@ -138,6 +147,7 @@ public class Budget {
             if(!amountBased){
                 temp += "%";
             }
+            temp += " of P.C.";
             partitionDisplay.setText(temp);
         }
     }

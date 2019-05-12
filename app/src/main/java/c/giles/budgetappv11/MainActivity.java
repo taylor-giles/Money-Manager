@@ -28,9 +28,10 @@ import java.util.Locale;
 
 import c.giles.budgetappv11.views.BudgetLayout;
 import c.giles.budgetappv11.views.DepositDialog;
+import c.giles.budgetappv11.views.EditDialog;
 import c.giles.budgetappv11.views.WithdrawDialog;
 
-public class MainActivity extends AppCompatActivity implements DepositDialog.DepositDialogListener, WithdrawDialog.WithdrawDialogListener {
+public class MainActivity extends AppCompatActivity implements DepositDialog.DepositDialogListener, WithdrawDialog.WithdrawDialogListener, EditDialog.EditDialogListener {
 
     TextView pageTitle;
     List<Budget> budgets = new ArrayList<>();
@@ -123,9 +124,10 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         editButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                budgets.get(i).setName("George");
-                nameView.setText("George");
-                //TODO replace "George" with something meaningful (i.e. make the Rename dialog and insert that result here)
+                BridgeClass.setBudgetList(budgets);
+                placeholder = i;
+                BridgeClass.setPlaceholder(placeholder);
+                openEditDialog();
             }
         });
 
@@ -312,6 +314,11 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         dialog.show(getSupportFragmentManager(), "Withdraw Dialog");
     }
 
+    public void openEditDialog(){
+        EditDialog dialog = new EditDialog();
+        dialog.show(getSupportFragmentManager(), "Edit Dialog");
+    }
+
     public void makeBudget(View view){
         Intent makeNewBudget = new Intent(this, BudgetCreateActivity.class);
         startActivityForResult(makeNewBudget, 1);
@@ -348,6 +355,17 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
     @Override
     public void applyWithdraw(String amount){
         budgets.get(placeholder).withdraw(Double.parseDouble(amount));
+        refresh();
+    }
+
+    @Override
+    public void applyEdits(String newName, String partitionValue, boolean isPartitioned, boolean isAmountBased){
+        budgets.get(placeholder).setName(newName);
+        budgets.get(placeholder).setPartitioned(isPartitioned);
+        if(isPartitioned) {
+            budgets.get(placeholder).setPartitionValue(Double.parseDouble(partitionValue));
+            budgets.get(placeholder).setAmountBased(isAmountBased);
+        }
         refresh();
     }
 }

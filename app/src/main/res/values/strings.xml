@@ -25,6 +25,7 @@
     <string name="quick_withdraw_3">$5</string>
     <string name="deposit_title">Deposit</string>
     <string name="withdraw_title">Withdraw</string>
+    <string name="edit_title">Edit Budget</string>
 
 
 </resources>
