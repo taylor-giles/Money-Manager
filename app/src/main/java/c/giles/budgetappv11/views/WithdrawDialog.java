@@ -15,10 +15,10 @@ import android.widget.EditText;
 import c.giles.budgetappv11.R;
 
 
-public class DepositDialog extends AppCompatDialogFragment {
+public class WithdrawDialog extends AppCompatDialogFragment {
 
-    private DepositDialogListener listener;
-    private EditText depositEntry;
+    private WithdrawDialogListener listener;
+    private EditText withdrawalEntry;
     private Button quickButton1;
     private Button quickButton2;
     private Button quickButton3;
@@ -30,25 +30,25 @@ public class DepositDialog extends AppCompatDialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
 
-        View view = inflater.inflate(R.layout.deposit_dialog, null);
+        View view = inflater.inflate(R.layout.withdraw_dialog, null);
 
-        depositEntry = (EditText)view.findViewById(R.id.depositEntryBar);
-        quickButton1 = (Button)view.findViewById(R.id.quickDeposit1);
-        quickButton2 = (Button)view.findViewById(R.id.quickDeposit2);
-        quickButton3 = (Button)view.findViewById(R.id.quickDeposit3);
+        withdrawalEntry = (EditText)view.findViewById(R.id.withdrawalEntryBar);
+        quickButton1 = (Button)view.findViewById(R.id.quickWithdraw1);
+        quickButton2 = (Button)view.findViewById(R.id.quickWithdraw2);
+        quickButton3 = (Button)view.findViewById(R.id.quickWithdraw3);
         builder.setView(view)
-                .setTitle("Deposit")
+                .setTitle("Withdraw")
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialogInterface, int i) {
 
                     }
 
                 })
-                .setPositiveButton("Deposit", new DialogInterface.OnClickListener(){
+                .setPositiveButton("Withdraw", new DialogInterface.OnClickListener(){
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i){
-                        String amount = depositEntry.getText().toString();
-                        listener.applyDeposit(amount);
+                        String amount = withdrawalEntry.getText().toString();
+                        listener.applyWithdraw(amount);
                     }
                 })
         ;
@@ -57,21 +57,21 @@ public class DepositDialog extends AppCompatDialogFragment {
         quickButton1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                depositEntry.setText(quickButton1.getText().toString().substring(1));
+                withdrawalEntry.setText(quickButton1.getText().toString().substring(1));
             }
         });
 
         quickButton2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                depositEntry.setText(quickButton2.getText().toString().substring(1));
+                withdrawalEntry.setText(quickButton2.getText().toString().substring(1));
             }
         });
 
         quickButton3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                depositEntry.setText(quickButton3.getText().toString().substring(1));
+                withdrawalEntry.setText(quickButton3.getText().toString().substring(1));
             }
         });
 
@@ -83,14 +83,14 @@ public class DepositDialog extends AppCompatDialogFragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         try {
-            listener = (DepositDialogListener) context;
+            listener = (WithdrawDialogListener) context;
         }catch(ClassCastException e){
-            throw new ClassCastException(context.toString() + " must implement DepositDialogListener");
+            throw new ClassCastException(context.toString() + " must implement WithdrawDialogListener");
         }
     }
 
 
-    public interface DepositDialogListener {
-        void applyDeposit(String amount);
+    public interface WithdrawDialogListener {
+        void applyWithdraw(String amount);
     }
 }

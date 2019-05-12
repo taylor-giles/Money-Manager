@@ -42,7 +42,7 @@ public class BudgetCreateActivity extends AppCompatActivity {
                 amountBased = partitionTypeButton.isChecked();
 
                 Budget newBudget = new Budget(budgetName, initalBudget, partition, amountBased, partitionValue);
-                BridgeClass.setNewBudget(newBudget);
+                BridgeClass.addBudget(newBudget);
                 setResult(RESULT_OK);
                 startMainActivity(view);
             }

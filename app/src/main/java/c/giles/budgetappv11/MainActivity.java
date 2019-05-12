@@ -1,6 +1,9 @@
 package c.giles.budgetappv11;
 
+import android.app.ActionBar;
+import android.app.AlertDialog;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -12,14 +15,22 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.Space;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity {
+import c.giles.budgetappv11.views.BudgetLayout;
+import c.giles.budgetappv11.views.DepositDialog;
+import c.giles.budgetappv11.views.WithdrawDialog;
+
+public class MainActivity extends AppCompatActivity implements DepositDialog.DepositDialogListener, WithdrawDialog.WithdrawDialogListener {
 
     TextView pageTitle;
     List<Budget> budgets = new ArrayList<>();
@@ -30,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
     List<Button> budgetMinusButtons = new ArrayList<>();
     List<ImageButton> renameButtons = new ArrayList<>();
     List<ImageButton> deleteButtons = new ArrayList<>();
+    int placeholder = -1;
 
     private LinearLayout verticalLayout;
 
@@ -50,16 +62,20 @@ public class MainActivity extends AppCompatActivity {
 //        });
 
         verticalLayout = (LinearLayout)findViewById(R.id.verticalLayout);
+        BridgeClass.setBudgetDisplayWindow(verticalLayout);
+        budgets = new ArrayList<>(BridgeClass.getBudgetList());
+        for(int i = 0; i < budgets.size(); i++){
+            addBudget(budgets.get(i), i);
+        }
 
         Button addButton = (Button) findViewById(R.id.addBudgetButton);
         addButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
+                //addBudget(new Budget("Test", 5,false, false, 5));
                 //verticalLayout.addView((Button)findViewById(R.id.addBudgetButton));
-                //makeBudget(view);
+                makeBudget(view);
                 //deposit(view);
-                LayoutInflater inflater = getLayoutInflater();
-                View budgetDisplay = inflater.inflate(R.layout.budget_layout, verticalLayout);
                 //verticalLayout.addView(budgetDisplay);
             }
         });
@@ -70,90 +86,235 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == 1) {
             if(resultCode == RESULT_OK) {
-                addBudget(BridgeClass.getNewBudget());
+                //addBudget(BridgeClass.getNewBudget());
             }
         }
     }
 
-    public void addBudget(Budget newBudget){
-        LayoutInflater inflater = getLayoutInflater();
-        View budgetDisplay = inflater.inflate(R.layout.budget_layout, null);
+    private void refresh(){
+        //budgets = new ArrayList<>(BridgeClass.getBudgetList());
+        for(int i = 0; i < budgets.size(); i++){
+            budgets.get(i).refresh();
+        }
+    }
 
-        //TODO figure out how to get these buttons and stuff to work; maybe a separate class for the budgetDisplay?
-        final TextView budgetName = (TextView)budgetDisplay.findViewById(R.id.nameDisplay);
-        TextView currentBudget = (TextView)budgetDisplay.findViewById(R.id.moneyDisplay);
-        TextView partitionDisplay = (TextView)budgetDisplay.findViewById(R.id.partitionDisplay);
-        ImageButton renameButton = (ImageButton)budgetDisplay.findViewById(R.id.renameButton);
-        ImageButton deleteButton = (ImageButton)budgetDisplay.findViewById(R.id.deleteButton);
-        Button depositButton = (Button)budgetDisplay.findViewById(R.id.addButton);
-        Button withdrawButton = (Button)budgetDisplay.findViewById(R.id.subtractButton);
+    public void addBudget(Budget newBudget, int index){
+        final int i = index;
 
-        budgetName.setText(newBudget.getBudgetName());
-        currentBudget.setText(String.format("%.2f",newBudget.getBudget()));
+        LinearLayout budgetLayout = new LinearLayout(this);
+        budgetLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+        budgetLayout.setOrientation(LinearLayout.HORIZONTAL);
+        if(index % 2 != 0){
+            budgetLayout.setBackgroundColor(getResources().getColor(android.R.color.darker_gray));
+        }
+        //budgetLayout.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+
+        ImageButton editButton = new ImageButton(this);
+        ImageButton deleteButton = new ImageButton(this);
+        Button depositButton = new Button(this);
+        Button withdrawButton = new Button(this);
+        final TextView nameView = new TextView(this);
+        final TextView moneyView = new TextView(this);
+        final TextView partitionView = new TextView(this);
+
+
+        editButton.setLayoutParams(new ViewGroup.LayoutParams(75, ViewGroup.LayoutParams.WRAP_CONTENT));
+        editButton.setImageResource(android.R.drawable.ic_menu_edit);
+        editButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                budgets.get(i).setName("George");
+                nameView.setText("George");
+                //TODO replace "George" with something meaningful (i.e. make the Rename dialog and insert that result here)
+            }
+        });
+
+        deleteButton.setLayoutParams(new ViewGroup.LayoutParams(75, ViewGroup.LayoutParams.WRAP_CONTENT));
+        deleteButton.setImageResource(android.R.drawable.ic_menu_delete);
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //TODO make some delete action
+            }
+        });
+
+        depositButton.setLayoutParams(new ViewGroup.LayoutParams(100, ViewGroup.LayoutParams.WRAP_CONTENT));
+        depositButton.setText("+");
+        depositButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                placeholder = i;
+                openDepositDialog();
+            }
+        });
+
+        withdrawButton.setLayoutParams(new ViewGroup.LayoutParams(100, ViewGroup.LayoutParams.WRAP_CONTENT));
+        withdrawButton.setText("-");
+        withdrawButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                placeholder = i;
+                openWithdrawDialog();
+            }
+        });
+
+        nameView.setText(newBudget.getBudgetName());
+        nameView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        nameView.setTextColor(getResources().getColor(android.R.color.black));
+        nameView.setTextSize(16f);
+
+        moneyView.setText("$" + String.format("%.02f", newBudget.getBudget()));
+        moneyView.setTextColor(getResources().getColor(android.R.color.black));
+        moneyView.setTextSize(16f);
+
         if(newBudget.isPartitioned()){
             String temp = "";
             if(newBudget.isAmountBased()){
                 temp += "$";
             }
-            temp += String.format("%.2f", newBudget.getPartitionValue());
+            temp += String.format("%.02f", newBudget.getPartitionValue());
             if(!newBudget.isAmountBased()){
                 temp += "%";
             }
             temp += " of P.C.";
-            partitionDisplay.setText(temp);
+            partitionView.setText(temp);
         }
 
+        //The name view and the innerInner layout go inside this layout
+        LinearLayout innerLayout = new LinearLayout(this);
+        innerLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+        innerLayout.setOrientation(LinearLayout.VERTICAL);
 
-        budgetTitles.add(budgetName);
-        budgetDisplays.add(currentBudget);
-        renameButtons.add(renameButton);
-        deleteButtons.add(deleteButton);
-        budgetPlusButtons.add(depositButton);
-        budgetMinusButtons.add(withdrawButton);
+        //The money and partition views go inside this layout
+        LinearLayout innerInnerLayout = new LinearLayout(this);
+        innerInnerLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+        innerInnerLayout.setOrientation(LinearLayout.HORIZONTAL);
 
-        renameButton.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view){
-                //TODO Make "rename" pop-up
-                budgetName.setText("Billy");
-            }
-        });
+        //The deposit and withdraw buttons go inside this layout
+        LinearLayout buttonLayout = new LinearLayout(this);
 
+        //This right-aligns the buttonLayout within the budgetLayout
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
+        layoutParams.gravity = RelativeLayout.ALIGN_PARENT_RIGHT;
+        buttonLayout.setLayoutParams(layoutParams);
+        buttonLayout.setOrientation(LinearLayout.HORIZONTAL);
 
-        deleteButton.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view){
-                //TODO Make "delete" pop-up
-            }
-        });
+        TextView fillerText = new TextView(this);
+        fillerText.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        fillerText.setText("   |   ");
 
+        Space space = new Space(this);
+        space.setLayoutParams(new LinearLayout.LayoutParams(0,0,1));
 
-        depositButton.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view){
-                deposit(view);
-            }
-        });
+        innerInnerLayout.addView(moneyView);
+        if(newBudget.isPartitioned()) {
+            innerInnerLayout.addView(fillerText);
+            innerInnerLayout.addView(partitionView);
+        }
+        innerLayout.addView(nameView);
+        innerLayout.addView(innerInnerLayout);
 
+        buttonLayout.addView(depositButton);
+        buttonLayout.addView(withdrawButton);
 
-        withdrawButton.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view){
-                //TODO Make "withdraw" pop-up
-            }
-        });
+        budgetLayout.addView(editButton);
+        budgetLayout.addView(deleteButton);
+        budgetLayout.addView(innerLayout);
+        budgetLayout.addView(space);
+        budgetLayout.addView(buttonLayout);
 
-        verticalLayout.addView(budgetDisplay);
+        budgets.get(i).setNameDisplay(nameView);
+        budgets.get(i).setAmountDisplay(moneyView);
+        budgets.get(i).setPartitionDisplay(partitionView);
+        budgets.get(i).setEditButton(editButton);
+        budgets.get(i).setDeleteButton(deleteButton);
+        budgets.get(i).setDepositButton(depositButton);
+        budgets.get(i).setWithdrawButton(withdrawButton);
+
+        budgetLayouts.add(budgetLayout);
+        verticalLayout.addView(budgetLayout);
+//        LayoutInflater inflater = getLayoutInflater();
+//        View budgetDisplay = inflater.inflate(R.layout.budget_layout, verticalLayout);
+//        budgetLayouts.add((LinearLayout)budgetDisplay);
+
+//        //TODO figure out how to get these buttons and stuff to work; maybe a separate class for the budgetDisplay?
+//        TextView budgetName = (TextView)budgetDisplay.findViewById(R.id.nameDisplay);
+//        TextView amountDisplay = (TextView)budgetDisplay.findViewById(R.id.moneyDisplay);
+//        TextView partitionDisplay = (TextView)budgetDisplay.findViewById(R.id.partitionDisplay);
+//        ImageButton editButton = (ImageButton)budgetDisplay.findViewById(R.id.editButton);
+//        ImageButton deleteButton = (ImageButton)budgetDisplay.findViewById(R.id.deleteButton);
+//        Button depositButton = (Button)budgetDisplay.findViewById(R.id.addButton);
+//        Button withdrawButton = (Button)budgetDisplay.findViewById(R.id.subtractButton);
+//
+//        budgetName.setText(newBudget.getBudgetName());
+//        amountDisplay.setText(String.format("%.2f",newBudget.getBudget()));
+//        if(newBudget.isPartitioned()){
+//            String temp = "";
+//            if(newBudget.isAmountBased()){
+//                temp += "$";
+//            }
+//            temp += String.format("%.2f", newBudget.getPartitionValue());
+//            if(!newBudget.isAmountBased()){
+//                temp += "%";
+//            }
+//            temp += " of P.C.";
+//            partitionDisplay.setText(temp);
+//        }
+//
+//
+//        budgetTitles.add(budgetName);
+//        budgetDisplays.add(amountDisplay);
+//        renameButtons.add(editButton);
+//        deleteButtons.add(deleteButton);
+//        budgetPlusButtons.add(depositButton);
+//        budgetMinusButtons.add(withdrawButton);
+//
+//        editButton.setOnClickListener(new View.OnClickListener(){
+//            @Override
+//            public void onClick(View view){
+//                //TODO Make "rename" pop-up
+//                budgetName.setText("Billy");
+//            }
+//        });
+//
+//
+//        deleteButton.setOnClickListener(new View.OnClickListener(){
+//            @Override
+//            public void onClick(View view){
+//                //TODO Make "delete" pop-up
+//            }
+//        });
+//
+//
+//        depositButton.setOnClickListener(new View.OnClickListener(){
+//            @Override
+//            public void onClick(View view){
+//                deposit(view);
+//            }
+//        });
+//
+//
+//        withdrawButton.setOnClickListener(new View.OnClickListener(){
+//            @Override
+//            public void onClick(View view){
+//                //TODO Make "withdraw" pop-up
+//            }
+//        });
+    }
+
+    public void openDepositDialog(){
+        DepositDialog dialog = new DepositDialog();
+        dialog.show(getSupportFragmentManager(), "Deposit Dialog");
+    }
+
+    public void openWithdrawDialog(){
+        WithdrawDialog dialog = new WithdrawDialog();
+        dialog.show(getSupportFragmentManager(), "Withdraw Dialog");
     }
 
     public void makeBudget(View view){
         Intent makeNewBudget = new Intent(this, BudgetCreateActivity.class);
         startActivityForResult(makeNewBudget, 1);
-    }
-
-    public void deposit(View view){
-        Intent deposit = new Intent(this, DepositActivity.class);
-        startActivityForResult(deposit, 2);
     }
 
     @Override
@@ -176,5 +337,17 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void applyDeposit(String amount) {
+        budgets.get(placeholder).deposit(Double.parseDouble(amount));
+        refresh();
+    }
+
+    @Override
+    public void applyWithdraw(String amount){
+        budgets.get(placeholder).withdraw(Double.parseDouble(amount));
+        refresh();
     }
 }
