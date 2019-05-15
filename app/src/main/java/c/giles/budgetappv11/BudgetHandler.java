@@ -38,8 +38,9 @@ public class BudgetHandler {
         budgetList = new ArrayList<>(newList);
     }
 
-    public void removeBudget(int index){
+    public static void removeBudget(int index){
         budgetList.remove(index);
+        modified = true;
     }
 
     public static void setBudgetDisplayWindow(ViewGroup layout){

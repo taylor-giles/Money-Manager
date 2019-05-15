@@ -1,5 +1,7 @@
 package c.giles.budgetappv11;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -30,12 +32,10 @@ import c.giles.budgetappv11.views.WithdrawDialog;
 
 public class MainActivity extends AppCompatActivity implements DepositDialog.DepositDialogListener, WithdrawDialog.WithdrawDialogListener, EditDialog.EditDialogListener {
 
-    TextView pageTitle;
     List<Budget> budgets = new ArrayList<>();
     List<LinearLayout> budgetLayouts = new ArrayList<>();
     NumberFormat format = NumberFormat.getNumberInstance();
     int placeholder = -1;
-    boolean sharedPreferencesChecked = false;
 
     private LinearLayout verticalLayout;
 
@@ -54,16 +54,7 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         format.setMaximumFractionDigits(2);
         format.setMinimumFractionDigits(2);
 
-        //Update the budgets list and the saved list if needed (if the bridge class indicates that a change has been made)
-        if(BudgetHandler.isModified()){
-            budgets = new ArrayList<>(BudgetHandler.getBudgetList());
-            saveSharedPreferences();
-            BudgetHandler.setModified(false);
-        }
-
-        for(int i = 0; i < budgets.size(); i++){
-            addBudget(budgets.get(i), i);
-        }
+        updateLists();
 
         Button addButton = (Button) findViewById(R.id.addBudgetButton);
         addButton.setOnClickListener(new View.OnClickListener(){
@@ -81,17 +72,6 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         String json = gson.toJson(budgets);
         editor.putString("budgets", json);
         editor.apply();
-
-//        editor.putInt("size", budgets.size());
-//        editor.apply();
-//        editor.putBoolean("flag", false);
-//        for(Integer i = 0; i < budgets.size(); i++){
-//            editor.putStringSet("set" + i.toString(), budgets.get(i).asStringSet());
-//            editor.apply();
-//            editor.putBoolean("flag", true);
-//        }
-//
-//        editor.apply();
     }
 
     private void loadSharedPreferences(){
@@ -104,23 +84,6 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         if(budgets == null){
             budgets = new ArrayList<>();
         }
-
-//        //Get Budgets from SharedPreferences
-//        for(Integer i = -1; i < sharedPreferences.getInt("size", 0); i++){
-//            //budgets.add(new Budget(sharedPreferences.getStringSet("set" + i.toString(), null)));
-//            //budgets.add(new Budget("name", 3.0, true, sharedPreferences.getBoolean("flag", false), 6.0));
-//            //Set<String> stringSet = sharedPreferences.getStringSet("set" + i.toString(), null);
-//            List<String> temp = new ArrayList<>();
-//            temp.add("name");
-//            temp.add("3");
-//            temp.add("true");
-//            temp.add("false");
-//            temp.add("6");
-//            budgets.add(new Budget(new HashSet<String>(temp)));
-//        }
-//
-//        BudgetHandler.setBudgetList(budgets);
-          sharedPreferencesChecked = true;
     }
 
     @Override
@@ -134,7 +97,8 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
     }
 
     private void refresh(){
-        //budgets = new ArrayList<>(BudgetHandler.getBudgetList());
+        updateLists();
+        //Updates each budgetLayout to reflect changes made to budgets
         for(int i = 0; i < budgets.size(); i++) {
             TextView nameDisplay = budgetLayouts.get(i).findViewWithTag(0);
             TextView amountDisplay = budgetLayouts.get(i).findViewWithTag(1);
@@ -154,6 +118,7 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
                 partitionDisplay.setText(temp);
             }
         }
+        BudgetHandler.setModified(true);
             //budgets.get(i).refresh();
     }
 
@@ -172,12 +137,11 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         Button depositButton = new Button(this);
         Button withdrawButton = new Button(this);
         final TextView nameView = new TextView(this);
-        nameView.setTag(0);
+            nameView.setTag(0);
         final TextView moneyView = new TextView(this);
-        moneyView.setTag(1);
+            moneyView.setTag(1);
         final TextView partitionView = new TextView(this);
-        partitionView.setTag(2);
-
+            partitionView.setTag(2);
 
         editButton.setLayoutParams(new ViewGroup.LayoutParams(75, ViewGroup.LayoutParams.WRAP_CONTENT));
         editButton.setImageResource(android.R.drawable.ic_menu_edit);
@@ -196,7 +160,29 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO make some delete action
+                DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch (which){
+                            case DialogInterface.BUTTON_POSITIVE:
+                                BudgetHandler.removeBudget(i);
+                                BudgetHandler.setModified(true);
+                                updateLists();
+                                break;
+
+                            case DialogInterface.BUTTON_NEGATIVE:
+                                //Do nothing
+                                break;
+                        }
+                    }
+                };
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+                builder.setMessage("Are you sure you want to delete " + budgets.get(i).getBudgetName() + "?")
+                        .setPositiveButton("Delete", dialogClickListener)
+                        .setNegativeButton("Cancel", dialogClickListener)
+                        .show()
+                ;
             }
         });
 
@@ -285,15 +271,7 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         budgetLayout.addView(space);
         budgetLayout.addView(buttonLayout);
 
-//        budgets.get(i).setNameDisplay(nameView);
-//        budgets.get(i).setAmountDisplay(moneyView);
-//        budgets.get(i).setPartitionDisplay(partitionView);
-//        budgets.get(i).setEditButton(editButton);
-//        budgets.get(i).setDeleteButton(deleteButton);
-//        budgets.get(i).setDepositButton(depositButton);
-//        budgets.get(i).setWithdrawButton(withdrawButton);
-
-        budgetLayouts.add(budgetLayout);
+        budgetLayouts.add(i,budgetLayout);
         verticalLayout.addView(budgetLayout);
     }
 
@@ -319,6 +297,24 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         startActivityForResult(makeNewBudget, 1);
     }
 
+
+    public void updateLists(){
+        //Update the budgets list and the saved list if needed (if the bridge class indicates that a change has been made)
+        if(BudgetHandler.isModified()){
+            budgets = new ArrayList<>(BudgetHandler.getBudgetList());
+            saveSharedPreferences();
+            BudgetHandler.setModified(false);
+        } else {
+            BudgetHandler.setBudgetList(budgets);
+        }
+
+        budgetLayouts = new ArrayList<>();
+        verticalLayout.removeAllViews();
+        for(int i = 0; i < budgets.size(); i++){
+            addBudget(budgets.get(i), i);
+        }
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -341,15 +337,18 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         return super.onOptionsItemSelected(item);
     }
 
+
     @Override
     public void applyDeposit(String amount) {
         budgets.get(placeholder).deposit(Double.parseDouble(amount));
+        BudgetHandler.setModified(true);
         refresh();
     }
 
     @Override
     public void applyWithdraw(String amount){
         budgets.get(placeholder).withdraw(Double.parseDouble(amount));
+        BudgetHandler.setModified(true);
         refresh();
     }
 
@@ -361,6 +360,9 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
             budgets.get(placeholder).setPartitionValue(Double.parseDouble(partitionValue));
             budgets.get(placeholder).setAmountBased(isAmountBased);
         }
+        BudgetHandler.setModified(true);
         refresh();
     }
+
+
 }
