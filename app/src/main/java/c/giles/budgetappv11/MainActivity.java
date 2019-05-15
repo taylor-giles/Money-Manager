@@ -1,32 +1,29 @@
 package c.giles.budgetappv11;
 
-import android.app.ActionBar;
-import android.app.AlertDialog;
 import android.content.Intent;
-import android.graphics.Color;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Space;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
-import c.giles.budgetappv11.views.BudgetLayout;
 import c.giles.budgetappv11.views.DepositDialog;
 import c.giles.budgetappv11.views.EditDialog;
 import c.giles.budgetappv11.views.WithdrawDialog;
@@ -36,35 +33,34 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
     TextView pageTitle;
     List<Budget> budgets = new ArrayList<>();
     List<LinearLayout> budgetLayouts = new ArrayList<>();
-    List<TextView> budgetTitles = new ArrayList<>();
-    List<TextView> budgetDisplays = new ArrayList<>();
-    List<Button> budgetPlusButtons = new ArrayList<>();
-    List<Button> budgetMinusButtons = new ArrayList<>();
-    List<ImageButton> renameButtons = new ArrayList<>();
-    List<ImageButton> deleteButtons = new ArrayList<>();
+    NumberFormat format = NumberFormat.getNumberInstance();
     int placeholder = -1;
+    boolean sharedPreferencesChecked = false;
 
     private LinearLayout verticalLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        loadSharedPreferences();
+
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//            }
-//        });
-
         verticalLayout = (LinearLayout)findViewById(R.id.verticalLayout);
-        BridgeClass.setBudgetDisplayWindow(verticalLayout);
-        budgets = new ArrayList<>(BridgeClass.getBudgetList());
+        BudgetHandler.setBudgetDisplayWindow(verticalLayout);
+
+        format.setMaximumFractionDigits(2);
+        format.setMinimumFractionDigits(2);
+
+        //Update the budgets list and the saved list if needed (if the bridge class indicates that a change has been made)
+        if(BudgetHandler.isModified()){
+            budgets = new ArrayList<>(BudgetHandler.getBudgetList());
+            saveSharedPreferences();
+            BudgetHandler.setModified(false);
+        }
+
         for(int i = 0; i < budgets.size(); i++){
             addBudget(budgets.get(i), i);
         }
@@ -73,13 +69,58 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         addButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-                //addBudget(new Budget("Test", 5,false, false, 5));
-                //verticalLayout.addView((Button)findViewById(R.id.addBudgetButton));
                 makeBudget(view);
-                //deposit(view);
-                //verticalLayout.addView(budgetDisplay);
             }
         });
+    }
+
+    private void saveSharedPreferences(){
+        SharedPreferences sharedPreferences = getSharedPreferences("shared preferences", MODE_PRIVATE);;
+        SharedPreferences.Editor editor= sharedPreferences.edit();
+        Gson gson = new Gson();
+        String json = gson.toJson(budgets);
+        editor.putString("budgets", json);
+        editor.apply();
+
+//        editor.putInt("size", budgets.size());
+//        editor.apply();
+//        editor.putBoolean("flag", false);
+//        for(Integer i = 0; i < budgets.size(); i++){
+//            editor.putStringSet("set" + i.toString(), budgets.get(i).asStringSet());
+//            editor.apply();
+//            editor.putBoolean("flag", true);
+//        }
+//
+//        editor.apply();
+    }
+
+    private void loadSharedPreferences(){
+        SharedPreferences sharedPreferences = getSharedPreferences("shared preferences", MODE_PRIVATE);
+        Gson gson = new Gson();
+        String loadedJson = sharedPreferences.getString("budgets", null);
+        Type type = new TypeToken<ArrayList<Budget>>() {}.getType();
+        budgets = gson.fromJson(loadedJson, type);
+
+        if(budgets == null){
+            budgets = new ArrayList<>();
+        }
+
+//        //Get Budgets from SharedPreferences
+//        for(Integer i = -1; i < sharedPreferences.getInt("size", 0); i++){
+//            //budgets.add(new Budget(sharedPreferences.getStringSet("set" + i.toString(), null)));
+//            //budgets.add(new Budget("name", 3.0, true, sharedPreferences.getBoolean("flag", false), 6.0));
+//            //Set<String> stringSet = sharedPreferences.getStringSet("set" + i.toString(), null);
+//            List<String> temp = new ArrayList<>();
+//            temp.add("name");
+//            temp.add("3");
+//            temp.add("true");
+//            temp.add("false");
+//            temp.add("6");
+//            budgets.add(new Budget(new HashSet<String>(temp)));
+//        }
+//
+//        BudgetHandler.setBudgetList(budgets);
+          sharedPreferencesChecked = true;
     }
 
     @Override
@@ -87,16 +128,33 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == 1) {
             if(resultCode == RESULT_OK) {
-                //addBudget(BridgeClass.getNewBudget());
+                //addBudget(BudgetHandler.getNewBudget());
             }
         }
     }
 
     private void refresh(){
-        //budgets = new ArrayList<>(BridgeClass.getBudgetList());
-        for(int i = 0; i < budgets.size(); i++){
-            budgets.get(i).refresh();
+        //budgets = new ArrayList<>(BudgetHandler.getBudgetList());
+        for(int i = 0; i < budgets.size(); i++) {
+            TextView nameDisplay = budgetLayouts.get(i).findViewWithTag(0);
+            TextView amountDisplay = budgetLayouts.get(i).findViewWithTag(1);
+            TextView partitionDisplay = budgetLayouts.get(i).findViewWithTag(2);
+            nameDisplay.setText(budgets.get(i).getBudgetName());
+            amountDisplay.setText("$" + String.format("%.02f", budgets.get(i).getBudget()));
+            if (budgets.get(i).isPartitioned()) {
+                String temp = "";
+                if (budgets.get(i).isAmountBased()) {
+                    temp += "$";
+                }
+                temp += String.format("%.02f", budgets.get(i).getPartitionValue());
+                if (!budgets.get(i).isAmountBased()) {
+                    temp += "%";
+                }
+                temp += " of P.C.";
+                partitionDisplay.setText(temp);
+            }
         }
+            //budgets.get(i).refresh();
     }
 
     public void addBudget(Budget newBudget, int index){
@@ -108,15 +166,17 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         if(index % 2 != 0){
             budgetLayout.setBackgroundColor(getResources().getColor(android.R.color.darker_gray));
         }
-        //budgetLayout.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
 
         ImageButton editButton = new ImageButton(this);
         ImageButton deleteButton = new ImageButton(this);
         Button depositButton = new Button(this);
         Button withdrawButton = new Button(this);
         final TextView nameView = new TextView(this);
+        nameView.setTag(0);
         final TextView moneyView = new TextView(this);
+        moneyView.setTag(1);
         final TextView partitionView = new TextView(this);
+        partitionView.setTag(2);
 
 
         editButton.setLayoutParams(new ViewGroup.LayoutParams(75, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -124,9 +184,9 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         editButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                BridgeClass.setBudgetList(budgets);
+                BudgetHandler.setBudgetList(budgets);
                 placeholder = i;
-                BridgeClass.setPlaceholder(placeholder);
+                BudgetHandler.setPlaceholder(placeholder);
                 openEditDialog();
             }
         });
@@ -165,7 +225,7 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         nameView.setTextColor(getResources().getColor(android.R.color.black));
         nameView.setTextSize(16f);
 
-        moneyView.setText("$" + String.format("%.02f", newBudget.getBudget()));
+        moneyView.setText("$" + format.format(newBudget.getBudget()));
         moneyView.setTextColor(getResources().getColor(android.R.color.black));
         moneyView.setTextSize(16f);
 
@@ -174,7 +234,7 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
             if(newBudget.isAmountBased()){
                 temp += "$";
             }
-            temp += String.format("%.02f", newBudget.getPartitionValue());
+            temp += format.format(newBudget.getPartitionValue());
             if(!newBudget.isAmountBased()){
                 temp += "%";
             }
@@ -225,84 +285,18 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         budgetLayout.addView(space);
         budgetLayout.addView(buttonLayout);
 
-        budgets.get(i).setNameDisplay(nameView);
-        budgets.get(i).setAmountDisplay(moneyView);
-        budgets.get(i).setPartitionDisplay(partitionView);
-        budgets.get(i).setEditButton(editButton);
-        budgets.get(i).setDeleteButton(deleteButton);
-        budgets.get(i).setDepositButton(depositButton);
-        budgets.get(i).setWithdrawButton(withdrawButton);
+//        budgets.get(i).setNameDisplay(nameView);
+//        budgets.get(i).setAmountDisplay(moneyView);
+//        budgets.get(i).setPartitionDisplay(partitionView);
+//        budgets.get(i).setEditButton(editButton);
+//        budgets.get(i).setDeleteButton(deleteButton);
+//        budgets.get(i).setDepositButton(depositButton);
+//        budgets.get(i).setWithdrawButton(withdrawButton);
 
         budgetLayouts.add(budgetLayout);
         verticalLayout.addView(budgetLayout);
-//        LayoutInflater inflater = getLayoutInflater();
-//        View budgetDisplay = inflater.inflate(R.layout.budget_layout, verticalLayout);
-//        budgetLayouts.add((LinearLayout)budgetDisplay);
-
-//        //TODO figure out how to get these buttons and stuff to work; maybe a separate class for the budgetDisplay?
-//        TextView budgetName = (TextView)budgetDisplay.findViewById(R.id.nameDisplay);
-//        TextView amountDisplay = (TextView)budgetDisplay.findViewById(R.id.moneyDisplay);
-//        TextView partitionDisplay = (TextView)budgetDisplay.findViewById(R.id.partitionDisplay);
-//        ImageButton editButton = (ImageButton)budgetDisplay.findViewById(R.id.editButton);
-//        ImageButton deleteButton = (ImageButton)budgetDisplay.findViewById(R.id.deleteButton);
-//        Button depositButton = (Button)budgetDisplay.findViewById(R.id.addButton);
-//        Button withdrawButton = (Button)budgetDisplay.findViewById(R.id.subtractButton);
-//
-//        budgetName.setText(newBudget.getBudgetName());
-//        amountDisplay.setText(String.format("%.2f",newBudget.getBudget()));
-//        if(newBudget.isPartitioned()){
-//            String temp = "";
-//            if(newBudget.isAmountBased()){
-//                temp += "$";
-//            }
-//            temp += String.format("%.2f", newBudget.getPartitionValue());
-//            if(!newBudget.isAmountBased()){
-//                temp += "%";
-//            }
-//            temp += " of P.C.";
-//            partitionDisplay.setText(temp);
-//        }
-//
-//
-//        budgetTitles.add(budgetName);
-//        budgetDisplays.add(amountDisplay);
-//        renameButtons.add(editButton);
-//        deleteButtons.add(deleteButton);
-//        budgetPlusButtons.add(depositButton);
-//        budgetMinusButtons.add(withdrawButton);
-//
-//        editButton.setOnClickListener(new View.OnClickListener(){
-//            @Override
-//            public void onClick(View view){
-//                //TODO Make "rename" pop-up
-//                budgetName.setText("Billy");
-//            }
-//        });
-//
-//
-//        deleteButton.setOnClickListener(new View.OnClickListener(){
-//            @Override
-//            public void onClick(View view){
-//                //TODO Make "delete" pop-up
-//            }
-//        });
-//
-//
-//        depositButton.setOnClickListener(new View.OnClickListener(){
-//            @Override
-//            public void onClick(View view){
-//                deposit(view);
-//            }
-//        });
-//
-//
-//        withdrawButton.setOnClickListener(new View.OnClickListener(){
-//            @Override
-//            public void onClick(View view){
-//                //TODO Make "withdraw" pop-up
-//            }
-//        });
     }
+
 
     public void openDepositDialog(){
         DepositDialog dialog = new DepositDialog();
@@ -318,6 +312,7 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         EditDialog dialog = new EditDialog();
         dialog.show(getSupportFragmentManager(), "Edit Dialog");
     }
+
 
     public void makeBudget(View view){
         Intent makeNewBudget = new Intent(this, BudgetCreateActivity.class);

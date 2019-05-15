@@ -8,17 +8,26 @@ import java.util.List;
 
 import c.giles.budgetappv11.views.BudgetLayout;
 
-public class BridgeClass {
+public class BudgetHandler {
+
     static double deposit = 0;
     static double withdrawal = 0;
-    static Budget newBudget;
     static List<Budget> budgetList = new ArrayList<>();
     static List<LinearLayout> budgetLayouts = new ArrayList<>();
     static ViewGroup budgetDisplayWindow;
     static int placeholder = -1;
+    static boolean modified = false;
 
     public static void addBudget(Budget newBudget){
         budgetList.add(newBudget);
+    }
+
+    public static boolean isModified(){
+        return modified;
+    }
+
+    public static void setModified(boolean bool){
+        modified = bool;
     }
 
     public static List<Budget> getBudgetList(){

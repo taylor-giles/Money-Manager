@@ -1,6 +1,5 @@
 package c.giles.budgetappv11.views;
 
-import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -18,7 +17,7 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import c.giles.budgetappv11.BridgeClass;
+import c.giles.budgetappv11.BudgetHandler;
 import c.giles.budgetappv11.Budget;
 import c.giles.budgetappv11.R;
 
@@ -31,12 +30,11 @@ public class EditDialog extends AppCompatDialogFragment {
     private TextView percentSign;
 
     private EditDialogListener listener;
-    private List<Budget> budgets = new ArrayList<>(BridgeClass.getBudgetList());
+    private List<Budget> budgets = new ArrayList<>(BudgetHandler.getBudgetList());
 
     NumberFormat format = NumberFormat.getNumberInstance();
 
 
-    @SuppressLint("DefaultLocale")
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -54,11 +52,11 @@ public class EditDialog extends AppCompatDialogFragment {
         dollarSign = view.findViewById(R.id.editDollarSignSmall);
         percentSign = view.findViewById(R.id.editPercentSignSmall);
 
-        nameEntry.setText(budgets.get(BridgeClass.getPlaceholder()).getBudgetName());
-        partitionSwitch.setChecked(budgets.get(BridgeClass.getPlaceholder()).isPartitioned());
-        if(budgets.get(BridgeClass.getPlaceholder()).isPartitioned()) {
-            partitionToggle.setChecked(budgets.get(BridgeClass.getPlaceholder()).isAmountBased());
-            partitionValueEntry.setText(format.format(budgets.get(BridgeClass.getPlaceholder()).getPartitionValue()));
+        nameEntry.setText(budgets.get(BudgetHandler.getPlaceholder()).getBudgetName());
+        partitionSwitch.setChecked(budgets.get(BudgetHandler.getPlaceholder()).isPartitioned());
+        if(budgets.get(BudgetHandler.getPlaceholder()).isPartitioned()) {
+            partitionToggle.setChecked(budgets.get(BudgetHandler.getPlaceholder()).isAmountBased());
+            partitionValueEntry.setText(format.format(budgets.get(BudgetHandler.getPlaceholder()).getPartitionValue()));
         }
 
         if(partitionToggle.isChecked()){

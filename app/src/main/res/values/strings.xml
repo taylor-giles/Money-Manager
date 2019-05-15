@@ -26,6 +26,7 @@
     <string name="deposit_title">Deposit</string>
     <string name="withdraw_title">Withdraw</string>
     <string name="edit_title">Edit Budget</string>
+    <string name="preference_file_key">c.giles.budgetappv11.PREFERENCE_FILE_KEY</string>
 
 
 </resources>
