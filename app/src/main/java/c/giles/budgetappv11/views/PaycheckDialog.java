@@ -18,10 +18,10 @@ import c.giles.budgetappv11.BudgetHandler;
 import c.giles.budgetappv11.R;
 
 
-public class WithdrawDialog extends AppCompatDialogFragment {
+public class PaycheckDialog extends AppCompatDialogFragment {
 
-    private WithdrawDialogListener listener;
-    private EditText withdrawalEntry;
+    private PaycheckDialogListener listener;
+    private EditText paycheckEntry;
     private Button quickButton1;
     private Button quickButton2;
     private Button quickButton3;
@@ -35,55 +35,54 @@ public class WithdrawDialog extends AppCompatDialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
 
-        View view = inflater.inflate(R.layout.withdraw_dialog, null);
+        View view = inflater.inflate(R.layout.paycheck_dialog, null);
 
         format.setMaximumFractionDigits(2);
         format.setMinimumFractionDigits(2);
 
-        withdrawalEntry = (EditText)view.findViewById(R.id.withdrawalEntryBar);
-        quickButton1 = (Button)view.findViewById(R.id.quickWithdraw1);
-        quickButton2 = (Button)view.findViewById(R.id.quickWithdraw2);
-        quickButton3 = (Button)view.findViewById(R.id.quickWithdraw3);
+        paycheckEntry = (EditText)view.findViewById(R.id.paycheck_entry_bar);
+        quickButton1 = (Button)view.findViewById(R.id.quick_pay_1);
+        quickButton2 = (Button)view.findViewById(R.id.quick_pay_2);
+        quickButton3 = (Button)view.findViewById(R.id.quick_pay_3);
         builder.setView(view)
-                .setTitle("Withdraw")
+                .setTitle("Log Paycheck")
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialogInterface, int i) {
 
                     }
 
                 })
-                .setPositiveButton("Withdraw", new DialogInterface.OnClickListener(){
+                .setPositiveButton("Log", new DialogInterface.OnClickListener(){
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i){
-                        String amount = withdrawalEntry.getText().toString();
-                        listener.applyWithdraw(amount);
+                        String amount = paycheckEntry.getText().toString();
+                        listener.logPaycheck(amount);
                     }
                 })
         ;
 
-
-        quickButton1.setText("$" + format.format(BudgetHandler.getQuickWithdrawValue(0)));
-        quickButton2.setText("$" + format.format(BudgetHandler.getQuickWithdrawValue(1)));
-        quickButton3.setText("$" + format.format(BudgetHandler.getQuickWithdrawValue(2)));
+        quickButton1.setText("$" + format.format(BudgetHandler.getQuickPayValue(0)));
+        quickButton2.setText("$" + format.format(BudgetHandler.getQuickPayValue(1)));
+        quickButton3.setText("$" + format.format(BudgetHandler.getQuickPayValue(2)));
 
         quickButton1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                withdrawalEntry.setText(quickButton1.getText().toString().substring(1));
+                paycheckEntry.setText(quickButton1.getText().toString().substring(1));
             }
         });
 
         quickButton2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                withdrawalEntry.setText(quickButton2.getText().toString().substring(1));
+                paycheckEntry.setText(quickButton2.getText().toString().substring(1));
             }
         });
 
         quickButton3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                withdrawalEntry.setText(quickButton3.getText().toString().substring(1));
+                paycheckEntry.setText(quickButton3.getText().toString().substring(1));
             }
         });
 
@@ -95,14 +94,14 @@ public class WithdrawDialog extends AppCompatDialogFragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         try {
-            listener = (WithdrawDialogListener) context;
+            listener = (PaycheckDialogListener) context;
         }catch(ClassCastException e){
-            throw new ClassCastException(context.toString() + " must implement WithdrawDialogListener");
+            throw new ClassCastException(context.toString() + " must implement PaycheckDialogListener");
         }
     }
 
 
-    public interface WithdrawDialogListener {
-        void applyWithdraw(String amount);
+    public interface PaycheckDialogListener {
+        void logPaycheck(String amount);
     }
 }

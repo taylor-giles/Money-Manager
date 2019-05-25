@@ -10,16 +10,21 @@ import c.giles.budgetappv11.views.BudgetLayout;
 
 public class BudgetHandler {
 
-    static double deposit = 0;
-    static double withdrawal = 0;
-    static List<Budget> budgetList = new ArrayList<>();
-    static List<LinearLayout> budgetLayouts = new ArrayList<>();
+    private static List<Budget> budgetList = new ArrayList<>();
     static ViewGroup budgetDisplayWindow;
-    static int placeholder = -1;
+    private static int placeholder = -1;
     static boolean modified = false;
+    private static Double[] quickPayAmounts = new Double[3];
+    private static Double[] quickDepositAmounts = new Double[3];
+    private static Double[] quickWithdrawAmounts = new Double[3];
+    private static String defaultBudgetName;
 
     public static void addBudget(Budget newBudget){
         budgetList.add(newBudget);
+    }
+
+    public static void addBudget(int index, Budget newBudget){
+        budgetList.add(index, newBudget);
     }
 
     public static boolean isModified(){
@@ -53,6 +58,60 @@ public class BudgetHandler {
 
     public static int getPlaceholder(){
         return placeholder;
+    }
+
+    public static double getTotalPercentPartitioned(){
+        double totalPercentPartitioned = 0;
+        for(Budget budget : budgetList){
+            if(budget.isPartitioned() && !budget.isAmountBased()){
+                totalPercentPartitioned += budget.getPartitionValue();
+            }
+        }
+        return totalPercentPartitioned;
+    }
+
+    public static Double getQuickPayValue(int index){
+        return quickPayAmounts[index];
+    }
+
+    public static Double getQuickDepositValue(int index){
+        return quickDepositAmounts[index];
+    }
+
+    public static Double[] getQuickWithdrawValues(){
+        return quickWithdrawAmounts;
+    }
+
+    public static Double[] getQuickPayValues(){
+        return quickPayAmounts;
+    }
+
+    public static Double[] getQuickDepositValues(){
+        return quickDepositAmounts;
+    }
+
+    public static Double getQuickWithdrawValue(int index){
+        return quickWithdrawAmounts[index];
+    }
+
+    public static void setQuickPayAmounts(Double[] amounts){
+        quickPayAmounts = amounts;
+    }
+
+    public static void setQuickDepositAmounts(Double[] amounts){
+        quickDepositAmounts = amounts;
+    }
+
+    public static void setQuickWithdrawAmounts(Double[] amounts){
+        quickWithdrawAmounts = amounts;
+    }
+
+    public static String getDefaultBudgetName(){
+        return defaultBudgetName;
+    }
+
+    public static void setDefaultBudgetName(String name){
+        defaultBudgetName = name;
     }
 
 }

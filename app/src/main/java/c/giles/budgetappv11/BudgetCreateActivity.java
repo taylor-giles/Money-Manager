@@ -7,7 +7,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
+
+import java.util.List;
 
 public class BudgetCreateActivity extends AppCompatActivity {
 
@@ -16,6 +19,7 @@ public class BudgetCreateActivity extends AppCompatActivity {
     boolean partition = false;
     boolean amountBased = true;
     double partitionValue = 0.0;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,11 +45,15 @@ public class BudgetCreateActivity extends AppCompatActivity {
                 partitionValue = Double.parseDouble(partitionValueView.getText().toString());
                 amountBased = partitionTypeButton.isChecked();
 
-                Budget newBudget = new Budget(budgetName, initalBudget, partition, amountBased, partitionValue);
-                BudgetHandler.addBudget(newBudget);
-                BudgetHandler.setModified(true);
-                setResult(RESULT_OK);
-                startMainActivity(view);
+                if(partition && !amountBased && BudgetHandler.getTotalPercentPartitioned() + partitionValue > 100){
+                    Toast.makeText(getBaseContext(), "Please keep total partition percentage below 100%", Toast.LENGTH_LONG).show();
+                } else {
+                    Budget newBudget = new Budget(budgetName, initalBudget, partition, amountBased, partitionValue);
+                    BudgetHandler.addBudget(newBudget);
+                    BudgetHandler.setModified(true);
+                    setResult(RESULT_OK);
+                    startMainActivity(view);
+                }
             }
         });
 

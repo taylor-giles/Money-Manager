@@ -12,6 +12,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import java.text.NumberFormat;
+
+import c.giles.budgetappv11.BudgetHandler;
 import c.giles.budgetappv11.R;
 
 
@@ -23,6 +26,8 @@ public class DepositDialog extends AppCompatDialogFragment {
     private Button quickButton2;
     private Button quickButton3;
 
+    NumberFormat format = NumberFormat.getNumberInstance();
+
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState){
@@ -32,10 +37,18 @@ public class DepositDialog extends AppCompatDialogFragment {
 
         View view = inflater.inflate(R.layout.deposit_dialog, null);
 
+        format.setMaximumFractionDigits(2);
+        format.setMinimumFractionDigits(2);
+
         depositEntry = (EditText)view.findViewById(R.id.depositEntryBar);
         quickButton1 = (Button)view.findViewById(R.id.quickDeposit1);
         quickButton2 = (Button)view.findViewById(R.id.quickDeposit2);
         quickButton3 = (Button)view.findViewById(R.id.quickDeposit3);
+
+        quickButton1.setText("$" + format.format(BudgetHandler.getQuickDepositValue(0)));
+        quickButton2.setText("$" + format.format(BudgetHandler.getQuickDepositValue(1)));
+        quickButton3.setText("$" + format.format(BudgetHandler.getQuickDepositValue(2)));
+
         builder.setView(view)
                 .setTitle("Deposit")
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -52,7 +65,6 @@ public class DepositDialog extends AppCompatDialogFragment {
                     }
                 })
         ;
-
 
         quickButton1.setOnClickListener(new View.OnClickListener() {
             @Override
