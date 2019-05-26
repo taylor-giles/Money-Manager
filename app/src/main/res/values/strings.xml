@@ -61,5 +61,6 @@
     <string name="switch_to_percent_based">Switch to Percent-Based</string>
     <string name="create">Create</string>
     <string name="cancel">Cancel</string>
+    <string name="dollar_sign">$</string>
 
 </resources>

@@ -37,14 +37,11 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <Space
-                    android:layout_width="10dp"
-                    android:layout_height="wrap_content" />
-
                 <TextView
                     android:id="@+id/quick_pay_title3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
                     android:text="@string/set_default_budget_name"
                     android:textSize="20sp"
                     android:textStyle="bold" />
@@ -58,25 +55,21 @@
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
-                <Space
-                    android:layout_width="30dp"
-                    android:layout_height="wrap_content" />
-
                 <TextView
                     android:id="@+id/default_budget_name_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="30dp"
                     android:text="@string/budget_name_label"
-                    android:textSize="15sp" />
+                    android:textSize="15sp"
+                     />
 
-                <Space
-                    android:layout_width="10dp"
-                    android:layout_height="wrap_content" />
 
                 <EditText
                     android:id="@+id/default_budget_name_box"
                     android:layout_width="wrap_content"
                     android:layout_height="50dp"
+                    android:layout_marginStart="10dp"
                     android:autofillHints=""
                     android:ems="10"
                     android:hint="@string/enter_a_name"
@@ -95,14 +88,11 @@
                 android:layout_weight="0"
                 android:orientation="horizontal">
 
-                <Space
-                    android:layout_width="10dp"
-                    android:layout_height="wrap_content" />
-
                 <TextView
                     android:id="@+id/quick_pay_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
                     android:text="@string/set_quick_pay_amounts"
                     android:textSize="20sp"
                     android:textStyle="bold" />
@@ -121,25 +111,19 @@
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
-                    <Space
-                        android:layout_width="30dp"
-                        android:layout_height="wrap_content" />
-
                     <TextView
                         android:id="@+id/quick_pay_label_1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="30dp"
                         android:text="@string/paycheck_1"
                         android:textSize="15sp" />
-
-                    <Space
-                        android:layout_width="10dp"
-                        android:layout_height="wrap_content" />
 
                     <TextView
                         android:id="@+id/pay_dollarsign_1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
                         android:text="@string/dollarSignSmall"
                         android:textSize="16sp" />
 
@@ -161,25 +145,20 @@
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
-                    <Space
-                        android:layout_width="30dp"
-                        android:layout_height="wrap_content" />
-
                     <TextView
                         android:id="@+id/quick_pay_label_2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="30dp"
                         android:text="@string/paycheck_2"
                         android:textSize="15sp" />
 
-                    <Space
-                        android:layout_width="10dp"
-                        android:layout_height="wrap_content" />
 
                     <TextView
                         android:id="@+id/pay_dollarsign_2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
                         android:text="@string/dollarSignSmall"
                         android:textSize="16sp" />
 
@@ -201,25 +180,19 @@
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
-                    <Space
-                        android:layout_width="30dp"
-                        android:layout_height="wrap_content" />
-
                     <TextView
                         android:id="@+id/quick_pay_label_3"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="30dp"
                         android:text="@string/paycheck_3"
                         android:textSize="15sp" />
-
-                    <Space
-                        android:layout_width="10dp"
-                        android:layout_height="wrap_content" />
 
                     <TextView
                         android:id="@+id/pay_dollarsign_3"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
                         android:text="@string/dollarSignSmall"
                         android:textSize="16sp" />
 
@@ -246,14 +219,11 @@
                 android:layout_weight="0"
                 android:orientation="horizontal">
 
-                <Space
-                    android:layout_width="10dp"
-                    android:layout_height="wrap_content" />
-
                 <TextView
                     android:id="@+id/quick_deposit_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
                     android:text="@string/set_quick_deposit_amounts"
                     android:textSize="20sp"
                     android:textStyle="bold" />
@@ -272,25 +242,19 @@
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
-                    <Space
-                        android:layout_width="30dp"
-                        android:layout_height="wrap_content" />
-
                     <TextView
                         android:id="@+id/quick_deposit_label_1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="30dp"
                         android:text="@string/deposit_1"
                         android:textSize="15sp" />
-
-                    <Space
-                        android:layout_width="10dp"
-                        android:layout_height="wrap_content" />
 
                     <TextView
                         android:id="@+id/deposit_dollarsign_1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
                         android:text="@string/dollarSignSmall"
                         android:textSize="16sp" />
 
@@ -312,25 +276,19 @@
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
-                    <Space
-                        android:layout_width="30dp"
-                        android:layout_height="wrap_content" />
-
                     <TextView
                         android:id="@+id/quick_deposit_label_2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="30dp"
                         android:text="@string/deposit_2"
                         android:textSize="15sp" />
-
-                    <Space
-                        android:layout_width="10dp"
-                        android:layout_height="wrap_content" />
 
                     <TextView
                         android:id="@+id/deposit_dollarsign_2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
                         android:text="@string/dollarSignSmall"
                         android:textSize="16sp" />
 
@@ -352,25 +310,19 @@
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
-                    <Space
-                        android:layout_width="30dp"
-                        android:layout_height="wrap_content" />
-
                     <TextView
                         android:id="@+id/quick_deposit_label_3"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="30dp"
                         android:text="@string/deposit_3"
                         android:textSize="15sp" />
-
-                    <Space
-                        android:layout_width="10dp"
-                        android:layout_height="wrap_content" />
 
                     <TextView
                         android:id="@+id/deposit_dollarsign_3"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
                         android:text="@string/dollarSignSmall"
                         android:textSize="16sp" />
 
@@ -398,14 +350,11 @@
                 android:layout_weight="0"
                 android:orientation="horizontal">
 
-                <Space
-                    android:layout_width="10dp"
-                    android:layout_height="wrap_content" />
-
                 <TextView
                     android:id="@+id/quick_withdraw_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
                     android:text="@string/set_quick_withdraw_amounts"
                     android:textSize="20sp"
                     android:textStyle="bold" />
@@ -424,25 +373,19 @@
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
-                    <Space
-                        android:layout_width="30dp"
-                        android:layout_height="wrap_content" />
-
                     <TextView
                         android:id="@+id/quick_withdraw_label_1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="30dp"
                         android:text="@string/withdrawal_1"
                         android:textSize="15sp" />
-
-                    <Space
-                        android:layout_width="10dp"
-                        android:layout_height="wrap_content" />
 
                     <TextView
                         android:id="@+id/withdraw_dollarsign_1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
                         android:text="@string/dollarSignSmall"
                         android:textSize="16sp" />
 
@@ -463,28 +406,21 @@
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
-                    <Space
-                        android:layout_width="30dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0" />
-
                     <TextView
                         android:id="@+id/quick_withdraw_label_2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="30dp"
                         android:layout_weight="0"
                         android:text="@string/withdrawal_2"
                         android:textSize="15sp" />
 
-                    <Space
-                        android:layout_width="10dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0" />
 
                     <TextView
                         android:id="@+id/withdraw_dollarsign_2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
                         android:layout_weight="0"
                         android:text="@string/dollarSignSmall"
                         android:textSize="16sp" />
@@ -506,27 +442,21 @@
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
-                    <Space
-                        android:layout_width="30dp"
-                        android:layout_height="wrap_content" />
-
                     <TextView
                         android:id="@+id/quick_withdraw_label_3"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="30dp"
                         android:layout_weight="0"
                         android:text="@string/withdrawal_3"
                         android:textSize="15sp" />
 
-                    <Space
-                        android:layout_width="10dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0" />
 
                     <TextView
                         android:id="@+id/withdraw_dollarsign_3"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
                         android:layout_weight="0"
                         android:text="@string/dollarSignSmall"
                         android:textSize="16sp" />

@@ -18,7 +18,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginLeft="16dp"
             android:layout_marginTop="16dp"
             android:text="@string/budget_name"
             android:textSize="18sp" />
@@ -50,7 +49,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginLeft="16dp"
             android:text="@string/starting_budget"
             android:textSize="18sp" />
 
@@ -65,7 +63,7 @@
             android:layout_width="10dp"
             android:layout_height="wrap_content"
 
-            android:text="$"
+            android:text="@string/dollar_sign"
             android:textColor="#000000"
             android:textSize="18sp" />
 
@@ -100,7 +98,6 @@
             android:id="@+id/textView4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="20dp"
             android:text="@string/amount_of_paycheck"
             android:layout_marginEnd="20dp" />
 
@@ -108,7 +105,7 @@
             android:id="@+id/dollarSignSmall"
             android:layout_width="9dp"
             android:layout_height="19dp"
-            android:text="@string/dollarSignSmall"
+            android:text="@string/dollar_sign"
             android:textColor="#000000"
             android:textSize="14sp"
             android:visibility="invisible" />
