@@ -57,5 +57,9 @@
     <string name="save">Save</string>
     <string name="budget_name_label">Budget Name:</string>
     <string name="set_default_budget_name">Set Default Budget Name</string>
+    <string name="initial_money_hint">Enter Initial $</string>
+    <string name="switch_to_percent_based">Switch to Percent-Based</string>
+    <string name="create">Create</string>
+    <string name="cancel">Cancel</string>
 
 </resources>

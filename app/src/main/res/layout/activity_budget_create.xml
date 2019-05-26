@@ -1,202 +1,179 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
     tools:context=".BudgetCreateActivity">
 
-    <TextView
-        android:id="@+id/percentSignSmall"
-        android:layout_width="10dp"
-        android:layout_height="19dp"
-        android:layout_marginTop="108dp"
-        android:layout_marginBottom="246dp"
-        android:text="@string/percent_sign_small"
-        android:textColor="#000000"
-        android:textSize="14sp"
-        android:visibility="visible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/partitionValue"
-        app:layout_constraintTop_toBottomOf="@+id/startingBudget"
-        app:layout_constraintVertical_bias="0.0" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
 
-    <TextView
-        android:id="@+id/dollarSignSmall"
-        android:layout_width="9dp"
-        android:layout_height="19dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="23dp"
-        android:layout_marginBottom="27dp"
-        android:text="@string/dollarSignSmall"
-        android:textColor="#000000"
-        android:textSize="14sp"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toTopOf="@+id/baseToggleButton"
-        app:layout_constraintEnd_toStartOf="@+id/partitionValue"
-        app:layout_constraintStart_toEndOf="@+id/textView4"
-        app:layout_constraintTop_toBottomOf="@+id/partitionSwitch"
-        app:layout_constraintVertical_bias="1.0" />
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="16dp"
+            android:text="@string/budget_name"
+            android:textSize="18sp" />
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="136dp"
-        android:layout_height="28dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="28dp"
-        android:layout_marginBottom="49dp"
-        android:text="@string/budget_name"
-        android:textSize="18sp"
-        app:layout_constraintBottom_toTopOf="@+id/textView2"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
 
-    <EditText
-        android:id="@+id/budgetName"
-        android:layout_width="166dp"
-        android:layout_height="42dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="56dp"
-        android:layout_marginRight="56dp"
-        android:autofillHints=""
-        android:ems="10"
-        android:hint="@string/enter_a_name"
-        android:inputType="textPersonName"
-        android:text="@string/new_budget"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        <EditText
+            android:id="@+id/budgetName"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:autofillHints=""
+            android:ems="10"
+            android:hint="@string/enter_a_name"
+            android:inputType="textPersonName"
+            android:text="@string/new_budget" />
+    </LinearLayout>
 
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="136dp"
-        android:layout_height="28dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="27dp"
-        android:text="@string/starting_budget"
-        android:textSize="18sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
 
-    <EditText
-        android:id="@+id/startingBudget"
-        android:layout_width="157dp"
-        android:layout_height="45dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginEnd="56dp"
-        android:layout_marginRight="56dp"
-        android:ems="10"
-        android:hint="Enter Initial $"
-        android:importantForAutofill="no"
-        android:inputType="numberDecimal"
-        android:text="0.00"
-        android:textColor="#000000"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/budgetName" />
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:text="@string/starting_budget"
+            android:textSize="18sp" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+
+        <TextView
+            android:id="@+id/textView8"
+            android:layout_width="10dp"
+            android:layout_height="wrap_content"
+
+            android:text="$"
+            android:textColor="#000000"
+            android:textSize="18sp" />
+
+        <EditText
+            android:id="@+id/startingBudget"
+            android:layout_width="190dp"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="@string/initial_money_hint"
+            android:importantForAutofill="no"
+            android:inputType="numberDecimal"
+            android:text="@string/_0_00"
+            android:textColor="#000000" />
+    </LinearLayout>
 
     <Switch
         android:id="@+id/partitionSwitch"
         android:layout_width="238dp"
         android:layout_height="23dp"
-        android:layout_marginStart="100dp"
-        android:layout_marginLeft="100dp"
         android:layout_marginTop="58dp"
-        android:layout_marginEnd="100dp"
-        android:layout_marginRight="100dp"
         android:layout_marginBottom="11dp"
         android:text="@string/partition_into_paycheck"
-        android:textSize="18sp"
-        app:layout_constraintBottom_toTopOf="@+id/partitionValue"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/startingBudget"
-        app:layout_constraintVertical_chainStyle="packed" />
+        android:textSize="18sp" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="20dp"
+            android:text="@string/amount_of_paycheck"
+            android:layout_marginEnd="20dp" />
+
+        <TextView
+            android:id="@+id/dollarSignSmall"
+            android:layout_width="9dp"
+            android:layout_height="19dp"
+            android:text="@string/dollarSignSmall"
+            android:textColor="#000000"
+            android:textSize="14sp"
+            android:visibility="invisible" />
+
+        <EditText
+            android:id="@+id/partitionValue"
+            android:layout_width="100dp"
+            android:layout_height="43dp"
+            android:ems="10"
+            android:hint="@string/enter_a_value"
+            android:importantForAutofill="no"
+            android:inputType="numberDecimal"
+            android:text="@string/_0_00"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/percentSignSmall"
+            android:layout_width="10dp"
+            android:layout_height="19dp"
+            android:text="@string/percent_sign_small"
+            android:textColor="#000000"
+            android:textSize="14sp"
+            android:visibility="visible" />
+    </LinearLayout>
 
     <ToggleButton
         android:id="@+id/baseToggleButton"
-        android:layout_width="227dp"
-        android:layout_height="47dp"
-        android:layout_marginStart="79dp"
-        android:layout_marginLeft="79dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginTop="15dp"
-        android:layout_marginEnd="78dp"
-        android:layout_marginRight="78dp"
         android:checked="false"
         android:text="@string/switch_partition_basis"
         android:textOff="@string/switch_to_amount_based"
-        android:textOn="Switch to Percent-Based"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/partitionValue" />
+        android:textOn="@string/switch_to_percent_based" />
 
-    <TextView
-        android:id="@+id/textView4"
-        android:layout_width="wrap_content"
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="50dp"
-        android:layout_marginLeft="50dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginBottom="27dp"
-        android:text="@string/amount_of_paycheck"
-        app:layout_constraintBottom_toTopOf="@+id/baseToggleButton"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/partitionSwitch" />
+        android:orientation="horizontal">
 
-    <EditText
-        android:id="@+id/partitionValue"
-        android:layout_width="100dp"
-        android:layout_height="43dp"
-        android:ems="10"
-        android:hint="@string/enter_a_value"
-        android:importantForAutofill="no"
-        android:inputType="numberDecimal"
-        android:text="@string/_0_00"
-        android:textSize="14sp"
-        app:layout_constraintBottom_toTopOf="@+id/baseToggleButton"
-        app:layout_constraintEnd_toStartOf="@+id/percentSignSmall"
-        app:layout_constraintStart_toEndOf="@+id/dollarSignSmall"
-        app:layout_constraintTop_toBottomOf="@+id/partitionSwitch" />
+        <Button
+            android:id="@+id/cancelButton"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/cancel" />
 
-    <Button
-        android:id="@+id/createButton"
-        android:layout_width="94dp"
-        android:layout_height="48dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginEnd="89dp"
-        android:layout_marginRight="89dp"
-        android:layout_marginBottom="35dp"
-        android:text="CREATE"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/cancelButton" />
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@android:color/darker_gray" />
 
-    <TextView
-        android:id="@+id/textView8"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="84dp"
-        android:text="$"
-        android:textColor="#000000"
-        android:textSize="18sp"
-        app:layout_constraintEnd_toStartOf="@+id/startingBudget"
-        app:layout_constraintTop_toTopOf="parent" />
+        <Button
+            android:id="@+id/createButton"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/create" />
+    </LinearLayout>
 
-    <Button
-        android:id="@+id/cancelButton"
-        android:layout_width="94dp"
-        android:layout_height="48dp"
-        android:layout_marginStart="89dp"
-        android:layout_marginLeft="89dp"
-        android:layout_marginEnd="15dp"
-        android:layout_marginRight="15dp"
-        android:layout_marginBottom="35dp"
-        android:text="Cancel"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/createButton"
-        app:layout_constraintStart_toStartOf="parent" />
-
-</android.support.constraint.ConstraintLayout>
+</LinearLayout>
