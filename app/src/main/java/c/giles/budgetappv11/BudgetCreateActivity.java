@@ -69,17 +69,15 @@ public class BudgetCreateActivity extends AppCompatActivity {
         partitionTypeButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-                if(partitionTypeButton.isChecked()){ //If it's activated, that means it's in amount-based mode
-                    dollarSignSmall.setText("$");
-                    percentSignSmall.setText(" ");
+                if(partitionTypeButton.isChecked()){ //If it's checked, that means it's in amount-based mode
+                    dollarSignSmall.setVisibility(View.VISIBLE);
+                    percentSignSmall.setVisibility(View.INVISIBLE);
                 } else {
-                    dollarSignSmall.setText(" ");
-                    percentSignSmall.setText("%");
+                    dollarSignSmall.setVisibility(View.INVISIBLE);
+                    percentSignSmall.setVisibility(View.VISIBLE);
                 }
             }
         });
-
-
 
     }
 

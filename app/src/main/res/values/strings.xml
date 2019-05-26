@@ -6,7 +6,7 @@
     <string name="enter_a_name">Enter a Name</string>
     <string name="starting_budget">Initial Budget:</string>
     <string name="new_budget">New Budget</string>
-    <string name="percent_sign_small"> </string>
+    <string name="percent_sign_small">%</string>
     <string name="dollarSignSmall">$</string>
     <string name="partition_into_paycheck">Partition into Paycheck</string>
     <string name="switch_partition_basis">Switch Partition Basis</string>

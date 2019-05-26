@@ -14,9 +14,9 @@ public class BudgetHandler {
     static ViewGroup budgetDisplayWindow;
     private static int placeholder = -1;
     static boolean modified = false;
-    private static Double[] quickPayAmounts = new Double[3];
-    private static Double[] quickDepositAmounts = new Double[3];
-    private static Double[] quickWithdrawAmounts = new Double[3];
+    private static List<Double> quickPayAmounts = new ArrayList<>();
+    private static List<Double> quickDepositAmounts = new ArrayList<>();
+    private static List<Double> quickWithdrawAmounts = new ArrayList<>();
     private static String defaultBudgetName;
 
     public static void addBudget(Budget newBudget){
@@ -71,39 +71,39 @@ public class BudgetHandler {
     }
 
     public static Double getQuickPayValue(int index){
-        return quickPayAmounts[index];
+        return quickPayAmounts.get(index);
     }
 
     public static Double getQuickDepositValue(int index){
-        return quickDepositAmounts[index];
+        return quickDepositAmounts.get(index);
     }
 
-    public static Double[] getQuickWithdrawValues(){
-        return quickWithdrawAmounts;
+    public static List<Double> getQuickWithdrawValues(){
+        return new ArrayList<>(quickWithdrawAmounts);
     }
 
-    public static Double[] getQuickPayValues(){
-        return quickPayAmounts;
+    public static List<Double> getQuickPayValues(){
+        return new ArrayList<>(quickPayAmounts);
     }
 
-    public static Double[] getQuickDepositValues(){
-        return quickDepositAmounts;
+    public static List<Double> getQuickDepositValues(){
+        return new ArrayList<>(quickDepositAmounts);
     }
 
     public static Double getQuickWithdrawValue(int index){
-        return quickWithdrawAmounts[index];
+        return quickWithdrawAmounts.get(index);
     }
 
-    public static void setQuickPayAmounts(Double[] amounts){
-        quickPayAmounts = amounts;
+    public static void setQuickPayAmounts(List<Double> amounts){
+        quickPayAmounts = new ArrayList<>(amounts);
     }
 
-    public static void setQuickDepositAmounts(Double[] amounts){
-        quickDepositAmounts = amounts;
+    public static void setQuickDepositAmounts(List<Double> amounts){
+        quickDepositAmounts = new ArrayList<>(amounts);
     }
 
-    public static void setQuickWithdrawAmounts(Double[] amounts){
-        quickWithdrawAmounts = amounts;
+    public static void setQuickWithdrawAmounts(List<Double> amounts){
+        quickWithdrawAmounts = new ArrayList<>(amounts);
     }
 
     public static String getDefaultBudgetName(){

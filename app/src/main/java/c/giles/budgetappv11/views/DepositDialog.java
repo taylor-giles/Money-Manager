@@ -26,7 +26,8 @@ public class DepositDialog extends AppCompatDialogFragment {
     private Button quickButton2;
     private Button quickButton3;
 
-    NumberFormat format = NumberFormat.getNumberInstance();
+    NumberFormat moneyFormat = NumberFormat.getNumberInstance();
+    NumberFormat intFormat = NumberFormat.getNumberInstance();
 
     @NonNull
     @Override
@@ -37,20 +38,36 @@ public class DepositDialog extends AppCompatDialogFragment {
 
         View view = inflater.inflate(R.layout.deposit_dialog, null);
 
-        format.setMaximumFractionDigits(2);
-        format.setMinimumFractionDigits(2);
+        moneyFormat.setMaximumFractionDigits(2);
+        moneyFormat.setMinimumFractionDigits(2);
+        intFormat.setMaximumFractionDigits(0);
+        intFormat.setMinimumFractionDigits(0);
 
         depositEntry = (EditText)view.findViewById(R.id.depositEntryBar);
         quickButton1 = (Button)view.findViewById(R.id.quickDeposit1);
         quickButton2 = (Button)view.findViewById(R.id.quickDeposit2);
         quickButton3 = (Button)view.findViewById(R.id.quickDeposit3);
 
-        quickButton1.setText("$" + format.format(BudgetHandler.getQuickDepositValue(0)));
-        quickButton2.setText("$" + format.format(BudgetHandler.getQuickDepositValue(1)));
-        quickButton3.setText("$" + format.format(BudgetHandler.getQuickDepositValue(2)));
+        //If the quickValues can be represented as integers, don't bother formatting them to 2 decimal places
+        if(BudgetHandler.getQuickDepositValue(0) != Math.rint(BudgetHandler.getQuickDepositValue(0))) {
+            quickButton1.setText("$" + moneyFormat.format(BudgetHandler.getQuickDepositValue(0)));
+        } else {
+            quickButton1.setText("$" + intFormat.format(BudgetHandler.getQuickDepositValue(0)));
+        }
+        if(BudgetHandler.getQuickDepositValue(1) != Math.rint(BudgetHandler.getQuickDepositValue(1))) {
+            quickButton2.setText("$" + moneyFormat.format(BudgetHandler.getQuickDepositValue(1)));
+        } else {
+            quickButton2.setText("$" + intFormat.format(BudgetHandler.getQuickDepositValue(1)));
+        }
+        if(BudgetHandler.getQuickDepositValue(2) != Math.rint(BudgetHandler.getQuickDepositValue(2))) {
+            quickButton3.setText("$" + moneyFormat.format(BudgetHandler.getQuickDepositValue(2)));
+        } else {
+            quickButton3.setText("$" + intFormat.format(BudgetHandler.getQuickDepositValue(2)));
+        }
+
 
         builder.setView(view)
-                .setTitle("Deposit")
+                .setTitle("")
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialogInterface, int i) {
 
@@ -61,7 +78,8 @@ public class DepositDialog extends AppCompatDialogFragment {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i){
                         String amount = depositEntry.getText().toString();
-                        listener.applyDeposit(amount);
+                        if(!amount.isEmpty())
+                            listener.applyDeposit(amount);
                     }
                 })
         ;

@@ -38,11 +38,13 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
     List<LinearLayout> budgetLayouts = new ArrayList<>();
     NumberFormat format = NumberFormat.getNumberInstance();
     int placeholder = -1;
+    boolean editModeOn = false;
 
     final int DEFAULT_BUDGET_PLACEHOLDER = -1;
 
     Budget defaultBudget;
     TextView defaultBudgetView;
+    TextView defaultBudgetNameView;
     Budget totalFunds;
     TextView totalFundsView;
 
@@ -70,22 +72,18 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
 
         refresh();
 
-//        editModeSwitch = (MenuItem)toolbar.findViewById(R.id.action_edit);
-//
-//        //Put budgets in edit mode if the switch is checked
-//        if(budgetLayouts != null && !budgetLayouts.isEmpty()) {
-//            if (editModeSwitch.isCheckable() && editModeSwitch.isChecked()) {
-//                for (LinearLayout layout : budgetLayouts) {
-//                    layout.findViewWithTag(3).setVisibility(View.VISIBLE);
-//                    layout.findViewWithTag(4).setVisibility(View.VISIBLE);
-//                }
-//            } else {
-//                for (LinearLayout layout : budgetLayouts) {
-//                    layout.findViewWithTag(3).setVisibility(View.GONE);
-//                    layout.findViewWithTag(4).setVisibility(View.GONE);
-//                }
-//            }
-//        }
+        //If the edit mode switch in the menu is checked, put the budgets in "edit mode" (show the edit and delete buttons)
+        if(editModeOn){
+            for(LinearLayout layout : budgetLayouts){
+                layout.findViewWithTag(3).setVisibility(View.VISIBLE);
+                layout.findViewWithTag(4).setVisibility(View.VISIBLE);
+            }
+        } else {
+            for(LinearLayout layout : budgetLayouts){
+                layout.findViewWithTag(3).setVisibility(View.GONE);
+                layout.findViewWithTag(4).setVisibility(View.GONE);
+            }
+        }
 
         Button paycheckButton = (Button) findViewById(R.id.paycheck_button);
         paycheckButton.setOnClickListener(new View.OnClickListener(){
@@ -106,7 +104,7 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
 
     private void saveSharedPreferences(){
         SharedPreferences sharedPreferences = getSharedPreferences("shared preferences", MODE_PRIVATE);;
-        SharedPreferences.Editor editor= sharedPreferences.edit();
+        SharedPreferences.Editor editor = sharedPreferences.edit();
         Gson gson = new Gson();
 
         List<Budget> temp = new ArrayList(budgets);
@@ -115,7 +113,7 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         String jsonTemp = gson.toJson(temp);
         editor.putString("budgets", jsonTemp);
 
-        List<Double[]> quickValues = new ArrayList<>();
+        List<List<Double>> quickValues = new ArrayList<>();
         quickValues.add(0, BudgetHandler.getQuickPayValues());
         quickValues.add(1, BudgetHandler.getQuickDepositValues());
         quickValues.add(2, BudgetHandler.getQuickWithdrawValues());
@@ -137,31 +135,38 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         if(temp == null){
             budgets = new ArrayList<>();
         } else {
+            //Take the default budget from the first element in the temp list and then set the budgets list to the remaining budgets
             defaultBudget = temp.get(0);
+            BudgetHandler.setDefaultBudgetName(defaultBudget.getBudgetName());
             budgets = temp.subList(1, temp.size());
         }
 
         //Get values for quick-action buttons
         String loadedQuickValues = sharedPreferences.getString("quick values", null);
-        Type quickValType = new TypeToken<ArrayList<Double[]>>() {}.getType();
-        ArrayList<Double[]> quickTemp = new ArrayList<>();
+        Type quickValType = new TypeToken<ArrayList<ArrayList<Double>>>() {}.getType();
+        List<List<Double>> quickTemp = new ArrayList<>();
         quickTemp = gson.fromJson(loadedQuickValues, quickValType);
         if(quickTemp == null){
-            BudgetHandler.setQuickPayAmounts(new Double[]{
-                    Double.parseDouble(getString(R.string.quick_pay_text_1).substring(1)),
-                    Double.parseDouble(getString(R.string.quick_pay_text_2).substring(1)),
-                    Double.parseDouble(getString(R.string.quick_pay_text_3).substring(1))
-            });
-            BudgetHandler.setQuickDepositAmounts(new Double[]{
-                    Double.parseDouble(getString(R.string.quick_deposit_1).substring(1)),
-                    Double.parseDouble(getString(R.string.quick_deposit_2).substring(1)),
-                    Double.parseDouble(getString(R.string.quick_deposit_3).substring(1))
-            });
-            BudgetHandler.setQuickWithdrawAmounts(new Double[]{
-                    Double.parseDouble(getString(R.string.quick_withdraw_1).substring(1)),
-                    Double.parseDouble(getString(R.string.quick_withdraw_2).substring(1)),
-                    Double.parseDouble(getString(R.string.quick_withdraw_3).substring(1))
-            });
+            List<Double> quickPayAmounts = new ArrayList<>();
+            List<Double> quickDepositAmounts = new ArrayList<>();
+            List<Double> quickWithdrawAmounts = new ArrayList<>();
+
+            quickPayAmounts.add(0, Double.parseDouble(getString(R.string.quick_pay_text_1).substring(1)));
+            quickPayAmounts.add(1, Double.parseDouble(getString(R.string.quick_pay_text_2).substring(1)));
+            quickPayAmounts.add(2, Double.parseDouble(getString(R.string.quick_pay_text_3).substring(1)));
+
+            quickDepositAmounts.add(0, Double.parseDouble(getString(R.string.quick_deposit_1).substring(1)));
+            quickDepositAmounts.add(1, Double.parseDouble(getString(R.string.quick_deposit_2).substring(1)));
+            quickDepositAmounts.add(2, Double.parseDouble(getString(R.string.quick_deposit_3).substring(1)));
+
+            quickWithdrawAmounts.add(0, Double.parseDouble(getString(R.string.quick_withdraw_1).substring(1)));
+            quickWithdrawAmounts.add(1, Double.parseDouble(getString(R.string.quick_withdraw_2).substring(1)));
+            quickWithdrawAmounts.add(2, Double.parseDouble(getString(R.string.quick_withdraw_3).substring(1)));
+
+            BudgetHandler.setQuickPayAmounts(quickPayAmounts);
+            BudgetHandler.setQuickDepositAmounts(quickDepositAmounts);
+            BudgetHandler.setQuickWithdrawAmounts(quickWithdrawAmounts);
+
         } else {
             BudgetHandler.setQuickPayAmounts(quickTemp.get(0));
             BudgetHandler.setQuickDepositAmounts(quickTemp.get(1));
@@ -169,11 +174,23 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         }
     }
 
-
     private void refresh(){
         updateLists();
 
-        //Updates each budgetLayout to reflect changes made to budgets
+        //If the edit mode switch in the menu is checked, put the budgets in "edit mode" (show the edit and delete buttons)
+        if(editModeOn){
+            for(LinearLayout layout : budgetLayouts){
+                layout.findViewWithTag(3).setVisibility(View.VISIBLE);
+                layout.findViewWithTag(4).setVisibility(View.VISIBLE);
+            }
+        } else {
+            for(LinearLayout layout : budgetLayouts){
+                layout.findViewWithTag(3).setVisibility(View.GONE);
+                layout.findViewWithTag(4).setVisibility(View.GONE);
+            }
+        }
+
+        //Update each budgetLayout to reflect changes made to budgets
         for(int i = 0; i < budgets.size(); i++) {
             TextView nameDisplay = budgetLayouts.get(i).findViewWithTag(0);
             TextView amountDisplay = budgetLayouts.get(i).findViewWithTag(1);
@@ -189,16 +206,18 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
                 if (!budgets.get(i).isAmountBased()) {
                     temp += "%";
                 }
-                //temp += " of P.C.";
+                if(!editModeOn) {
+                    temp += " of paycheck";
+                }
                 partitionDisplay.setText(temp);
             }
         }
 
+        defaultBudgetNameView.setText(BudgetHandler.getDefaultBudgetName());
         defaultBudgetView.setText("$" + format.format(defaultBudget.getBudget()));
         totalFundsView.setText("$" + format.format(totalFunds.getBudget()));
 
         BudgetHandler.setModified(true);
-            //budgets.get(i).refresh();
     }
     public void updateLists(){
         //Update the budgets list and the saved list if needed (if the bridge class indicates that a change has been made)
@@ -211,6 +230,7 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
             BudgetHandler.setBudgetList(budgets);
         }
 
+        //Erase all the budget layouts and rebuild them
         budgetLayouts = new ArrayList<>();
         budgetsWindow.removeAllViews();
 
@@ -236,18 +256,27 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
 //            budgetLayout.setBackgroundColor(getResources().getColor(android.R.color.darker_gray));
 //        }
 
+        final TextView nameView = new TextView(this);
+        nameView.setTag(0);
+
+        final TextView moneyView = new TextView(this);
+        moneyView.setTag(1);
+
+        final TextView partitionView = new TextView(this);
+        partitionView.setTag(2);
+
         ImageButton editButton = new ImageButton(this);
-            editButton.setTag(3);
+        editButton.setTag(3);
+
         ImageButton deleteButton = new ImageButton(this);
-            deleteButton.setTag(4);
+        deleteButton.setTag(4);
+
+        View colorView = new View(this); //TODO: Add color options to create & edit menus
+        colorView.setTag(5);
+
         Button depositButton = new Button(this);
         Button withdrawButton = new Button(this);
-        final TextView nameView = new TextView(this);
-            nameView.setTag(0);
-        final TextView moneyView = new TextView(this);
-            moneyView.setTag(1);
-        final TextView partitionView = new TextView(this);
-            partitionView.setTag(2);
+
 
         editButton.setLayoutParams(new ViewGroup.LayoutParams(75, ViewGroup.LayoutParams.WRAP_CONTENT));
         editButton.setImageResource(android.R.drawable.ic_menu_edit);
@@ -315,12 +344,12 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         nameView.setText(newBudget.getBudgetName());
         nameView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
         nameView.setTextColor(getResources().getColor(android.R.color.black));
-        nameView.setTextSize(16f);
+        nameView.setTextSize(18f);
         nameView.setTypeface(null, Typeface.BOLD);
 
         moneyView.setText("$" + format.format(newBudget.getBudget()));
         moneyView.setTextColor(getResources().getColor(android.R.color.black));
-        moneyView.setTextSize(16f);
+        moneyView.setTextSize(18f);
 
         if(newBudget.isPartitioned()){
             String temp = "";
@@ -331,9 +360,24 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
             if(!newBudget.isAmountBased()){
                 temp += "%";
             }
-            //temp += " of P.C.";-
+            if(!editModeOn) {
+                temp += " of paycheck";
+            }
             partitionView.setText(temp);
         }
+
+        //The color view displays the chosen color for this budget as a strip on the left side of the budget layout
+        colorView.setLayoutParams(new LinearLayout.LayoutParams(10, LinearLayout.LayoutParams.MATCH_PARENT));
+
+        //This cushion will go after the colorView
+        Space cushion = new Space(this);
+        cushion.setLayoutParams(new LinearLayout.LayoutParams(10, LinearLayout.LayoutParams.MATCH_PARENT));
+
+        //These cushions will go above and below the budget layout, to put space between this layout and the ones around it
+        Space topCushion = new Space(this);
+        topCushion.setLayoutParams(new LinearLayout.LayoutParams(0, 5)); //This one goes above the BUTTONS ONLY
+        Space bottomCushion = new Space(this);
+        bottomCushion.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 10));
 
         //The name view and the innerInner layout go inside this layout
         LinearLayout innerLayout = new LinearLayout(this);
@@ -346,13 +390,18 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         innerInnerLayout.setOrientation(LinearLayout.HORIZONTAL);
 
         //The deposit and withdraw buttons go inside this layout
-        LinearLayout buttonLayout = new LinearLayout(this);
+        LinearLayout innerButtonLayout = new LinearLayout(this);
+        innerButtonLayout.setOrientation(LinearLayout.HORIZONTAL);
+        innerButtonLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
 
-        //This right-aligns the buttonLayout within the budgetLayout
+        //The innerButtonLayout and some cushions go inside this layout
+        LinearLayout buttonLayout = new LinearLayout(this);
+        buttonLayout.setOrientation(LinearLayout.VERTICAL);
+
+        //Right-align the buttonLayout within the budgetLayout
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
         layoutParams.gravity = RelativeLayout.ALIGN_PARENT_RIGHT;
         buttonLayout.setLayoutParams(layoutParams);
-        buttonLayout.setOrientation(LinearLayout.HORIZONTAL);
 
         TextView fillerText = new TextView(this);
         fillerText.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -361,6 +410,7 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         Space space = new Space(this);
         space.setLayoutParams(new LinearLayout.LayoutParams(0,0,1));
 
+        //Add all the views to their appropriate layouts
         innerInnerLayout.addView(moneyView);
         if(newBudget.isPartitioned()) {
             innerInnerLayout.addView(fillerText);
@@ -369,9 +419,15 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         innerLayout.addView(nameView);
         innerLayout.addView(innerInnerLayout);
 
-        buttonLayout.addView(depositButton);
-        buttonLayout.addView(withdrawButton);
+        innerButtonLayout.addView(depositButton);
+        innerButtonLayout.addView(withdrawButton);
+        buttonLayout.addView(topCushion);
+        buttonLayout.addView(innerButtonLayout);
 
+        if(!editModeOn) {
+            budgetLayout.addView(colorView);
+            budgetLayout.addView(cushion);
+        }
         budgetLayout.addView(editButton);
         budgetLayout.addView(deleteButton);
         budgetLayout.addView(innerLayout);
@@ -380,6 +436,9 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
 
         budgetLayouts.add(i,budgetLayout);
         budgetsWindow.addView(budgetLayout);
+        budgetsWindow.addView(bottomCushion);
+
+        //If this budget isn't the last one, put a divider line after it
         if(i != budgets.size() - 1){
             View divider = new View(this);
             divider.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,1));
@@ -387,6 +446,7 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
             budgetsWindow.addView(divider);
         }
 
+        //Hide the edit and delete buttons, as they will be shown only if the Edit Mode menu option is checked.
         editButton.setVisibility(View.GONE);
         deleteButton.setVisibility(View.GONE);
     }
@@ -395,6 +455,9 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
     private void initDefaultBudgets(){
         defaultBudget = new Budget(BudgetHandler.getDefaultBudgetName(), 0, false, false, 0);
         defaultBudgetView = (TextView) findViewById(R.id.default_budget_money);
+        defaultBudgetNameView = (TextView) findViewById(R.id.default_budget_name_view);
+        defaultBudgetNameView.setText(BudgetHandler.getDefaultBudgetName());
+
         totalFunds = new Budget(getString(R.string.total_funds), 0, false, false, 0);
         totalFundsView = (TextView) findViewById(R.id.total_funds_money);
 
@@ -456,6 +519,12 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
+        if(editModeOn){
+            menu.findItem(R.id.action_edit).setChecked(true);
+        } else {
+            menu.findItem(R.id.action_edit).setChecked(false);
+        }
+
         return true;
     }
 
@@ -467,6 +536,7 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         switch(item.getItemId()) {
             case R.id.action_settings:
                 openSettings(item.getActionView());
+                refresh();
                 return true;
 
             case R.id.action_edit:
@@ -475,16 +545,19 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
                 }
 
                 if(item.isCheckable() && item.isChecked()){
+                    editModeOn = true;
                     for(LinearLayout layout : budgetLayouts){
                         layout.findViewWithTag(3).setVisibility(View.VISIBLE);
                         layout.findViewWithTag(4).setVisibility(View.VISIBLE);
                     }
                 } else {
+                    editModeOn = false;
                     for(LinearLayout layout : budgetLayouts){
                         layout.findViewWithTag(3).setVisibility(View.GONE);
                         layout.findViewWithTag(4).setVisibility(View.GONE);
                     }
                 }
+                refresh();
                 return true;
         }
 

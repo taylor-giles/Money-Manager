@@ -60,24 +60,24 @@ public class EditDialog extends AppCompatDialogFragment {
         }
 
         if(partitionToggle.isChecked()){
-            dollarSign.setText("$");
-            percentSign.setText("");
+            dollarSign.setVisibility(View.VISIBLE);
+            percentSign.setVisibility(View.INVISIBLE);
         }
         if(!partitionToggle.isChecked()){
-            dollarSign.setText("");
-            percentSign.setText("%");
+            dollarSign.setVisibility(View.INVISIBLE);
+            percentSign.setVisibility(View.VISIBLE);
         }
 
         partitionToggle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(partitionToggle.isChecked()){
-                    dollarSign.setText("$");
-                    percentSign.setText("");
+                    dollarSign.setVisibility(View.VISIBLE);
+                    percentSign.setVisibility(View.INVISIBLE);
                 }
                 if(!partitionToggle.isChecked()){
-                    dollarSign.setText("");
-                    percentSign.setText("%");
+                    dollarSign.setVisibility(View.INVISIBLE);
+                    percentSign.setVisibility(View.VISIBLE);
                 }
             }
         });
@@ -109,6 +109,7 @@ public class EditDialog extends AppCompatDialogFragment {
             throw new ClassCastException(context.toString() + " must implement EditDialogListener");
         }
     }
+
     public interface EditDialogListener{
         void applyEdits(String newName, String partitionValue, boolean isPartitioned, boolean isAmountBased);
     }

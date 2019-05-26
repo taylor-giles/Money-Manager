@@ -26,7 +26,8 @@ public class WithdrawDialog extends AppCompatDialogFragment {
     private Button quickButton2;
     private Button quickButton3;
 
-    NumberFormat format = NumberFormat.getNumberInstance();
+    NumberFormat moneyFormat = NumberFormat.getNumberInstance();
+    NumberFormat intFormat = NumberFormat.getNumberInstance();
 
     @NonNull
     @Override
@@ -37,15 +38,17 @@ public class WithdrawDialog extends AppCompatDialogFragment {
 
         View view = inflater.inflate(R.layout.withdraw_dialog, null);
 
-        format.setMaximumFractionDigits(2);
-        format.setMinimumFractionDigits(2);
+        moneyFormat.setMaximumFractionDigits(2);
+        moneyFormat.setMinimumFractionDigits(2);
+        intFormat.setMaximumFractionDigits(0);
+        intFormat.setMinimumFractionDigits(0);
 
         withdrawalEntry = (EditText)view.findViewById(R.id.withdrawalEntryBar);
         quickButton1 = (Button)view.findViewById(R.id.quickWithdraw1);
         quickButton2 = (Button)view.findViewById(R.id.quickWithdraw2);
         quickButton3 = (Button)view.findViewById(R.id.quickWithdraw3);
         builder.setView(view)
-                .setTitle("Withdraw")
+                .setTitle("")
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialogInterface, int i) {
 
@@ -56,15 +59,29 @@ public class WithdrawDialog extends AppCompatDialogFragment {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i){
                         String amount = withdrawalEntry.getText().toString();
-                        listener.applyWithdraw(amount);
+                        if(!amount.isEmpty())
+                            listener.applyWithdraw(amount);
                     }
                 })
         ;
 
 
-        quickButton1.setText("$" + format.format(BudgetHandler.getQuickWithdrawValue(0)));
-        quickButton2.setText("$" + format.format(BudgetHandler.getQuickWithdrawValue(1)));
-        quickButton3.setText("$" + format.format(BudgetHandler.getQuickWithdrawValue(2)));
+        //If the quickValues can be represented as integers, don't bother formatting them to 2 decimal places
+        if(BudgetHandler.getQuickWithdrawValue(0) != Math.rint(BudgetHandler.getQuickWithdrawValue(0))) {
+            quickButton1.setText("$" + moneyFormat.format(BudgetHandler.getQuickWithdrawValue(0)));
+        } else {
+            quickButton1.setText("$" + intFormat.format(BudgetHandler.getQuickWithdrawValue(0)));
+        }
+        if(BudgetHandler.getQuickWithdrawValue(1) != Math.rint(BudgetHandler.getQuickWithdrawValue(1))) {
+            quickButton2.setText("$" + moneyFormat.format(BudgetHandler.getQuickWithdrawValue(1)));
+        } else {
+            quickButton2.setText("$" + intFormat.format(BudgetHandler.getQuickWithdrawValue(1)));
+        }
+        if(BudgetHandler.getQuickWithdrawValue(2) != Math.rint(BudgetHandler.getQuickWithdrawValue(2))) {
+            quickButton3.setText("$" + moneyFormat.format(BudgetHandler.getQuickWithdrawValue(2)));
+        } else {
+            quickButton3.setText("$" + intFormat.format(BudgetHandler.getQuickWithdrawValue(2)));
+        }
 
         quickButton1.setOnClickListener(new View.OnClickListener() {
             @Override

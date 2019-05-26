@@ -1,19 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp">
-
-    <TextView
-        android:id="@+id/editTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/edit_title"
-        android:textSize = "25sp"
-        android:textStyle = "bold"
-        android:layout_gravity="center"
-        android:layout_marginTop="5dp"/>
 
     <Space
         android:layout_width="match_parent"
@@ -86,7 +77,8 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/dollarSignSmall"
-                    android:textColor="@android:color/black" />
+                    android:textColor="@android:color/black"
+                    android:visibility="gone" />
 
                 <EditText
                     android:id="@+id/editPartitionValue"
@@ -105,7 +97,8 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/percent_sign_small"
-                    android:textColor="@android:color/black" />
+                    android:textColor="@android:color/black"
+                    android:visibility="visible" />
 
             </LinearLayout>
 
@@ -114,7 +107,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:checked="true"
+                android:checked="false"
                 android:text="ToggleButton"
                 android:textOff="@string/switch_to_amount_based"
                 android:textOn="Switch to Percent-Based"

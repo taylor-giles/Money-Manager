@@ -26,7 +26,8 @@ public class PaycheckDialog extends AppCompatDialogFragment {
     private Button quickButton2;
     private Button quickButton3;
 
-    NumberFormat format = NumberFormat.getNumberInstance();
+    NumberFormat moneyFormat = NumberFormat.getNumberInstance();
+    NumberFormat intFormat = NumberFormat.getNumberInstance();
 
     @NonNull
     @Override
@@ -37,8 +38,10 @@ public class PaycheckDialog extends AppCompatDialogFragment {
 
         View view = inflater.inflate(R.layout.paycheck_dialog, null);
 
-        format.setMaximumFractionDigits(2);
-        format.setMinimumFractionDigits(2);
+        moneyFormat.setMaximumFractionDigits(2);
+        moneyFormat.setMinimumFractionDigits(2);
+        intFormat.setMaximumFractionDigits(0);
+        intFormat.setMinimumFractionDigits(0);
 
         paycheckEntry = (EditText)view.findViewById(R.id.paycheck_entry_bar);
         quickButton1 = (Button)view.findViewById(R.id.quick_pay_1);
@@ -56,14 +59,28 @@ public class PaycheckDialog extends AppCompatDialogFragment {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i){
                         String amount = paycheckEntry.getText().toString();
-                        listener.logPaycheck(amount);
+                        if(!amount.isEmpty())
+                            listener.logPaycheck(amount);
                     }
                 })
         ;
 
-        quickButton1.setText("$" + format.format(BudgetHandler.getQuickPayValue(0)));
-        quickButton2.setText("$" + format.format(BudgetHandler.getQuickPayValue(1)));
-        quickButton3.setText("$" + format.format(BudgetHandler.getQuickPayValue(2)));
+        //If the quickValues can be represented as integers, don't bother formatting them to 2 decimal places
+        if(BudgetHandler.getQuickPayValue(0) != Math.rint(BudgetHandler.getQuickPayValue(0))) {
+            quickButton1.setText("$" + moneyFormat.format(BudgetHandler.getQuickPayValue(0)));
+        } else {
+            quickButton1.setText("$" + intFormat.format(BudgetHandler.getQuickPayValue(0)));
+        }
+        if(BudgetHandler.getQuickPayValue(1) != Math.rint(BudgetHandler.getQuickPayValue(1))) {
+            quickButton2.setText("$" + moneyFormat.format(BudgetHandler.getQuickPayValue(1)));
+        } else {
+            quickButton2.setText("$" + intFormat.format(BudgetHandler.getQuickPayValue(1)));
+        }
+        if(BudgetHandler.getQuickPayValue(2) != Math.rint(BudgetHandler.getQuickPayValue(2))) {
+            quickButton3.setText("$" + moneyFormat.format(BudgetHandler.getQuickPayValue(2)));
+        } else {
+            quickButton3.setText("$" + intFormat.format(BudgetHandler.getQuickPayValue(2)));
+        }
 
         quickButton1.setOnClickListener(new View.OnClickListener() {
             @Override

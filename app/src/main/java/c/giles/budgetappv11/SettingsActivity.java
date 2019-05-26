@@ -9,6 +9,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SettingsActivity extends AppCompatActivity {
 
@@ -74,26 +76,31 @@ public class SettingsActivity extends AppCompatActivity {
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                List<Double> quickPayAmounts = new ArrayList<>();
+                List<Double> quickDepositAmounts = new ArrayList<>();
+                List<Double> quickWithdrawAmounts = new ArrayList<>();
+
+                quickPayAmounts.add(0, Double.parseDouble(quickPayBox1.getText().toString()));
+                quickPayAmounts.add(1, Double.parseDouble(quickPayBox2.getText().toString()));
+                quickPayAmounts.add(2, Double.parseDouble(quickPayBox3.getText().toString()));
+
+                quickDepositAmounts.add(0,  Double.parseDouble(quickDepositBox1.getText().toString()));
+                quickDepositAmounts.add(1,  Double.parseDouble(quickDepositBox2.getText().toString()));
+                quickDepositAmounts.add(2,  Double.parseDouble(quickDepositBox3.getText().toString()));
+
+                quickWithdrawAmounts.add(0,  Double.parseDouble(quickWithdrawBox1.getText().toString()));
+                quickWithdrawAmounts.add(1,  Double.parseDouble(quickWithdrawBox2.getText().toString()));
+                quickWithdrawAmounts.add(2,  Double.parseDouble(quickWithdrawBox3.getText().toString()));
+
+
                 BudgetHandler.setDefaultBudgetName(defaultBudgetNameBox.getText().toString());
-                BudgetHandler.setQuickPayAmounts(new Double[]{
-                        Double.parseDouble(quickPayBox1.getText().toString()),
-                        Double.parseDouble(quickPayBox2.getText().toString()),
-                        Double.parseDouble(quickPayBox3.getText().toString()),
-                });
-                BudgetHandler.setQuickDepositAmounts(new Double[]{
-                        Double.parseDouble(quickDepositBox1.getText().toString()),
-                        Double.parseDouble(quickDepositBox2.getText().toString()),
-                        Double.parseDouble(quickDepositBox3.getText().toString()),
-                });
-                BudgetHandler.setQuickWithdrawAmounts(new Double[]{
-                        Double.parseDouble(quickWithdrawBox1.getText().toString()),
-                        Double.parseDouble(quickWithdrawBox2.getText().toString()),
-                        Double.parseDouble(quickWithdrawBox3.getText().toString()),
-                });
+                BudgetHandler.setQuickPayAmounts(quickPayAmounts);
+                BudgetHandler.setQuickDepositAmounts(quickDepositAmounts);
+                BudgetHandler.setQuickWithdrawAmounts(quickWithdrawAmounts);
+
 
                 BudgetHandler.setModified(true);
-
-                startMainActivity(v);
+                finish();
             }
         });
 
@@ -102,5 +109,9 @@ public class SettingsActivity extends AppCompatActivity {
     public void startMainActivity(View view){
         Intent mainActivity = new Intent(this, MainActivity.class);
         startActivity(mainActivity);
+    }
+
+    public interface SettingsListener {
+        void applySettings();
     }
 }
