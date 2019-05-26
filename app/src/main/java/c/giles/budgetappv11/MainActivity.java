@@ -77,11 +77,19 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
             for(LinearLayout layout : budgetLayouts){
                 layout.findViewWithTag(3).setVisibility(View.VISIBLE);
                 layout.findViewWithTag(4).setVisibility(View.VISIBLE);
+                layout.findViewWithTag(6).setVisibility(View.GONE);
+                layout.findViewWithTag(7).setVisibility(View.GONE);
+                layout.findViewWithTag(8).setVisibility(View.VISIBLE);
+                layout.findViewWithTag(9).setVisibility(View.VISIBLE);
             }
         } else {
             for(LinearLayout layout : budgetLayouts){
                 layout.findViewWithTag(3).setVisibility(View.GONE);
                 layout.findViewWithTag(4).setVisibility(View.GONE);
+                layout.findViewWithTag(6).setVisibility(View.VISIBLE);
+                layout.findViewWithTag(7).setVisibility(View.VISIBLE);
+                layout.findViewWithTag(8).setVisibility(View.GONE);
+                layout.findViewWithTag(9).setVisibility(View.GONE);
             }
         }
 
@@ -182,11 +190,20 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
             for(LinearLayout layout : budgetLayouts){
                 layout.findViewWithTag(3).setVisibility(View.VISIBLE);
                 layout.findViewWithTag(4).setVisibility(View.VISIBLE);
+                layout.findViewWithTag(6).setVisibility(View.GONE);
+                layout.findViewWithTag(7).setVisibility(View.GONE);
+                layout.findViewWithTag(8).setVisibility(View.VISIBLE);
+                layout.findViewWithTag(9).setVisibility(View.VISIBLE);
+
             }
         } else {
             for(LinearLayout layout : budgetLayouts){
                 layout.findViewWithTag(3).setVisibility(View.GONE);
                 layout.findViewWithTag(4).setVisibility(View.GONE);
+                layout.findViewWithTag(6).setVisibility(View.VISIBLE);
+                layout.findViewWithTag(7).setVisibility(View.VISIBLE);
+                layout.findViewWithTag(8).setVisibility(View.GONE);
+                layout.findViewWithTag(9).setVisibility(View.GONE);
             }
         }
 
@@ -246,7 +263,7 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         totalFunds.setBudget(total);
     }
 
-    public void addBudget(Budget newBudget, int index){
+    public void addBudget(Budget newBudget, int index) {
         final int i = index;
 
         LinearLayout budgetLayout = new LinearLayout(this);
@@ -275,7 +292,38 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         colorView.setTag(5);
 
         Button depositButton = new Button(this);
+        depositButton.setTag(6);
         Button withdrawButton = new Button(this);
+        withdrawButton.setTag(7);
+
+        Button upButton = new Button(this);
+        upButton.setTag(8);
+        Button downButton = new Button(this);
+        downButton.setTag(9);
+
+        //The name view and the innerInner layout go inside this layout
+        LinearLayout innerLayout = new LinearLayout(this);
+        innerLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+        innerLayout.setOrientation(LinearLayout.VERTICAL);
+
+        //The money and partition views go inside this layout
+        LinearLayout innerInnerLayout = new LinearLayout(this);
+        innerInnerLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+        innerInnerLayout.setOrientation(LinearLayout.HORIZONTAL);
+
+        //The deposit and withdraw buttons go inside this layout
+        LinearLayout moneyButtonLayout = new LinearLayout(this);
+        moneyButtonLayout.setOrientation(LinearLayout.HORIZONTAL);
+        moneyButtonLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+
+        //The up and down buttons go inside this layout
+        LinearLayout reorderButtonLayout = new LinearLayout(this);
+        reorderButtonLayout.setOrientation(LinearLayout.HORIZONTAL);
+        reorderButtonLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+
+        //The moneyButtonLayout, reorderButtonLayout, and some cushions go inside this layout
+        LinearLayout buttonLayout = new LinearLayout(this);
+        buttonLayout.setOrientation(LinearLayout.VERTICAL);
 
 
         editButton.setLayoutParams(new ViewGroup.LayoutParams(75, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -298,7 +346,7 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
                 DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        switch (which){
+                        switch (which) {
                             case DialogInterface.BUTTON_POSITIVE:
                                 BudgetHandler.removeBudget(i);
                                 BudgetHandler.setModified(true);
@@ -341,6 +389,36 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
             }
         });
 
+        //The up and down buttons reorder the budget within the list when edit mode is enabled
+        upButton.setLayoutParams(new ViewGroup.LayoutParams(100, ViewGroup.LayoutParams.WRAP_CONTENT));
+        upButton.setText("↑");
+        upButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Budget currentBudget = budgets.get(i);
+                if (!(i - 1 < 0)) {
+                    BudgetHandler.removeBudget(i);
+                    BudgetHandler.addBudget(i - 1, currentBudget);
+                    BudgetHandler.setModified(true);
+                    refresh();
+                }
+            }
+        });
+
+        downButton.setLayoutParams(new ViewGroup.LayoutParams(100, ViewGroup.LayoutParams.WRAP_CONTENT));
+        downButton.setText("↓");
+        downButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Budget currentBudget = budgets.get(i);
+                if (!(budgets.size() <= i + 1)) {
+                    BudgetHandler.removeBudget(i);
+                    BudgetHandler.addBudget(i + 1, currentBudget);
+                    refresh();
+                }
+            }
+        });
+
         nameView.setText(newBudget.getBudgetName());
         nameView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
         nameView.setTextColor(getResources().getColor(android.R.color.black));
@@ -351,16 +429,16 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         moneyView.setTextColor(getResources().getColor(android.R.color.black));
         moneyView.setTextSize(18f);
 
-        if(newBudget.isPartitioned()){
+        if (newBudget.isPartitioned()) {
             String temp = "";
-            if(newBudget.isAmountBased()){
+            if (newBudget.isAmountBased()) {
                 temp += "$";
             }
             temp += format.format(newBudget.getPartitionValue());
-            if(!newBudget.isAmountBased()){
+            if (!newBudget.isAmountBased()) {
                 temp += "%";
             }
-            if(!editModeOn) {
+            if (!editModeOn) {
                 temp += " of paycheck";
             }
             partitionView.setText(temp);
@@ -379,24 +457,6 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         Space bottomCushion = new Space(this);
         bottomCushion.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 10));
 
-        //The name view and the innerInner layout go inside this layout
-        LinearLayout innerLayout = new LinearLayout(this);
-        innerLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-        innerLayout.setOrientation(LinearLayout.VERTICAL);
-
-        //The money and partition views go inside this layout
-        LinearLayout innerInnerLayout = new LinearLayout(this);
-        innerInnerLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-        innerInnerLayout.setOrientation(LinearLayout.HORIZONTAL);
-
-        //The deposit and withdraw buttons go inside this layout
-        LinearLayout innerButtonLayout = new LinearLayout(this);
-        innerButtonLayout.setOrientation(LinearLayout.HORIZONTAL);
-        innerButtonLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-
-        //The innerButtonLayout and some cushions go inside this layout
-        LinearLayout buttonLayout = new LinearLayout(this);
-        buttonLayout.setOrientation(LinearLayout.VERTICAL);
 
         //Right-align the buttonLayout within the budgetLayout
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
@@ -408,23 +468,29 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         fillerText.setText("   |   ");
 
         Space space = new Space(this);
-        space.setLayoutParams(new LinearLayout.LayoutParams(0,0,1));
+        space.setLayoutParams(new LinearLayout.LayoutParams(0, 0, 1));
 
         //Add all the views to their appropriate layouts
         innerInnerLayout.addView(moneyView);
-        if(newBudget.isPartitioned()) {
+        if (newBudget.isPartitioned()) {
             innerInnerLayout.addView(fillerText);
             innerInnerLayout.addView(partitionView);
         }
         innerLayout.addView(nameView);
         innerLayout.addView(innerInnerLayout);
 
-        innerButtonLayout.addView(depositButton);
-        innerButtonLayout.addView(withdrawButton);
-        buttonLayout.addView(topCushion);
-        buttonLayout.addView(innerButtonLayout);
+        moneyButtonLayout.addView(depositButton);
+        moneyButtonLayout.addView(withdrawButton);
 
-        if(!editModeOn) {
+        reorderButtonLayout.addView(upButton);
+        reorderButtonLayout.addView(downButton);
+
+        buttonLayout.addView(topCushion);
+        buttonLayout.addView(moneyButtonLayout);
+        buttonLayout.addView(reorderButtonLayout);
+
+        //budgetLayout.addView(topCushion);
+        if (!editModeOn) {
             budgetLayout.addView(colorView);
             budgetLayout.addView(cushion);
         }
@@ -434,21 +500,23 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         budgetLayout.addView(space);
         budgetLayout.addView(buttonLayout);
 
-        budgetLayouts.add(i,budgetLayout);
+        budgetLayouts.add(i, budgetLayout);
         budgetsWindow.addView(budgetLayout);
         budgetsWindow.addView(bottomCushion);
 
         //If this budget isn't the last one, put a divider line after it
-        if(i != budgets.size() - 1){
+        if (i != budgets.size() - 1) {
             View divider = new View(this);
-            divider.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,1));
+            divider.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 1));
             divider.setBackgroundColor(getResources().getColor(android.R.color.darker_gray));
             budgetsWindow.addView(divider);
         }
 
-        //Hide the edit and delete buttons, as they will be shown only if the Edit Mode menu option is checked.
+        //Hide the edit/delete buttons and the reorder buttons, as they will be shown only if the Edit Mode menu option is checked.
         editButton.setVisibility(View.GONE);
         deleteButton.setVisibility(View.GONE);
+        upButton.setVisibility(View.GONE);
+        downButton.setVisibility(View.GONE);
     }
 
 
@@ -549,12 +617,20 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
                     for(LinearLayout layout : budgetLayouts){
                         layout.findViewWithTag(3).setVisibility(View.VISIBLE);
                         layout.findViewWithTag(4).setVisibility(View.VISIBLE);
+                        layout.findViewWithTag(6).setVisibility(View.GONE);
+                        layout.findViewWithTag(7).setVisibility(View.GONE);
+                        layout.findViewWithTag(8).setVisibility(View.VISIBLE);
+                        layout.findViewWithTag(9).setVisibility(View.VISIBLE);
                     }
                 } else {
                     editModeOn = false;
                     for(LinearLayout layout : budgetLayouts){
                         layout.findViewWithTag(3).setVisibility(View.GONE);
                         layout.findViewWithTag(4).setVisibility(View.GONE);
+                        layout.findViewWithTag(6).setVisibility(View.VISIBLE);
+                        layout.findViewWithTag(7).setVisibility(View.VISIBLE);
+                        layout.findViewWithTag(8).setVisibility(View.GONE);
+                        layout.findViewWithTag(9).setVisibility(View.GONE);
                     }
                 }
                 refresh();
