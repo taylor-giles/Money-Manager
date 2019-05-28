@@ -8,6 +8,16 @@
     android:orientation="vertical"
     tools:context=".BudgetCreateActivity">
 
+    <TextView
+        android:id="@+id/textView9"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="@string/budget_create_title"
+        android:textColor="@android:color/black"
+        android:textSize="25sp"
+        android:textStyle="bold" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -152,21 +162,14 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/cancelButton"
-            style="@style/Widget.AppCompat.Button.Borderless"
+            android:id="@+id/cancel_button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/cancel" />
 
-        <View
-            android:layout_width="1dp"
-            android:layout_height="match_parent"
-            android:background="@android:color/darker_gray" />
-
         <Button
-            android:id="@+id/createButton"
-            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:id="@+id/create_button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"

@@ -10,15 +10,21 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
-import java.util.List;
-
 public class BudgetCreateActivity extends AppCompatActivity {
 
     String budgetName = "New Budget";
-    double initalBudget = 0.0;
+    double initialBudget = 0.0;
     boolean partition = false;
     boolean amountBased = true;
     double partitionValue = 0.0;
+    TextView nameView;
+    TextView initialBudgetView;
+    Switch partitionSwitch;
+    TextView partitionValueView;
+    ToggleButton partitionTypeButton;
+    TextView dollarSignSmall;
+    TextView percentSignSmall;
+
 
 
     @Override
@@ -26,45 +32,22 @@ public class BudgetCreateActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_budget_create);
 
-        final TextView nameView = (TextView) findViewById(R.id.budgetName);
-        final TextView initialBudgetView = (TextView) findViewById(R.id.startingBudget);
-        final Switch partitionSwitch = (Switch) findViewById(R.id.partitionSwitch);
-        final TextView partitionValueView = (TextView) findViewById(R.id.partitionValue);
-        final ToggleButton partitionTypeButton = (ToggleButton)findViewById(R.id.baseToggleButton);
 
-        final TextView dollarSignSmall = (TextView)findViewById(R.id.dollarSignSmall);
-        final TextView percentSignSmall = (TextView)findViewById(R.id.percentSignSmall);
+        nameView = (TextView) findViewById(R.id.budgetName);
+        initialBudgetView = (TextView) findViewById(R.id.startingBudget);
+        partitionSwitch = (Switch) findViewById(R.id.partitionSwitch);
+        partitionValueView = (TextView) findViewById(R.id.partitionValue);
+        partitionTypeButton = (ToggleButton)findViewById(R.id.baseToggleButton);
+        dollarSignSmall = (TextView)findViewById(R.id.dollarSignSmall);
+        percentSignSmall = (TextView)findViewById(R.id.percentSignSmall);
 
-        Button createButton = (Button) findViewById(R.id.createButton);
-        createButton.setOnClickListener(new View.OnClickListener(){
+        partitionValueView.setEnabled(partitionSwitch.isChecked());
+        partitionSwitch.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view){
-                budgetName = nameView.getText().toString();
-                initalBudget = Double.parseDouble(initialBudgetView.getText().toString());
-                partition = partitionSwitch.isChecked();
-                partitionValue = Double.parseDouble(partitionValueView.getText().toString());
-                amountBased = partitionTypeButton.isChecked();
-
-                if(partition && !amountBased && BudgetHandler.getTotalPercentPartitioned() + partitionValue > 100){
-                    Toast.makeText(getBaseContext(), "Please keep total partition percentage below 100%", Toast.LENGTH_LONG).show();
-                } else {
-                    Budget newBudget = new Budget(budgetName, initalBudget, partition, amountBased, partitionValue);
-                    BudgetHandler.addBudget(newBudget);
-                    BudgetHandler.setModified(true);
-                    setResult(RESULT_OK);
-                    startMainActivity(view);
-                }
+            public void onClick(View v) {
+                partitionValueView.setEnabled(partitionSwitch.isChecked());
             }
         });
-
-        Button cancelButton = (Button) findViewById(R.id.cancelButton);
-        cancelButton.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view){
-                startMainActivity(view);
-            }
-        });
-
 
         partitionTypeButton.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -86,4 +69,25 @@ public class BudgetCreateActivity extends AppCompatActivity {
         startActivity(mainActivity);
     }
 
+    public void create(View view) {
+        budgetName = nameView.getText().toString();
+        initialBudget = Double.parseDouble(initialBudgetView.getText().toString());
+        partition = partitionSwitch.isChecked();
+        partitionValue = Double.parseDouble(partitionValueView.getText().toString());
+        amountBased = partitionTypeButton.isChecked();
+
+        if(partition && !amountBased && BudgetHandler.getTotalPercentPartitioned() + partitionValue > 100){
+            Toast.makeText(getBaseContext(), "Please keep total partition percentage below 100%", Toast.LENGTH_LONG).show();
+        } else {
+            Budget newBudget = new Budget(budgetName, initialBudget, partition, amountBased, partitionValue);
+            BudgetHandler.addBudget(newBudget);
+            BudgetHandler.setModified(true);
+            setResult(RESULT_OK);
+            startMainActivity(view);
+        }
+    }
+
+    public void cancel(View view) {
+        startMainActivity(view);
+    }
 }

@@ -54,6 +54,15 @@ public class EditDialog extends AppCompatDialogFragment {
 
         nameEntry.setText(budgets.get(BudgetHandler.getPlaceholder()).getBudgetName());
         partitionSwitch.setChecked(budgets.get(BudgetHandler.getPlaceholder()).isPartitioned());
+
+        partitionValueEntry.setEnabled(partitionSwitch.isChecked());
+        partitionSwitch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                partitionValueEntry.setEnabled(partitionSwitch.isChecked());
+            }
+        });
+
         if(budgets.get(BudgetHandler.getPlaceholder()).isPartitioned()) {
             partitionToggle.setChecked(budgets.get(BudgetHandler.getPlaceholder()).isAmountBased());
             partitionValueEntry.setText(format.format(budgets.get(BudgetHandler.getPlaceholder()).getPartitionValue()));

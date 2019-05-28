@@ -48,7 +48,7 @@ public class PaycheckDialog extends AppCompatDialogFragment {
         quickButton2 = (Button)view.findViewById(R.id.quick_pay_2);
         quickButton3 = (Button)view.findViewById(R.id.quick_pay_3);
         builder.setView(view)
-                .setTitle("Log Paycheck")
+                .setTitle("")
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialogInterface, int i) {
 

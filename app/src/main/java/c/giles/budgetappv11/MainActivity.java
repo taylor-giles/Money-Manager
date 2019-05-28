@@ -110,6 +110,12 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        refresh();
+    }
+
     private void saveSharedPreferences(){
         SharedPreferences sharedPreferences = getSharedPreferences("shared preferences", MODE_PRIVATE);;
         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -142,6 +148,8 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         temp = gson.fromJson(loadedBudgets, budgetsType);
         if(temp == null){
             budgets = new ArrayList<>();
+            BudgetHandler.setDefaultBudgetName(getString(R.string.default_budget_name));
+            initDefaultBudgets();
         } else {
             //Take the default budget from the first element in the temp list and then set the budgets list to the remaining budgets
             defaultBudget = temp.get(0);
