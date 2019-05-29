@@ -55,7 +55,7 @@ public class HistoryFragment extends Fragment {
 
         //Get history data
         String loadedHistoryList = sharedPreferences.getString("history list", null);
-        Type historyType = new TypeToken<ArrayList<HistoryItem>>() {}.getType();
+        Type historyType = new TypeToken<List<HistoryItem>>() {}.getType();
         List<HistoryItem> temp = new ArrayList<>();
         temp = gson.fromJson(loadedHistoryList, historyType);
         if(temp == null){
@@ -69,6 +69,8 @@ public class HistoryFragment extends Fragment {
     private void loadHistory(){
         for (int i = 0; i < historyList.size(); i++) {
             HistoryItem item = historyList.get(i);
+
+            //Add a header for each new day
             if(i == 0 ||
                     item.getDate().get(Calendar.YEAR) != historyList.get(i-1).getDate().get(Calendar.YEAR) ||
                     item.getDate().get(Calendar.MONTH) != historyList.get(i-1).getDate().get(Calendar.MONTH) ||
@@ -104,6 +106,8 @@ public class HistoryFragment extends Fragment {
 
                 historyView.addView(dateLayout);
             }
+
+            //Add the item
             View topSpace = new Space(getActivity());
             topSpace.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 5));
 

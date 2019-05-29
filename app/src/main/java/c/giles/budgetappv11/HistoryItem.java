@@ -21,6 +21,8 @@ public class HistoryItem {
     private NumberFormat moneyFormat = NumberFormat.getCurrencyInstance();
     private DateFormat timeFormat = DateFormat.getTimeInstance(DateFormat.SHORT);
 
+    public HistoryItem(){}
+
     public HistoryItem(Context context, Budget budget, Double amount, GregorianCalendar time){
         this.budget = budget;
         this.amount = amount;
@@ -34,7 +36,7 @@ public class HistoryItem {
         Space rightPadding = new Space(context);
         Space fillerSpace = new Space(context);
 
-        timeView.setText(timeFormat.format(time));
+        timeView.setText(timeFormat.format(time.getTime()));
         timeView.setTextSize(14);
         timeView.setTextColor(context.getColor(android.R.color.darker_gray));
 

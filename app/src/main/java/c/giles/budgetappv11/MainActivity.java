@@ -23,8 +23,11 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
+import java.sql.Time;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Calendar;
 
@@ -685,8 +688,10 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
     public void applyDeposit(String amount) {
         if(placeholder == DEFAULT_BUDGET_PLACEHOLDER){
             defaultBudget.deposit(Double.parseDouble(amount));
+            addHistoryItem(defaultBudget, Double.parseDouble(amount));
         } else {
             budgets.get(placeholder).deposit(Double.parseDouble(amount));
+            addHistoryItem(budgets.get(placeholder), Double.parseDouble(amount));
         }
         BudgetHandler.setModified(true);
         refresh();
@@ -696,8 +701,10 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
     public void applyWithdraw(String amount){
         if(placeholder == DEFAULT_BUDGET_PLACEHOLDER){
             defaultBudget.withdraw(Double.parseDouble(amount));
+            addHistoryItem(defaultBudget, Double.parseDouble(amount) * -1);
         } else {
             budgets.get(placeholder).withdraw(Double.parseDouble(amount));
+            addHistoryItem(budgets.get(placeholder), Double.parseDouble(amount) * -1);
         }
         BudgetHandler.setModified(true);
         refresh();
@@ -722,15 +729,22 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
             if(budget.isPartitioned()){
                 if(!budget.isAmountBased()){
                     budget.deposit((budget.getPartitionValue() / 100) * Double.parseDouble(amount));
+                    addHistoryItem(budget, Double.parseDouble(amount));
                     remainingAmount = remainingAmount - (budget.getPartitionValue() / 100) * Double.parseDouble(amount);
                 } else {
                     budget.deposit(budget.getPartitionValue());
+                    addHistoryItem(budget, Double.parseDouble(amount));
                     //TODO MAKE SURE THE AMOUNT-BASED PARTITIONS DON'T EXCEED PAYCHECK AMOUNT
                     remainingAmount = remainingAmount - budget.getPartitionValue();
                 }
             }
         }
         defaultBudget.deposit(remainingAmount);
+        addHistoryItem(defaultBudget, remainingAmount);
         refresh();
+    }
+
+    public void addHistoryItem(Budget budget, Double amount){
+        historyItems.add(new HistoryItem(this, budget, amount, (GregorianCalendar) Calendar.getInstance()));
     }
 }
