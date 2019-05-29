@@ -11,4 +11,7 @@
         android:id="@+id/action_edit"
         android:checkable="true"
         android:title="@string/action_edit_string" />
+    <item
+        android:id="@+id/action_history"
+        android:title="@string/history_trends_title" />
 </menu>

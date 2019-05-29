@@ -26,6 +26,7 @@ import java.lang.reflect.Type;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Calendar;
 
 import c.giles.budgetappv11.views.DepositDialog;
 import c.giles.budgetappv11.views.EditDialog;
@@ -36,6 +37,7 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
 
     List<Budget> budgets = new ArrayList<>();
     List<LinearLayout> budgetLayouts = new ArrayList<>();
+    List<HistoryItem> historyItems = new ArrayList<>();
     NumberFormat format = NumberFormat.getNumberInstance();
     int placeholder = -1;
     boolean editModeOn = false;
@@ -47,8 +49,6 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
     TextView defaultBudgetNameView;
     Budget totalFunds;
     TextView totalFundsView;
-
-    MenuItem editModeSwitch;
 
     private LinearLayout budgetsWindow;
 
@@ -117,16 +117,18 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
     }
 
     private void saveSharedPreferences(){
-        SharedPreferences sharedPreferences = getSharedPreferences("shared preferences", MODE_PRIVATE);;
+        SharedPreferences sharedPreferences = getSharedPreferences("shared preferences", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         Gson gson = new Gson();
 
+        //Save budgets
         List<Budget> temp = new ArrayList(budgets);
         temp.add(0, defaultBudget);
 
         String jsonTemp = gson.toJson(temp);
         editor.putString("budgets", jsonTemp);
 
+        //Save quick values
         List<List<Double>> quickValues = new ArrayList<>();
         quickValues.add(0, BudgetHandler.getQuickPayValues());
         quickValues.add(1, BudgetHandler.getQuickDepositValues());
@@ -135,10 +137,20 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         String jsonValues = gson.toJson(quickValues);
         editor.putString("quick values", jsonValues);
         editor.apply();
+
+
+        //Update the history shared preferences
+        SharedPreferences historyData = getSharedPreferences("history data", MODE_PRIVATE);
+        SharedPreferences.Editor historyEditor = historyData.edit();
+        List<HistoryItem> historyTemp = new ArrayList<>(historyItems);
+        String historyJson = gson.toJson(historyTemp);
+        historyEditor.putString("history list", historyJson);
+        historyEditor.apply();
     }
 
     private void loadSharedPreferences(){
         SharedPreferences sharedPreferences = getSharedPreferences("shared preferences", MODE_PRIVATE);
+        SharedPreferences historyPreferences = getSharedPreferences("history data", MODE_PRIVATE);
         Gson gson = new Gson();
 
         //Get budgets
@@ -188,6 +200,18 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
             BudgetHandler.setQuickDepositAmounts(quickTemp.get(1));
             BudgetHandler.setQuickWithdrawAmounts(quickTemp.get(2));
         }
+
+
+        /*//Get history data
+        String loadedHistoryList = historyPreferences.getString("history list", null);
+        Type historyType = new TypeToken<ArrayList<HistoryItem>>() {}.getType();
+        List<HistoryItem> historyTemp = new ArrayList<>();
+        historyTemp = gson.fromJson(loadedHistoryList, historyType);
+        if(historyTemp == null){
+            historyItems = new ArrayList<>();
+        } else {
+            historyItems = new ArrayList<>(historyTemp);
+        }*/
     }
 
     private void refresh(){
@@ -590,6 +614,10 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         startActivityForResult(openSettings, 2);
     }
 
+    public void openHistory(View view){
+        Intent openHistory = new Intent(this, HistoryActivity.class);
+        startActivityForResult(openHistory, 3);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -642,6 +670,10 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
                     }
                 }
                 refresh();
+                return true;
+
+            case R.id.action_history:
+                openHistory(item.getActionView());
                 return true;
         }
 

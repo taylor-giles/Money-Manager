@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,40 +32,34 @@ public class BudgetCreateActivity extends AppCompatActivity {
         setContentView(R.layout.activity_budget_create);
 
 
-        nameView = (TextView) findViewById(R.id.budgetName);
-        initialBudgetView = (TextView) findViewById(R.id.startingBudget);
-        partitionSwitch = (Switch) findViewById(R.id.partitionSwitch);
-        partitionValueView = (TextView) findViewById(R.id.partitionValue);
-        partitionTypeButton = (ToggleButton)findViewById(R.id.baseToggleButton);
-        dollarSignSmall = (TextView)findViewById(R.id.dollarSignSmall);
-        percentSignSmall = (TextView)findViewById(R.id.percentSignSmall);
+        nameView = (TextView) findViewById(R.id.budget_name_entry);
+        initialBudgetView = (TextView) findViewById(R.id.initial_budget_entry);
+        partitionSwitch = (Switch) findViewById(R.id.partition_switch);
+        partitionValueView = (TextView) findViewById(R.id.partition_value_entry);
+        partitionTypeButton = (ToggleButton)findViewById(R.id.partition_basis_toggle_button);
+        dollarSignSmall = (TextView)findViewById(R.id.dollar_sign_small);
+        percentSignSmall = (TextView)findViewById(R.id.percent_sign_small);
 
         partitionValueView.setEnabled(partitionSwitch.isChecked());
-        partitionSwitch.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                partitionValueView.setEnabled(partitionSwitch.isChecked());
-            }
-        });
-
-        partitionTypeButton.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view){
-                if(partitionTypeButton.isChecked()){ //If it's checked, that means it's in amount-based mode
-                    dollarSignSmall.setVisibility(View.VISIBLE);
-                    percentSignSmall.setVisibility(View.INVISIBLE);
-                } else {
-                    dollarSignSmall.setVisibility(View.INVISIBLE);
-                    percentSignSmall.setVisibility(View.VISIBLE);
-                }
-            }
-        });
-
     }
 
     public void startMainActivity(View view){
         Intent mainActivity = new Intent(this, MainActivity.class);
         startActivity(mainActivity);
+    }
+
+    public void toggleBasis(View view){
+        if(partitionTypeButton.isChecked()){ //If it's checked, that means it's in amount-based mode
+            dollarSignSmall.setVisibility(View.VISIBLE);
+            percentSignSmall.setVisibility(View.INVISIBLE);
+        } else {
+            dollarSignSmall.setVisibility(View.INVISIBLE);
+            percentSignSmall.setVisibility(View.VISIBLE);
+        }
+    }
+
+    public void flipSwitch(View view){
+        partitionValueView.setEnabled(partitionSwitch.isChecked());
     }
 
     public void create(View view) {

@@ -63,5 +63,12 @@
     <string name="cancel">Cancel</string>
     <string name="dollar_sign">$</string>
     <string name="budget_create_title">Create a New Budget</string>
+    <string name="value">Value</string>
+    <string name="toggle_partition_basis">Toggle Partition Basis</string>
+    <string name="history_trends_title"><![CDATA[History & Trends]]></string>
+    <string name="title_activity_history">HistoryActivity</string>
+    <string name="tab_text_1">Tab 1</string>
+    <string name="tab_text_2">Tab 2</string>
+    <string name="history">History</string>
 
 </resources>
