@@ -1,6 +1,7 @@
 package c.giles.budgetappv11;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -13,6 +14,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Objects;
+
+import static android.graphics.Typeface.BOLD;
 
 public class HistoryItem {
     private View view;
@@ -67,19 +70,21 @@ public class HistoryItem {
             moneyView.setTextSize(16);
 
         } else {
-            nameView.setTextColor(context.getColor(android.R.color.holo_blue_dark));
+            //nameView.setTextColor(context.getColor(android.R.color.holo_blue_dark));
 
             if (amount > 0) {
-                moneyView.setText("+" + moneyFormat.format(Math.abs(amount)));
+                moneyView.setText(moneyFormat.format(Math.abs(amount)));
                 moneyView.setTextColor(context.getColor(android.R.color.holo_blue_dark));
             } else if (amount < 0) {
-                moneyView.setText("-" + moneyFormat.format(Math.abs(amount)));
+                moneyView.setText(moneyFormat.format(Math.abs(amount)));
                 moneyView.setTextColor(context.getColor(android.R.color.holo_blue_dark));
             } else if (amount == 0) {
                 moneyView.setText(moneyFormat.format(amount));
                 moneyView.setTextColor(context.getColor(android.R.color.darker_gray));
             }
             moneyView.setTextSize(16);
+            moneyView.setTypeface(Typeface.defaultFromStyle(BOLD));
+            nameView.setTypeface(Typeface.defaultFromStyle(BOLD));
         }
 
         //Indent the views of the history items that WERE the result of a paycheck being logged
@@ -89,7 +94,9 @@ public class HistoryItem {
             rightPadding.setLayoutParams(new LinearLayout.LayoutParams(20, LinearLayout.LayoutParams.MATCH_PARENT));
             fillerSpace.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, 1));
         } else {
-            nameView.setTextColor(context.getColor(android.R.color.holo_blue_dark));
+            //nameView.setTextColor(context.getColor(android.R.color.holo_blue_dark));
+            moneyView.setTypeface(Typeface.defaultFromStyle(Typeface.ITALIC));
+            nameView.setTypeface(Typeface.defaultFromStyle(Typeface.ITALIC));
             leftPadding.setLayoutParams(new LinearLayout.LayoutParams(300, LinearLayout.LayoutParams.MATCH_PARENT));
             timePadding.setLayoutParams(new LinearLayout.LayoutParams(50, LinearLayout.LayoutParams.MATCH_PARENT));
             rightPadding.setLayoutParams(new LinearLayout.LayoutParams(20, LinearLayout.LayoutParams.MATCH_PARENT));

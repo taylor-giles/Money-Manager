@@ -29,9 +29,11 @@ import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Calendar;
+import java.util.Locale;
 
 import c.giles.budgetappv11.views.DepositDialog;
 import c.giles.budgetappv11.views.EditDialog;
+import c.giles.budgetappv11.views.HistoryFragment;
 import c.giles.budgetappv11.views.PaycheckDialog;
 import c.giles.budgetappv11.views.WithdrawDialog;
 
@@ -41,6 +43,7 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
     List<LinearLayout> budgetLayouts = new ArrayList<>();
     List<HistoryData> historyDataList = new ArrayList<>();
     NumberFormat format = NumberFormat.getNumberInstance();
+    NumberFormat moneyFormat = NumberFormat.getCurrencyInstance(Locale.US);
     int placeholder = -1;
     boolean editModeOn = false;
 
@@ -115,6 +118,12 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
     @Override
     protected void onResume() {
         super.onResume();
+
+        //Empty the history data list if the history data has been deleted
+        if(HistoryFragment.isHistoryDeleted()){
+            historyDataList = new ArrayList<>();
+            HistoryFragment.setHistoryDeleted(false);
+        }
         refresh();
     }
 
@@ -248,7 +257,7 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
             TextView amountDisplay = budgetLayouts.get(i).findViewWithTag(1);
             TextView partitionDisplay = budgetLayouts.get(i).findViewWithTag(2);
             nameDisplay.setText(budgets.get(i).getBudgetName());
-            amountDisplay.setText("$" + String.format("%.02f", budgets.get(i).getBudget()));
+            amountDisplay.setText(moneyFormat.format(budgets.get(i).getBudget()));
             if (budgets.get(i).isPartitioned()) {
                 String temp = "";
                 if (budgets.get(i).isAmountBased()) {
@@ -266,8 +275,8 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         }
 
         defaultBudgetNameView.setText(BudgetHandler.getDefaultBudgetName());
-        defaultBudgetView.setText("$" + format.format(defaultBudget.getBudget()));
-        totalFundsView.setText("$" + format.format(totalFunds.getBudget()));
+        defaultBudgetView.setText(moneyFormat.format(defaultBudget.getBudget()));
+        totalFundsView.setText(moneyFormat.format(totalFunds.getBudget()));
 
         BudgetHandler.setModified(true);
     }
@@ -295,6 +304,13 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         for(Budget budget : budgets){
             total += budget.getBudget();
         }
+
+        if(defaultBudget.getBudget() > 0) {
+            defaultBudgetView.setTextColor(getResources().getColor(android.R.color.black));
+        } else {
+            defaultBudgetView.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
+        }
+
         totalFunds.setBudget(total);
     }
 
@@ -460,8 +476,12 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         nameView.setTextSize(18f);
         nameView.setTypeface(null, Typeface.BOLD);
 
-        moneyView.setText("$" + format.format(newBudget.getBudget()));
-        moneyView.setTextColor(getResources().getColor(android.R.color.black));
+        moneyView.setText(moneyFormat.format(newBudget.getBudget()));
+        if(newBudget.getBudget() > 0) {
+            moneyView.setTextColor(getResources().getColor(android.R.color.black));
+        } else {
+            moneyView.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
+        }
         moneyView.setTextSize(18f);
 
         if (newBudget.isPartitioned()) {
@@ -583,6 +603,12 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
                 openWithdrawDialog();
             }
         });
+
+        if(defaultBudget.getBudget() > 0) {
+            defaultBudgetView.setTextColor(getResources().getColor(android.R.color.black));
+        } else {
+            defaultBudgetView.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
+        }
     }
 
 
