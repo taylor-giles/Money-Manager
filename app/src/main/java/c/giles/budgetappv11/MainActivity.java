@@ -693,6 +693,7 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
             budgets.get(placeholder).deposit(Double.parseDouble(amount));
             addHistoryData(budgets.get(placeholder), Double.parseDouble(amount));
         }
+        Toast.makeText(this, "Deposit Successful", Toast.LENGTH_SHORT).show();
         BudgetHandler.setModified(true);
         refresh();
     }
@@ -706,6 +707,7 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
             budgets.get(placeholder).withdraw(Double.parseDouble(amount));
             addHistoryData(budgets.get(placeholder), Double.parseDouble(amount) * -1);
         }
+        Toast.makeText(this, "Withdrawal Successful", Toast.LENGTH_SHORT).show();
         BudgetHandler.setModified(true);
         refresh();
     }
