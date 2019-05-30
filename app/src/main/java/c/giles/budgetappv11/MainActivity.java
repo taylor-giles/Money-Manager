@@ -733,11 +733,11 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
             if(budget.isPartitioned()){
                 if(!budget.isAmountBased()){
                     budget.deposit((budget.getPartitionValue() / 100) * Double.parseDouble(amount));
-                    historyDataList.add(new HistoryData(budget, Double.parseDouble(amount), (GregorianCalendar) Calendar.getInstance(), paycheckData));
+                    historyDataList.add(new HistoryData(budget, (budget.getPartitionValue() / 100) * Double.parseDouble(amount), (GregorianCalendar) Calendar.getInstance(), paycheckData));
                     remainingAmount = remainingAmount - (budget.getPartitionValue() / 100) * Double.parseDouble(amount);
                 } else {
                     budget.deposit(budget.getPartitionValue());
-                    historyDataList.add(new HistoryData(budget, Double.parseDouble(amount), (GregorianCalendar) Calendar.getInstance(), paycheckData));
+                    historyDataList.add(new HistoryData(budget, budget.getPartitionValue(), (GregorianCalendar) Calendar.getInstance(), paycheckData));
                     //TODO MAKE SURE THE AMOUNT-BASED PARTITIONS DON'T EXCEED PAYCHECK AMOUNT
                     remainingAmount = remainingAmount - budget.getPartitionValue();
                 }
