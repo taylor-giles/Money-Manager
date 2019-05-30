@@ -90,16 +90,17 @@ public class HistoryItem {
             fillerSpace.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, 1));
         } else {
             nameView.setTextColor(context.getColor(android.R.color.holo_blue_dark));
-            timeView.setTextColor(context.getColor(android.R.color.white));
-            leftPadding.setLayoutParams(new LinearLayout.LayoutParams(100, LinearLayout.LayoutParams.MATCH_PARENT));
+            leftPadding.setLayoutParams(new LinearLayout.LayoutParams(400, LinearLayout.LayoutParams.MATCH_PARENT));
             timePadding.setLayoutParams(new LinearLayout.LayoutParams(50, LinearLayout.LayoutParams.MATCH_PARENT));
             rightPadding.setLayoutParams(new LinearLayout.LayoutParams(20, LinearLayout.LayoutParams.MATCH_PARENT));
-            fillerSpace.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, 1));
+            fillerSpace.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT,1));
         }
 
         layout.addView(leftPadding);
-        layout.addView(timeView);
-        layout.addView(timePadding);
+        if(!isFromPaycheck) {
+            layout.addView(timeView);
+            layout.addView(timePadding);
+        }
         layout.addView(nameView);
         layout.addView(fillerSpace);
         layout.addView(moneyView);
