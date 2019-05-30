@@ -12,6 +12,7 @@ import java.text.NumberFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Objects;
 
 public class HistoryItem {
     private View view;
@@ -23,7 +24,15 @@ public class HistoryItem {
 
     public HistoryItem(){}
 
+    public HistoryItem(Context context, HistoryData data){
+        this(context, data.getBudget(), data.getAmount(), data.getTime(), data.isPaycheck(), data.isFromPaycheck());
+    }
+
     public HistoryItem(Context context, Budget budget, Double amount, GregorianCalendar time){
+        this(context, budget, amount, time, false, false);
+    }
+
+    public HistoryItem(Context context, Budget budget, Double amount, GregorianCalendar time, boolean isPaycheck, boolean isFromPaycheck){
         this.budget = budget;
         this.amount = amount;
         this.time = time;
@@ -32,7 +41,8 @@ public class HistoryItem {
         TextView timeView = new TextView(context);
         TextView nameView = new TextView(context);
         TextView moneyView = new TextView(context);
-        Space padding = new Space(context);
+        Space leftPadding = new Space(context);
+        Space timePadding = new Space(context);
         Space rightPadding = new Space(context);
         Space fillerSpace = new Space(context);
 
@@ -43,25 +53,53 @@ public class HistoryItem {
         nameView.setText(budget.getBudgetName());
         nameView.setTextSize(16);
         nameView.setTextColor(context.getColor(android.R.color.black));
+        if(!isPaycheck) {
+            if (amount > 0) {
+                moneyView.setText("+" + moneyFormat.format(Math.abs(amount)));
+                moneyView.setTextColor(context.getColor(android.R.color.holo_green_dark));
+            } else if (amount < 0) {
+                moneyView.setText("-" + moneyFormat.format(Math.abs(amount)));
+                moneyView.setTextColor(context.getColor(android.R.color.holo_red_dark));
+            } else if (amount == 0) {
+                moneyView.setText(moneyFormat.format(amount));
+                moneyView.setTextColor(context.getColor(android.R.color.darker_gray));
+            }
+            moneyView.setTextSize(16);
 
-        if(amount > 0){
-            moneyView.setText("+" + moneyFormat.format(Math.abs(amount)));
-            moneyView.setTextColor(context.getColor(android.R.color.holo_green_dark));
-        } else if(amount < 0){
-            moneyView.setText("-" + moneyFormat.format(Math.abs(amount)));
-            moneyView.setTextColor(context.getColor(android.R.color.holo_red_dark));
-        } else if(amount == 0){
-            moneyView.setText(moneyFormat.format(amount));
-            moneyView.setTextColor(context.getColor(android.R.color.darker_gray));
+        } else {
+            nameView.setTextColor(context.getColor(android.R.color.holo_blue_dark));
+
+            if (amount > 0) {
+                moneyView.setText("+" + moneyFormat.format(Math.abs(amount)));
+                moneyView.setTextColor(context.getColor(android.R.color.holo_blue_dark));
+            } else if (amount < 0) {
+                moneyView.setText("-" + moneyFormat.format(Math.abs(amount)));
+                moneyView.setTextColor(context.getColor(android.R.color.holo_blue_dark));
+            } else if (amount == 0) {
+                moneyView.setText(moneyFormat.format(amount));
+                moneyView.setTextColor(context.getColor(android.R.color.darker_gray));
+            }
+            moneyView.setTextSize(16);
         }
-        moneyView.setTextSize(16);
 
-        padding.setLayoutParams(new LinearLayout.LayoutParams(10, LinearLayout.LayoutParams.MATCH_PARENT));
-        rightPadding.setLayoutParams(new LinearLayout.LayoutParams(10, LinearLayout.LayoutParams.MATCH_PARENT));
-        fillerSpace.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, 1));
+        //Indent the views of the history items that WERE the result of a paycheck being logged
+        if(!isFromPaycheck) {
+            leftPadding.setLayoutParams(new LinearLayout.LayoutParams(20, LinearLayout.LayoutParams.MATCH_PARENT));
+            timePadding.setLayoutParams(new LinearLayout.LayoutParams(50, LinearLayout.LayoutParams.MATCH_PARENT));
+            rightPadding.setLayoutParams(new LinearLayout.LayoutParams(20, LinearLayout.LayoutParams.MATCH_PARENT));
+            fillerSpace.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, 1));
+        } else {
+            nameView.setTextColor(context.getColor(android.R.color.holo_blue_dark));
+            timeView.setTextColor(context.getColor(android.R.color.white));
+            leftPadding.setLayoutParams(new LinearLayout.LayoutParams(100, LinearLayout.LayoutParams.MATCH_PARENT));
+            timePadding.setLayoutParams(new LinearLayout.LayoutParams(50, LinearLayout.LayoutParams.MATCH_PARENT));
+            rightPadding.setLayoutParams(new LinearLayout.LayoutParams(20, LinearLayout.LayoutParams.MATCH_PARENT));
+            fillerSpace.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, 1));
+        }
 
+        layout.addView(leftPadding);
         layout.addView(timeView);
-        layout.addView(padding);
+        layout.addView(timePadding);
         layout.addView(nameView);
         layout.addView(fillerSpace);
         layout.addView(moneyView);
@@ -70,7 +108,7 @@ public class HistoryItem {
         view = layout;
     }
 
-    public Calendar getDate(){
+    public Calendar getCalendar(){
         return time;
     }
 

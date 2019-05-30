@@ -42,5 +42,7 @@ public class HistoryActivity extends AppCompatActivity {
         adapter.addFragment(new HistoryFragment(), "History");
         //adapter.addFragment(new TrendsFragment(), "Trends");
         //TODO uncomment this line^ when Trends fragment is finished
+
+        viewPager.setAdapter(adapter);
     }
 }

@@ -18,15 +18,14 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Space;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
-import java.sql.Time;
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Calendar;
@@ -40,7 +39,7 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
 
     List<Budget> budgets = new ArrayList<>();
     List<LinearLayout> budgetLayouts = new ArrayList<>();
-    List<HistoryItem> historyItems = new ArrayList<>();
+    List<HistoryData> historyDataList = new ArrayList<>();
     NumberFormat format = NumberFormat.getNumberInstance();
     int placeholder = -1;
     boolean editModeOn = false;
@@ -145,7 +144,7 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         //Update the history shared preferences
         SharedPreferences historyData = getSharedPreferences("history data", MODE_PRIVATE);
         SharedPreferences.Editor historyEditor = historyData.edit();
-        List<HistoryItem> historyTemp = new ArrayList<>(historyItems);
+        List<HistoryData> historyTemp = new ArrayList<>(historyDataList);
         String historyJson = gson.toJson(historyTemp);
         historyEditor.putString("history list", historyJson);
         historyEditor.apply();
@@ -205,16 +204,17 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         }
 
 
-        /*//Get history data
+        //Get history data
+        //Retrieve this data for the sole purpose of UPDATING it and saving it again later.
         String loadedHistoryList = historyPreferences.getString("history list", null);
-        Type historyType = new TypeToken<ArrayList<HistoryItem>>() {}.getType();
-        List<HistoryItem> historyTemp = new ArrayList<>();
+        Type historyType = new TypeToken<ArrayList<HistoryData>>() {}.getType();
+        List<HistoryData> historyTemp = new ArrayList<>();
         historyTemp = gson.fromJson(loadedHistoryList, historyType);
         if(historyTemp == null){
-            historyItems = new ArrayList<>();
+            historyDataList = new ArrayList<>();
         } else {
-            historyItems = new ArrayList<>(historyTemp);
-        }*/
+            historyDataList = new ArrayList<>(historyTemp);
+        }
     }
 
     private void refresh(){
@@ -688,10 +688,10 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
     public void applyDeposit(String amount) {
         if(placeholder == DEFAULT_BUDGET_PLACEHOLDER){
             defaultBudget.deposit(Double.parseDouble(amount));
-            addHistoryItem(defaultBudget, Double.parseDouble(amount));
+            addHistoryData(defaultBudget, Double.parseDouble(amount));
         } else {
             budgets.get(placeholder).deposit(Double.parseDouble(amount));
-            addHistoryItem(budgets.get(placeholder), Double.parseDouble(amount));
+            addHistoryData(budgets.get(placeholder), Double.parseDouble(amount));
         }
         BudgetHandler.setModified(true);
         refresh();
@@ -701,10 +701,10 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
     public void applyWithdraw(String amount){
         if(placeholder == DEFAULT_BUDGET_PLACEHOLDER){
             defaultBudget.withdraw(Double.parseDouble(amount));
-            addHistoryItem(defaultBudget, Double.parseDouble(amount) * -1);
+            addHistoryData(defaultBudget, Double.parseDouble(amount) * -1);
         } else {
             budgets.get(placeholder).withdraw(Double.parseDouble(amount));
-            addHistoryItem(budgets.get(placeholder), Double.parseDouble(amount) * -1);
+            addHistoryData(budgets.get(placeholder), Double.parseDouble(amount) * -1);
         }
         BudgetHandler.setModified(true);
         refresh();
@@ -725,26 +725,29 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
     @Override
     public void logPaycheck(String amount){
         Double remainingAmount = Double.parseDouble(amount);
+        HistoryData paycheckData = new HistoryData(Double.parseDouble(amount), (GregorianCalendar) Calendar.getInstance());
+        historyDataList.add(paycheckData);
         for(Budget budget : budgets){
             if(budget.isPartitioned()){
                 if(!budget.isAmountBased()){
                     budget.deposit((budget.getPartitionValue() / 100) * Double.parseDouble(amount));
-                    addHistoryItem(budget, Double.parseDouble(amount));
+                    historyDataList.add(new HistoryData(budget, Double.parseDouble(amount), (GregorianCalendar) Calendar.getInstance(), paycheckData));
                     remainingAmount = remainingAmount - (budget.getPartitionValue() / 100) * Double.parseDouble(amount);
                 } else {
                     budget.deposit(budget.getPartitionValue());
-                    addHistoryItem(budget, Double.parseDouble(amount));
+                    historyDataList.add(new HistoryData(budget, Double.parseDouble(amount), (GregorianCalendar) Calendar.getInstance(), paycheckData));
                     //TODO MAKE SURE THE AMOUNT-BASED PARTITIONS DON'T EXCEED PAYCHECK AMOUNT
                     remainingAmount = remainingAmount - budget.getPartitionValue();
                 }
             }
         }
         defaultBudget.deposit(remainingAmount);
-        addHistoryItem(defaultBudget, remainingAmount);
+        historyDataList.add(new HistoryData(defaultBudget, remainingAmount, (GregorianCalendar) Calendar.getInstance(), paycheckData));
+        Toast.makeText(this, "Paycheck Logged", Toast.LENGTH_SHORT).show();
         refresh();
     }
 
-    public void addHistoryItem(Budget budget, Double amount){
-        historyItems.add(new HistoryItem(this, budget, amount, (GregorianCalendar) Calendar.getInstance()));
+    public void addHistoryData(Budget budget, Double amount){
+        historyDataList.add(new HistoryData(budget, amount, (GregorianCalendar) Calendar.getInstance()));
     }
 }

@@ -32,11 +32,11 @@ public class SectionsPageAdapter extends FragmentPagerAdapter {
 
     @Override
     public Fragment getItem(int i) {
-        return null;
+        return fragmentList.get(i);
     }
 
     @Override
     public int getCount() {
-        return 0;
+        return fragmentList.size();
     }
 }
