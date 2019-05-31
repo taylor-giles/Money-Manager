@@ -71,5 +71,6 @@
     <string name="tab_text_2">Tab 2</string>
     <string name="history">History</string>
     <string name="clear_history">Clear History</string>
+    <string name="trends">Trends</string>
 
 </resources>
