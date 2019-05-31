@@ -1,7 +1,9 @@
 package c.giles.budgetappv11.views;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -25,6 +27,8 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
 
+import c.giles.budgetappv11.BudgetHandler;
+import c.giles.budgetappv11.HistoryActivity;
 import c.giles.budgetappv11.HistoryData;
 import c.giles.budgetappv11.HistoryItem;
 import c.giles.budgetappv11.R;
@@ -36,6 +40,7 @@ public class HistoryFragment extends Fragment {
     private List<HistoryItem> historyList = new ArrayList<>();
     private List<HistoryData> historyDataList = new ArrayList<>();
     private LinearLayout historyView;
+    private static boolean historyDeleted = false;
 
     @Nullable
     @Override
@@ -43,10 +48,10 @@ public class HistoryFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_history, container, false);
         historyView = (LinearLayout) view.findViewById(R.id.history_list_layout);
 
+        historyDeleted = false;
         loadSharedPreferences();
 
         loadHistory();
-
 
         return view;
     }
@@ -70,6 +75,17 @@ public class HistoryFragment extends Fragment {
                 historyList.add(new HistoryItem(getActivity(), data));
             }
         }
+    }
+
+    private void saveSharedPreferences(){
+        //Update the history shared preferences
+        Gson gson = new Gson();
+        SharedPreferences historyData = Objects.requireNonNull(getActivity()).getSharedPreferences("history data", MODE_PRIVATE);
+        SharedPreferences.Editor historyEditor = historyData.edit();
+        List<HistoryData> historyTemp = new ArrayList<>(historyDataList);
+        String historyJson = gson.toJson(historyTemp);
+        historyEditor.putString("history list", historyJson);
+        historyEditor.apply();
     }
 
     //Fills the historyView with all of the information contained in the historyList
@@ -151,5 +167,43 @@ public class HistoryFragment extends Fragment {
                 }
             }
         }
+    }
+
+    public void clearHistory(View v){
+        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which) {
+                    case DialogInterface.BUTTON_POSITIVE:
+                        historyDataList = new ArrayList<>();
+                        historyList = new ArrayList<>();
+                        historyView.removeAllViews();
+                        saveSharedPreferences();
+                        loadHistory();
+                        historyDeleted = true;
+                        break;
+
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        //Do nothing
+                        break;
+                }
+            }
+        };
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext(), android.R.style.Theme_Material_Light_Dialog_Alert);
+        builder.setMessage("Are you sure you want to clear all history items?")
+                .setPositiveButton("Yes", dialogClickListener)
+                .setNegativeButton("No", dialogClickListener)
+                .show()
+        ;
+
+    }
+
+    public static boolean isHistoryDeleted(){
+        return historyDeleted;
+    }
+
+    public static void setHistoryDeleted(boolean deleted){
+        historyDeleted = false;
     }
 }
