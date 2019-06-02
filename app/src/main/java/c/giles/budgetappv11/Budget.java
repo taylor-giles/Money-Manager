@@ -93,7 +93,7 @@ public class Budget {
         return budgetName;
     }
 
-    public Double getBudget(){
+    public Double getAmount(){
         return money;
     }
 

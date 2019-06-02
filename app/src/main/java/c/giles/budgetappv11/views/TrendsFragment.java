@@ -1,43 +1,37 @@
 package c.giles.budgetappv11.views;
 
-import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.DashPathEffect;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
+import com.github.mikephil.charting.utils.Utils;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
-import c.giles.budgetappv11.BudgetManager;
+import c.giles.budgetappv11.CustomMarkerView;
 import c.giles.budgetappv11.HistoryData;
 import c.giles.budgetappv11.HistoryManager;
 import c.giles.budgetappv11.R;
-import lecho.lib.hellocharts.model.AxisValue;
-import lecho.lib.hellocharts.model.Line;
-import lecho.lib.hellocharts.model.LineChartData;
-import lecho.lib.hellocharts.model.PointValue;
-import lecho.lib.hellocharts.view.LineChartView;
-
-import static android.content.Context.MODE_PRIVATE;
 
 public class TrendsFragment extends Fragment {
-    LineChartView chart;
-    List<HistoryData> historyDataList = new ArrayList<>();
-    List<String> xAxisData = new ArrayList<>();
-    List<Float> yAxisData = new ArrayList<>();
-    List<AxisValue> xAxisValues = new ArrayList<>();
-    List<PointValue> yAxisValues = new ArrayList<>();
-    Line line;
-    LineChartData data = new LineChartData();
+
+    private LineChart chart;
+    private ArrayList<HistoryData> totalDataList = new ArrayList<>();
 
 
     @Nullable
@@ -54,27 +48,78 @@ public class TrendsFragment extends Fragment {
 
 
     private void loadChart(){
-        line = new Line(yAxisValues);
-        List<Line> lines = new ArrayList<>();
-        lines.add(line);
+        chart.setTouchEnabled(true);
+        chart.setPinchZoom(true);
+        CustomMarkerView markerView = new CustomMarkerView(getContext(), R.layout.custom_marker_view);
+        markerView.setChartView(chart);
+        chart.setMarker(markerView);
 
-        data.setLines(lines);
-        chart.setLineChartData(data);
+
+
+        XAxis xAxis = chart.getXAxis();
+        xAxis.enableGridDashedLine(10f, 10f, 0f);
+        xAxis.setAxisMaximum(10f);
+        xAxis.setAxisMinimum(0f);
+        xAxis.setDrawLimitLinesBehindData(true);
+
+        YAxis leftAxis = chart.getAxisLeft();
+        leftAxis.removeAllLimitLines();
+        leftAxis.setAxisMaximum(350f);
+        leftAxis.setAxisMinimum(0f);
+        leftAxis.enableGridDashedLine(10f, 10f, 0f);
+        leftAxis.setDrawZeroLine(false);
+        leftAxis.setDrawLimitLinesBehindData(false);
+
+        chart.getAxisRight().setEnabled(false);
+
+
+        //Update values
+        ArrayList<Entry> values = new ArrayList<>();
+        for(HistoryData data : totalDataList){
+            values.add(new Entry(
+                    //data.getTime().getTimeInMillis()
+                    totalDataList.indexOf(data), Float.parseFloat(data.getAmount().toString())));
+        }
+
+        //Make and apply data set
+        LineDataSet totalSet;
+        if(chart.getData() != null && chart.getData().getDataSetCount() > 0){
+            totalSet = (LineDataSet)chart.getData().getDataSetByIndex(0);
+            totalSet.setValues(values);
+            chart.getData().notifyDataChanged();
+            chart.notifyDataSetChanged();
+        } else {
+            totalSet = new LineDataSet(values, "Sample Data");
+            totalSet.setDrawIcons(false);
+            totalSet.enableDashedLine(10f, 5f, 0f);
+            totalSet.enableDashedHighlightLine(10f, 5f, 0f);
+            totalSet.setColor(Color.DKGRAY);
+            totalSet.setCircleColor(Color.DKGRAY);
+            totalSet.setLineWidth(1f);
+            totalSet.setCircleRadius(3f);
+            totalSet.setDrawCircleHole(false);
+            totalSet.setValueTextSize(9f);
+            totalSet.setDrawFilled(true);
+            totalSet.setFormLineWidth(1f);
+            totalSet.setFormLineDashEffect(new DashPathEffect(new float[]{10f, 5f}, 0f));
+            totalSet.setFormSize(15.f);
+
+            if (Utils.getSDKInt() >= 18) {
+                Drawable drawable = ContextCompat.getDrawable(getContext(), android.R.color.holo_blue_dark);
+                totalSet.setFillDrawable(drawable);
+            } else {
+                totalSet.setFillColor(Color.DKGRAY);
+            }
+            ArrayList<ILineDataSet> dataSets = new ArrayList<>();
+            dataSets.add(totalSet);
+            LineData data = new LineData(dataSets);
+            chart.setData(data);
+        }
     }
 
     //Called by HistoryActivity when history is cleared by user
     public void refresh(){
-        historyDataList = new ArrayList<>(HistoryManager.getHistoryDataList());
-        for(HistoryData data : historyDataList){
-            xAxisData.add(data.getTime().toString());
-            yAxisData.add(Float.parseFloat(BudgetManager.getTotalFunds().toString()));
-        }
-        for(int i = 0; i < xAxisData.size(); i++){
-            xAxisValues.add(i, new AxisValue(i).setLabel(xAxisData.get(i)));
-        }
-        for (int i = 0; i < yAxisData.size(); i++){
-            yAxisValues.add(new PointValue(i, yAxisData.get(i)));
-        }
+        totalDataList = new ArrayList<>(HistoryManager.getTotalDataList());
     }
 
 }

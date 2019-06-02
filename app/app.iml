@@ -133,7 +133,6 @@
     <orderEntry type="library" name="Gradle: com.android.support:support-fragment:28.0.0@aar" level="project" />
     <orderEntry type="library" name="Gradle: com.android.support:localbroadcastmanager:28.0.0@aar" level="project" />
     <orderEntry type="library" name="Gradle: com.android.support:animated-vector-drawable:28.0.0@aar" level="project" />
-    <orderEntry type="library" name="Gradle: com.github.lecho:hellocharts-library:1.5.8@aar" level="project" />
     <orderEntry type="library" name="Gradle: android.arch.lifecycle:viewmodel:1.1.1@aar" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: com.android.support.test.espresso:espresso-idling-resource:3.0.2@aar" level="project" />
     <orderEntry type="library" name="Gradle: com.android.support:loader:28.0.0@aar" level="project" />
@@ -181,5 +180,6 @@
     <orderEntry type="library" name="Gradle: com.android.support:coordinatorlayout:28.0.0@aar" level="project" />
     <orderEntry type="library" name="Gradle: com.android.support:customview:28.0.0@aar" level="project" />
     <orderEntry type="library" name="Gradle: com.android.support:swiperefreshlayout:28.0.0@aar" level="project" />
+    <orderEntry type="library" name="Gradle: com.github.PhilJay:MPAndroidChart:v3.1.0@aar" level="project" />
   </component>
 </module>

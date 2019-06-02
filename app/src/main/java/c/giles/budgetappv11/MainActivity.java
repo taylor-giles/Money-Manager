@@ -41,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
     List<Budget> budgets = new ArrayList<>();
     List<LinearLayout> budgetLayouts = new ArrayList<>();
     List<HistoryData> historyDataList = new ArrayList<>();
+    List<HistoryData> totalHistoryDataList = new ArrayList<>();
     NumberFormat format = NumberFormat.getNumberInstance();
     NumberFormat moneyFormat = NumberFormat.getCurrencyInstance(Locale.US);
     int placeholder = -1;
@@ -121,6 +122,7 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         //Empty the history data list if the history data has been deleted
         if(HistoryManager.isHistoryDeleted()){
             historyDataList = new ArrayList<>();
+            totalHistoryDataList = new ArrayList<>();
             HistoryManager.setHistoryDeleted(false);
         }
         refresh();
@@ -153,8 +155,11 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         SharedPreferences historyData = getSharedPreferences("history data", MODE_PRIVATE);
         SharedPreferences.Editor historyEditor = historyData.edit();
         List<HistoryData> historyTemp = new ArrayList<>(historyDataList);
+        List<HistoryData> totalHistoryTemp = new ArrayList<>(totalHistoryDataList);
         String historyJson = gson.toJson(historyTemp);
+        String totalJson = gson.toJson(totalHistoryTemp);
         historyEditor.putString("history list", historyJson);
+        historyEditor.putString("total history list", totalJson);
         historyEditor.apply();
     }
 
@@ -215,15 +220,25 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         //Get history data
         //This data is retrieved within the Main activity so that it can be updated: it is not accessed until the HistoryActivity is opened.
         String loadedHistoryList = historyPreferences.getString("history list", null);
+        String loadedTotalHistoryList = historyPreferences.getString("total history list", null);
         Type historyType = new TypeToken<ArrayList<HistoryData>>() {}.getType();
         List<HistoryData> historyTemp = new ArrayList<>();
+        List<HistoryData> totalHistoryTemp = new ArrayList<>();
         historyTemp = gson.fromJson(loadedHistoryList, historyType);
+        totalHistoryTemp = gson.fromJson(loadedHistoryList, historyType);
         if(historyTemp == null){
             historyDataList = new ArrayList<>();
         } else {
             historyDataList = new ArrayList<>(historyTemp);
         }
+
+        if(totalHistoryTemp == null){
+            totalHistoryDataList = new ArrayList<>();
+        } else {
+            totalHistoryDataList = new ArrayList<>(totalHistoryTemp);
+        }
         HistoryManager.setHistoryDataList(historyDataList);
+        HistoryManager.setTotalDataList(totalHistoryDataList);
     }
 
     private void refresh(){
@@ -257,7 +272,7 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
             TextView amountDisplay = budgetLayouts.get(i).findViewWithTag(1);
             TextView partitionDisplay = budgetLayouts.get(i).findViewWithTag(2);
             nameDisplay.setText(budgets.get(i).getBudgetName());
-            amountDisplay.setText(moneyFormat.format(budgets.get(i).getBudget()));
+            amountDisplay.setText(moneyFormat.format(budgets.get(i).getAmount()));
             if (budgets.get(i).isPartitioned()) {
                 String temp = "";
                 if (budgets.get(i).isAmountBased()) {
@@ -275,8 +290,8 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         }
 
         defaultBudgetNameView.setText(BudgetManager.getDefaultBudgetName());
-        defaultBudgetView.setText(moneyFormat.format(defaultBudget.getBudget()));
-        totalFundsView.setText(moneyFormat.format(totalFunds.getBudget()));
+        defaultBudgetView.setText(moneyFormat.format(defaultBudget.getAmount()));
+        totalFundsView.setText(moneyFormat.format(totalFunds.getAmount()));
 
         BudgetManager.setModified(true);
     }
@@ -291,13 +306,15 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
             BudgetManager.setBudgetList(budgets);
         }
 
-        //Update the history data list if needed
+        //Update the history data lists if needed
         //HistoryManager.isHistoryDeleted() is equivalent to isModified(), since the Main activity is the only place where the history data can be modified, but history can be cleared from the HistoryActivity.
         if(HistoryManager.isHistoryDeleted()){
             //If history has been cleared, then the HistoryActivity has already saved that change to sharedPreferences, and the list in HistoryManager has been replaced with an empty one.
             historyDataList = HistoryManager.getHistoryDataList();
+            totalHistoryDataList = HistoryManager.getTotalDataList();
         } else {
             HistoryManager.setHistoryDataList(historyDataList);
+            HistoryManager.setTotalDataList(totalHistoryDataList);
         }
 
         //Erase all the budget layouts and rebuild them
@@ -309,19 +326,19 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         }
 
         //Calc. total budget
-        double total = defaultBudget.getBudget();
+        double total = defaultBudget.getAmount();
         for(Budget budget : budgets){
-            total += budget.getBudget();
+            total += budget.getAmount();
         }
 
-        if(defaultBudget.getBudget() > 0) {
+        if(defaultBudget.getAmount() > 0) {
             defaultBudgetView.setTextColor(getResources().getColor(android.R.color.black));
         } else {
             defaultBudgetView.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
         }
 
         totalFunds.setBudget(total);
-        BudgetManager.setTotalFunds(totalFunds.getBudget());
+        BudgetManager.setTotalFunds(totalFunds.getAmount());
     }
 
     public void addBudget(Budget newBudget, int index) {
@@ -486,8 +503,8 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         nameView.setTextSize(18f);
         nameView.setTypeface(null, Typeface.BOLD);
 
-        moneyView.setText(moneyFormat.format(newBudget.getBudget()));
-        if(newBudget.getBudget() > 0) {
+        moneyView.setText(moneyFormat.format(newBudget.getAmount()));
+        if(newBudget.getAmount() > 0) {
             moneyView.setTextColor(getResources().getColor(android.R.color.black));
         } else {
             moneyView.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
@@ -614,7 +631,7 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
             }
         });
 
-        if(defaultBudget.getBudget() > 0) {
+        if(defaultBudget.getAmount() > 0) {
             defaultBudgetView.setTextColor(getResources().getColor(android.R.color.black));
         } else {
             defaultBudgetView.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
@@ -765,6 +782,7 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         Double remainingAmount = Double.parseDouble(amount);
         HistoryData paycheckData = new HistoryData(Double.parseDouble(amount), (GregorianCalendar) Calendar.getInstance());
         historyDataList.add(paycheckData);
+        totalHistoryDataList.add(new HistoryData(totalFunds, Double.parseDouble(amount), (GregorianCalendar)Calendar.getInstance()));
         for(Budget budget : budgets){
             if(budget.isPartitioned()){
                 if(!budget.isAmountBased()){
@@ -787,5 +805,6 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
 
     public void addHistoryData(Budget budget, Double amount){
         historyDataList.add(new HistoryData(budget, amount, (GregorianCalendar) Calendar.getInstance()));
+        totalHistoryDataList.add(new HistoryData(totalFunds, totalFunds.getAmount(), (GregorianCalendar)Calendar.getInstance()));
     }
 }

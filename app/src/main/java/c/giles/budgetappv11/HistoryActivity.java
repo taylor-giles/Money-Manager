@@ -107,8 +107,11 @@ public class HistoryActivity extends AppCompatActivity {
         Gson gson = new Gson();
 
         List<HistoryData> historyTemp = new ArrayList<>(HistoryManager.getHistoryDataList());
+        List<HistoryData> totalHistoryTemp = new ArrayList<>(HistoryManager.getTotalDataList());
         String historyJson = gson.toJson(historyTemp);
+        String totalJson = gson.toJson(totalHistoryTemp);
         historyEditor.putString("history list", historyJson);
+        historyEditor.putString("total history list", totalJson);
         historyEditor.apply();
     }
 

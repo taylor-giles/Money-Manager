@@ -31,7 +31,7 @@ public class BudgetLayout extends LinearLayout {
         this.budget = budget;
 
         budgetName.setText(budget.getBudgetName());
-        currentBudget.setText(budget.getBudget().toString());
+        currentBudget.setText(budget.getAmount().toString());
         partitionDisplay.setText("");
 
         renameButton.setOnClickListener(new View.OnClickListener(){
