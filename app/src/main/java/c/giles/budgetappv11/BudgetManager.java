@@ -8,7 +8,7 @@ import java.util.List;
 
 import c.giles.budgetappv11.views.BudgetLayout;
 
-public class BudgetHandler {
+public class BudgetManager {
 
     private static List<Budget> budgetList = new ArrayList<>();
     static ViewGroup budgetDisplayWindow;
@@ -18,6 +18,7 @@ public class BudgetHandler {
     private static List<Double> quickDepositAmounts = new ArrayList<>();
     private static List<Double> quickWithdrawAmounts = new ArrayList<>();
     private static String defaultBudgetName;
+    private static Double totalFunds;
 
     public static void addBudget(Budget newBudget){
         budgetList.add(newBudget);
@@ -112,6 +113,14 @@ public class BudgetHandler {
 
     public static void setDefaultBudgetName(String name){
         defaultBudgetName = name;
+    }
+
+    public static void setTotalFunds(Double total){
+        totalFunds = total;
+    }
+
+    public static Double getTotalFunds(){
+        return totalFunds;
     }
 
 }

@@ -33,7 +33,6 @@ import java.util.Locale;
 
 import c.giles.budgetappv11.views.DepositDialog;
 import c.giles.budgetappv11.views.EditDialog;
-import c.giles.budgetappv11.views.HistoryFragment;
 import c.giles.budgetappv11.views.PaycheckDialog;
 import c.giles.budgetappv11.views.WithdrawDialog;
 
@@ -66,7 +65,7 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         budgetsWindow = (LinearLayout)findViewById(R.id.budgets_window);
-        BudgetHandler.setBudgetDisplayWindow(budgetsWindow);
+        BudgetManager.setBudgetDisplayWindow(budgetsWindow);
 
         format.setMaximumFractionDigits(2);
         format.setMinimumFractionDigits(2);
@@ -120,9 +119,9 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         super.onResume();
 
         //Empty the history data list if the history data has been deleted
-        if(HistoryFragment.isHistoryDeleted()){
+        if(HistoryManager.isHistoryDeleted()){
             historyDataList = new ArrayList<>();
-            HistoryFragment.setHistoryDeleted(false);
+            HistoryManager.setHistoryDeleted(false);
         }
         refresh();
     }
@@ -141,9 +140,9 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
 
         //Save quick values
         List<List<Double>> quickValues = new ArrayList<>();
-        quickValues.add(0, BudgetHandler.getQuickPayValues());
-        quickValues.add(1, BudgetHandler.getQuickDepositValues());
-        quickValues.add(2, BudgetHandler.getQuickWithdrawValues());
+        quickValues.add(0, BudgetManager.getQuickPayValues());
+        quickValues.add(1, BudgetManager.getQuickDepositValues());
+        quickValues.add(2, BudgetManager.getQuickWithdrawValues());
 
         String jsonValues = gson.toJson(quickValues);
         editor.putString("quick values", jsonValues);
@@ -171,12 +170,12 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         temp = gson.fromJson(loadedBudgets, budgetsType);
         if(temp == null){
             budgets = new ArrayList<>();
-            BudgetHandler.setDefaultBudgetName(getString(R.string.default_budget_name));
+            BudgetManager.setDefaultBudgetName(getString(R.string.default_budget_name));
             initDefaultBudgets();
         } else {
             //Take the default budget from the first element in the temp list and then set the budgets list to the remaining budgets
             defaultBudget = temp.get(0);
-            BudgetHandler.setDefaultBudgetName(defaultBudget.getBudgetName());
+            BudgetManager.setDefaultBudgetName(defaultBudget.getBudgetName());
             budgets = temp.subList(1, temp.size());
         }
 
@@ -202,19 +201,19 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
             quickWithdrawAmounts.add(1, Double.parseDouble(getString(R.string.quick_withdraw_2).substring(1)));
             quickWithdrawAmounts.add(2, Double.parseDouble(getString(R.string.quick_withdraw_3).substring(1)));
 
-            BudgetHandler.setQuickPayAmounts(quickPayAmounts);
-            BudgetHandler.setQuickDepositAmounts(quickDepositAmounts);
-            BudgetHandler.setQuickWithdrawAmounts(quickWithdrawAmounts);
+            BudgetManager.setQuickPayAmounts(quickPayAmounts);
+            BudgetManager.setQuickDepositAmounts(quickDepositAmounts);
+            BudgetManager.setQuickWithdrawAmounts(quickWithdrawAmounts);
 
         } else {
-            BudgetHandler.setQuickPayAmounts(quickTemp.get(0));
-            BudgetHandler.setQuickDepositAmounts(quickTemp.get(1));
-            BudgetHandler.setQuickWithdrawAmounts(quickTemp.get(2));
+            BudgetManager.setQuickPayAmounts(quickTemp.get(0));
+            BudgetManager.setQuickDepositAmounts(quickTemp.get(1));
+            BudgetManager.setQuickWithdrawAmounts(quickTemp.get(2));
         }
 
 
         //Get history data
-        //Retrieve this data for the sole purpose of UPDATING it and saving it again later.
+        //This data is retrieved within the Main activity so that it can be updated: it is not accessed until the HistoryActivity is opened.
         String loadedHistoryList = historyPreferences.getString("history list", null);
         Type historyType = new TypeToken<ArrayList<HistoryData>>() {}.getType();
         List<HistoryData> historyTemp = new ArrayList<>();
@@ -224,6 +223,7 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         } else {
             historyDataList = new ArrayList<>(historyTemp);
         }
+        HistoryManager.setHistoryDataList(historyDataList);
     }
 
     private void refresh(){
@@ -274,21 +274,30 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
             }
         }
 
-        defaultBudgetNameView.setText(BudgetHandler.getDefaultBudgetName());
+        defaultBudgetNameView.setText(BudgetManager.getDefaultBudgetName());
         defaultBudgetView.setText(moneyFormat.format(defaultBudget.getBudget()));
         totalFundsView.setText(moneyFormat.format(totalFunds.getBudget()));
 
-        BudgetHandler.setModified(true);
+        BudgetManager.setModified(true);
     }
     public void updateLists(){
         //Update the budgets list and the saved list if needed (if the bridge class indicates that a change has been made)
-        if(BudgetHandler.isModified()){
-            budgets = new ArrayList<>(BudgetHandler.getBudgetList());
-            defaultBudget.setName(BudgetHandler.getDefaultBudgetName());
+        if(BudgetManager.isModified()){
+            budgets = new ArrayList<>(BudgetManager.getBudgetList());
+            defaultBudget.setName(BudgetManager.getDefaultBudgetName());
             saveSharedPreferences();
-            BudgetHandler.setModified(false);
+            BudgetManager.setModified(false);
         } else {
-            BudgetHandler.setBudgetList(budgets);
+            BudgetManager.setBudgetList(budgets);
+        }
+
+        //Update the history data list if needed
+        //HistoryManager.isHistoryDeleted() is equivalent to isModified(), since the Main activity is the only place where the history data can be modified, but history can be cleared from the HistoryActivity.
+        if(HistoryManager.isHistoryDeleted()){
+            //If history has been cleared, then the HistoryActivity has already saved that change to sharedPreferences, and the list in HistoryManager has been replaced with an empty one.
+            historyDataList = HistoryManager.getHistoryDataList();
+        } else {
+            HistoryManager.setHistoryDataList(historyDataList);
         }
 
         //Erase all the budget layouts and rebuild them
@@ -312,6 +321,7 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         }
 
         totalFunds.setBudget(total);
+        BudgetManager.setTotalFunds(totalFunds.getBudget());
     }
 
     public void addBudget(Budget newBudget, int index) {
@@ -382,9 +392,9 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         editButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                BudgetHandler.setBudgetList(budgets);
+                BudgetManager.setBudgetList(budgets);
                 placeholder = i;
-                BudgetHandler.setPlaceholder(placeholder);
+                BudgetManager.setPlaceholder(placeholder);
                 openEditDialog();
             }
         });
@@ -399,8 +409,8 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
                     public void onClick(DialogInterface dialog, int which) {
                         switch (which) {
                             case DialogInterface.BUTTON_POSITIVE:
-                                BudgetHandler.removeBudget(i);
-                                BudgetHandler.setModified(true);
+                                BudgetManager.removeBudget(i);
+                                BudgetManager.setModified(true);
                                 refresh();
                                 break;
 
@@ -448,9 +458,9 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
             public void onClick(View v) {
                 Budget currentBudget = budgets.get(i);
                 if (!(i - 1 < 0)) {
-                    BudgetHandler.removeBudget(i);
-                    BudgetHandler.addBudget(i - 1, currentBudget);
-                    BudgetHandler.setModified(true);
+                    BudgetManager.removeBudget(i);
+                    BudgetManager.addBudget(i - 1, currentBudget);
+                    BudgetManager.setModified(true);
                     refresh();
                 }
             }
@@ -463,8 +473,8 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
             public void onClick(View v) {
                 Budget currentBudget = budgets.get(i);
                 if (!(budgets.size() <= i + 1)) {
-                    BudgetHandler.removeBudget(i);
-                    BudgetHandler.addBudget(i + 1, currentBudget);
+                    BudgetManager.removeBudget(i);
+                    BudgetManager.addBudget(i + 1, currentBudget);
                     refresh();
                 }
             }
@@ -576,10 +586,10 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
 
 
     private void initDefaultBudgets(){
-        defaultBudget = new Budget(BudgetHandler.getDefaultBudgetName(), 0, false, false, 0);
+        defaultBudget = new Budget(BudgetManager.getDefaultBudgetName(), 0, false, false, 0);
         defaultBudgetView = (TextView) findViewById(R.id.default_budget_money);
         defaultBudgetNameView = (TextView) findViewById(R.id.default_budget_name_view);
-        defaultBudgetNameView.setText(BudgetHandler.getDefaultBudgetName());
+        defaultBudgetNameView.setText(BudgetManager.getDefaultBudgetName());
 
         totalFunds = new Budget(getString(R.string.total_funds), 0, false, false, 0);
         totalFundsView = (TextView) findViewById(R.id.total_funds_money);
@@ -720,7 +730,7 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
             addHistoryData(budgets.get(placeholder), Double.parseDouble(amount));
         }
         Toast.makeText(this, "Deposit Successful", Toast.LENGTH_SHORT).show();
-        BudgetHandler.setModified(true);
+        BudgetManager.setModified(true);
         refresh();
     }
 
@@ -734,7 +744,7 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
             addHistoryData(budgets.get(placeholder), Double.parseDouble(amount) * -1);
         }
         Toast.makeText(this, "Withdrawal Successful", Toast.LENGTH_SHORT).show();
-        BudgetHandler.setModified(true);
+        BudgetManager.setModified(true);
         refresh();
     }
 
@@ -746,7 +756,7 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
             budgets.get(placeholder).setPartitionValue(Double.parseDouble(partitionValue));
             budgets.get(placeholder).setAmountBased(isAmountBased);
         }
-        BudgetHandler.setModified(true);
+        BudgetManager.setModified(true);
         refresh();
     }
 

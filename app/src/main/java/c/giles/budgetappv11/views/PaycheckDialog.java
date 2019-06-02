@@ -14,7 +14,7 @@ import android.widget.EditText;
 
 import java.text.NumberFormat;
 
-import c.giles.budgetappv11.BudgetHandler;
+import c.giles.budgetappv11.BudgetManager;
 import c.giles.budgetappv11.R;
 
 
@@ -66,20 +66,20 @@ public class PaycheckDialog extends AppCompatDialogFragment {
         ;
 
         //If the quickValues can be represented as integers, don't bother formatting them to 2 decimal places
-        if(BudgetHandler.getQuickPayValue(0) != Math.rint(BudgetHandler.getQuickPayValue(0))) {
-            quickButton1.setText("$" + moneyFormat.format(BudgetHandler.getQuickPayValue(0)));
+        if(BudgetManager.getQuickPayValue(0) != Math.rint(BudgetManager.getQuickPayValue(0))) {
+            quickButton1.setText("$" + moneyFormat.format(BudgetManager.getQuickPayValue(0)));
         } else {
-            quickButton1.setText("$" + intFormat.format(BudgetHandler.getQuickPayValue(0)));
+            quickButton1.setText("$" + intFormat.format(BudgetManager.getQuickPayValue(0)));
         }
-        if(BudgetHandler.getQuickPayValue(1) != Math.rint(BudgetHandler.getQuickPayValue(1))) {
-            quickButton2.setText("$" + moneyFormat.format(BudgetHandler.getQuickPayValue(1)));
+        if(BudgetManager.getQuickPayValue(1) != Math.rint(BudgetManager.getQuickPayValue(1))) {
+            quickButton2.setText("$" + moneyFormat.format(BudgetManager.getQuickPayValue(1)));
         } else {
-            quickButton2.setText("$" + intFormat.format(BudgetHandler.getQuickPayValue(1)));
+            quickButton2.setText("$" + intFormat.format(BudgetManager.getQuickPayValue(1)));
         }
-        if(BudgetHandler.getQuickPayValue(2) != Math.rint(BudgetHandler.getQuickPayValue(2))) {
-            quickButton3.setText("$" + moneyFormat.format(BudgetHandler.getQuickPayValue(2)));
+        if(BudgetManager.getQuickPayValue(2) != Math.rint(BudgetManager.getQuickPayValue(2))) {
+            quickButton3.setText("$" + moneyFormat.format(BudgetManager.getQuickPayValue(2)));
         } else {
-            quickButton3.setText("$" + intFormat.format(BudgetHandler.getQuickPayValue(2)));
+            quickButton3.setText("$" + intFormat.format(BudgetManager.getQuickPayValue(2)));
         }
 
         quickButton1.setOnClickListener(new View.OnClickListener() {

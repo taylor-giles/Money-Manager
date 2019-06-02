@@ -14,7 +14,7 @@ import android.widget.EditText;
 
 import java.text.NumberFormat;
 
-import c.giles.budgetappv11.BudgetHandler;
+import c.giles.budgetappv11.BudgetManager;
 import c.giles.budgetappv11.R;
 
 
@@ -49,20 +49,20 @@ public class DepositDialog extends AppCompatDialogFragment {
         quickButton3 = (Button)view.findViewById(R.id.quickDeposit3);
 
         //If the quickValues can be represented as integers, don't bother formatting them to 2 decimal places
-        if(BudgetHandler.getQuickDepositValue(0) != Math.rint(BudgetHandler.getQuickDepositValue(0))) {
-            quickButton1.setText("$" + moneyFormat.format(BudgetHandler.getQuickDepositValue(0)));
+        if(BudgetManager.getQuickDepositValue(0) != Math.rint(BudgetManager.getQuickDepositValue(0))) {
+            quickButton1.setText("$" + moneyFormat.format(BudgetManager.getQuickDepositValue(0)));
         } else {
-            quickButton1.setText("$" + intFormat.format(BudgetHandler.getQuickDepositValue(0)));
+            quickButton1.setText("$" + intFormat.format(BudgetManager.getQuickDepositValue(0)));
         }
-        if(BudgetHandler.getQuickDepositValue(1) != Math.rint(BudgetHandler.getQuickDepositValue(1))) {
-            quickButton2.setText("$" + moneyFormat.format(BudgetHandler.getQuickDepositValue(1)));
+        if(BudgetManager.getQuickDepositValue(1) != Math.rint(BudgetManager.getQuickDepositValue(1))) {
+            quickButton2.setText("$" + moneyFormat.format(BudgetManager.getQuickDepositValue(1)));
         } else {
-            quickButton2.setText("$" + intFormat.format(BudgetHandler.getQuickDepositValue(1)));
+            quickButton2.setText("$" + intFormat.format(BudgetManager.getQuickDepositValue(1)));
         }
-        if(BudgetHandler.getQuickDepositValue(2) != Math.rint(BudgetHandler.getQuickDepositValue(2))) {
-            quickButton3.setText("$" + moneyFormat.format(BudgetHandler.getQuickDepositValue(2)));
+        if(BudgetManager.getQuickDepositValue(2) != Math.rint(BudgetManager.getQuickDepositValue(2))) {
+            quickButton3.setText("$" + moneyFormat.format(BudgetManager.getQuickDepositValue(2)));
         } else {
-            quickButton3.setText("$" + intFormat.format(BudgetHandler.getQuickDepositValue(2)));
+            quickButton3.setText("$" + intFormat.format(BudgetManager.getQuickDepositValue(2)));
         }
 
 

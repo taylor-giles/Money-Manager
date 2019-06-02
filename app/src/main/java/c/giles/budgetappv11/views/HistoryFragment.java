@@ -1,8 +1,6 @@
 package c.giles.budgetappv11.views;
 
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -27,10 +25,9 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
 
-import c.giles.budgetappv11.BudgetHandler;
-import c.giles.budgetappv11.HistoryActivity;
 import c.giles.budgetappv11.HistoryData;
 import c.giles.budgetappv11.HistoryItem;
+import c.giles.budgetappv11.HistoryManager;
 import c.giles.budgetappv11.R;
 
 import static android.content.Context.MODE_PRIVATE;
@@ -40,7 +37,6 @@ public class HistoryFragment extends Fragment {
     private List<HistoryItem> historyList = new ArrayList<>();
     private List<HistoryData> historyDataList = new ArrayList<>();
     private LinearLayout historyView;
-    private static boolean historyDeleted = false;
 
     @Nullable
     @Override
@@ -48,45 +44,12 @@ public class HistoryFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_history, container, false);
         historyView = (LinearLayout) view.findViewById(R.id.history_list_layout);
 
-        historyDeleted = false;
-        loadSharedPreferences();
-
-        loadHistory();
+        HistoryManager.setHistoryDeleted(false);
+        refresh();
 
         return view;
     }
 
-
-    private void loadSharedPreferences(){
-        SharedPreferences sharedPreferences = Objects.requireNonNull(getActivity()).getSharedPreferences("history data", MODE_PRIVATE);
-        Gson gson = new Gson();
-
-        //Get history data
-        String loadedHistoryList = sharedPreferences.getString("history list", null);
-        Type historyType = new TypeToken<List<HistoryData>>() {}.getType();
-        List<HistoryData> temp = new ArrayList<>();
-        temp = gson.fromJson(loadedHistoryList, historyType);
-        if(temp == null){
-            historyDataList = new ArrayList<>();
-            historyList = new ArrayList<>();
-        } else {
-            historyDataList = new ArrayList<>(temp);
-            for(HistoryData data : historyDataList){
-                historyList.add(new HistoryItem(getActivity(), data));
-            }
-        }
-    }
-
-    private void saveSharedPreferences(){
-        //Update the history shared preferences
-        Gson gson = new Gson();
-        SharedPreferences historyData = Objects.requireNonNull(getActivity()).getSharedPreferences("history data", MODE_PRIVATE);
-        SharedPreferences.Editor historyEditor = historyData.edit();
-        List<HistoryData> historyTemp = new ArrayList<>(historyDataList);
-        String historyJson = gson.toJson(historyTemp);
-        historyEditor.putString("history list", historyJson);
-        historyEditor.apply();
-    }
 
     //Fills the historyView with all of the information contained in the historyList
     private void loadHistory(){
@@ -100,7 +63,8 @@ public class HistoryFragment extends Fragment {
                     item.getCalendar().get(Calendar.DAY_OF_MONTH) != historyList.get(i-1).getCalendar().get(Calendar.DAY_OF_MONTH)){
 
 
-                LinearLayout dateLayout = new LinearLayout(getActivity());
+
+                LinearLayout dateLayout = new LinearLayout(item.asView().getContext());
                 View leftLine = new View(getActivity());
                 View rightLine = new View(getActivity());
                 TextView dateView = new TextView(getActivity());
@@ -131,6 +95,8 @@ public class HistoryFragment extends Fragment {
                 historyView.addView(dateLayout);
             }
 
+            LinearLayout itemLayout;
+
             //Add the item
             View topSpace = new View(getActivity());
             topSpace.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 25));
@@ -145,7 +111,7 @@ public class HistoryFragment extends Fragment {
             Space lastItemOfDaySpace = new Space(getActivity());
             lastItemOfDaySpace.setLayoutParams(new LinearLayout.LayoutParams(1,75));
 
-            LinearLayout itemLayout = (LinearLayout)item.asView();
+            itemLayout = (LinearLayout)item.asView();
 
             //Make every other layout gray (for visual separation)
 //            if(i%2 == 1){
@@ -157,7 +123,8 @@ public class HistoryFragment extends Fragment {
             historyView.addView(topSpace);
             historyView.addView(itemLayout);
             historyView.addView(bottomSpace);
-            if(i != historyDataList.size() -1){
+            //Check if this item is the last item from its day
+            if(!(i >= historyDataList.size() -1)){
                 if(item.getCalendar().get(Calendar.YEAR) != historyList.get(i+1).getCalendar().get(Calendar.YEAR) ||
                         item.getCalendar().get(Calendar.MONTH) != historyList.get(i+1).getCalendar().get(Calendar.MONTH) ||
                         item.getCalendar().get(Calendar.DAY_OF_MONTH) != historyList.get(i+1).getCalendar().get(Calendar.DAY_OF_MONTH)){
@@ -169,41 +136,15 @@ public class HistoryFragment extends Fragment {
         }
     }
 
-    public void clearHistory(View v){
-        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                switch (which) {
-                    case DialogInterface.BUTTON_POSITIVE:
-                        historyDataList = new ArrayList<>();
-                        historyList = new ArrayList<>();
-                        historyView.removeAllViews();
-                        saveSharedPreferences();
-                        loadHistory();
-                        historyDeleted = true;
-                        break;
+    //Called by HistoryActivity when history is cleared by user
+    public void refresh(){
+        historyDataList = new ArrayList<>(HistoryManager.getHistoryDataList());
+        historyList = new ArrayList<>();
+        for(HistoryData data : historyDataList){
+            historyList.add(new HistoryItem(getActivity(), data));
+        }
 
-                    case DialogInterface.BUTTON_NEGATIVE:
-                        //Do nothing
-                        break;
-                }
-            }
-        };
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext(), android.R.style.Theme_Material_Light_Dialog_Alert);
-        builder.setMessage("Are you sure you want to clear all history items?")
-                .setPositiveButton("Yes", dialogClickListener)
-                .setNegativeButton("No", dialogClickListener)
-                .show()
-        ;
-
-    }
-
-    public static boolean isHistoryDeleted(){
-        return historyDeleted;
-    }
-
-    public static void setHistoryDeleted(boolean deleted){
-        historyDeleted = false;
+        historyView.removeAllViews();
+        loadHistory();
     }
 }

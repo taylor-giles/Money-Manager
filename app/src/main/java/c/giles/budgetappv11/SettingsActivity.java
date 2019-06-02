@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -51,19 +50,19 @@ public class SettingsActivity extends AppCompatActivity {
         saveButton = (Button)findViewById(R.id.settings_save_button);
 
 
-        defaultBudgetNameBox.setText(BudgetHandler.getDefaultBudgetName());
+        defaultBudgetNameBox.setText(BudgetManager.getDefaultBudgetName());
 
-        quickPayBox1.setText(format.format(BudgetHandler.getQuickPayValue(0)));
-        quickPayBox2.setText(format.format(BudgetHandler.getQuickPayValue(1)));
-        quickPayBox3.setText(format.format(BudgetHandler.getQuickPayValue(2)));
+        quickPayBox1.setText(format.format(BudgetManager.getQuickPayValue(0)));
+        quickPayBox2.setText(format.format(BudgetManager.getQuickPayValue(1)));
+        quickPayBox3.setText(format.format(BudgetManager.getQuickPayValue(2)));
 
-        quickDepositBox1.setText(format.format(BudgetHandler.getQuickDepositValue(0)));
-        quickDepositBox2.setText(format.format(BudgetHandler.getQuickDepositValue(1)));
-        quickDepositBox3.setText(format.format(BudgetHandler.getQuickDepositValue(2)));
+        quickDepositBox1.setText(format.format(BudgetManager.getQuickDepositValue(0)));
+        quickDepositBox2.setText(format.format(BudgetManager.getQuickDepositValue(1)));
+        quickDepositBox3.setText(format.format(BudgetManager.getQuickDepositValue(2)));
 
-        quickWithdrawBox1.setText(format.format(BudgetHandler.getQuickWithdrawValue(0)));
-        quickWithdrawBox2.setText(format.format(BudgetHandler.getQuickWithdrawValue(1)));
-        quickWithdrawBox3.setText(format.format(BudgetHandler.getQuickWithdrawValue(2)));
+        quickWithdrawBox1.setText(format.format(BudgetManager.getQuickWithdrawValue(0)));
+        quickWithdrawBox2.setText(format.format(BudgetManager.getQuickWithdrawValue(1)));
+        quickWithdrawBox3.setText(format.format(BudgetManager.getQuickWithdrawValue(2)));
 
 
         cancelButton.setOnClickListener(new View.OnClickListener() {
@@ -93,13 +92,13 @@ public class SettingsActivity extends AppCompatActivity {
                 quickWithdrawAmounts.add(2,  Double.parseDouble(quickWithdrawBox3.getText().toString()));
 
 
-                BudgetHandler.setDefaultBudgetName(defaultBudgetNameBox.getText().toString());
-                BudgetHandler.setQuickPayAmounts(quickPayAmounts);
-                BudgetHandler.setQuickDepositAmounts(quickDepositAmounts);
-                BudgetHandler.setQuickWithdrawAmounts(quickWithdrawAmounts);
+                BudgetManager.setDefaultBudgetName(defaultBudgetNameBox.getText().toString());
+                BudgetManager.setQuickPayAmounts(quickPayAmounts);
+                BudgetManager.setQuickDepositAmounts(quickDepositAmounts);
+                BudgetManager.setQuickWithdrawAmounts(quickWithdrawAmounts);
 
 
-                BudgetHandler.setModified(true);
+                BudgetManager.setModified(true);
                 finish();
             }
         });

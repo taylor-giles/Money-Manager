@@ -17,7 +17,7 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import c.giles.budgetappv11.BudgetHandler;
+import c.giles.budgetappv11.BudgetManager;
 import c.giles.budgetappv11.Budget;
 import c.giles.budgetappv11.R;
 
@@ -30,7 +30,7 @@ public class EditDialog extends AppCompatDialogFragment {
     private TextView percentSign;
 
     private EditDialogListener listener;
-    private List<Budget> budgets = new ArrayList<>(BudgetHandler.getBudgetList());
+    private List<Budget> budgets = new ArrayList<>(BudgetManager.getBudgetList());
 
     NumberFormat format = NumberFormat.getNumberInstance();
 
@@ -52,8 +52,8 @@ public class EditDialog extends AppCompatDialogFragment {
         dollarSign = view.findViewById(R.id.editDollarSignSmall);
         percentSign = view.findViewById(R.id.editPercentSignSmall);
 
-        nameEntry.setText(budgets.get(BudgetHandler.getPlaceholder()).getBudgetName());
-        partitionSwitch.setChecked(budgets.get(BudgetHandler.getPlaceholder()).isPartitioned());
+        nameEntry.setText(budgets.get(BudgetManager.getPlaceholder()).getBudgetName());
+        partitionSwitch.setChecked(budgets.get(BudgetManager.getPlaceholder()).isPartitioned());
 
         partitionValueEntry.setEnabled(partitionSwitch.isChecked());
         partitionSwitch.setOnClickListener(new View.OnClickListener() {
@@ -63,9 +63,9 @@ public class EditDialog extends AppCompatDialogFragment {
             }
         });
 
-        if(budgets.get(BudgetHandler.getPlaceholder()).isPartitioned()) {
-            partitionToggle.setChecked(budgets.get(BudgetHandler.getPlaceholder()).isAmountBased());
-            partitionValueEntry.setText(format.format(budgets.get(BudgetHandler.getPlaceholder()).getPartitionValue()));
+        if(budgets.get(BudgetManager.getPlaceholder()).isPartitioned()) {
+            partitionToggle.setChecked(budgets.get(BudgetManager.getPlaceholder()).isAmountBased());
+            partitionValueEntry.setText(format.format(budgets.get(BudgetManager.getPlaceholder()).getPartitionValue()));
         }
 
         if(partitionToggle.isChecked()){

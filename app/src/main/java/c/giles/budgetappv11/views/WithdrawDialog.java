@@ -14,7 +14,7 @@ import android.widget.EditText;
 
 import java.text.NumberFormat;
 
-import c.giles.budgetappv11.BudgetHandler;
+import c.giles.budgetappv11.BudgetManager;
 import c.giles.budgetappv11.R;
 
 
@@ -67,20 +67,20 @@ public class WithdrawDialog extends AppCompatDialogFragment {
 
 
         //If the quickValues can be represented as integers, don't bother formatting them to 2 decimal places
-        if(BudgetHandler.getQuickWithdrawValue(0) != Math.rint(BudgetHandler.getQuickWithdrawValue(0))) {
-            quickButton1.setText("$" + moneyFormat.format(BudgetHandler.getQuickWithdrawValue(0)));
+        if(BudgetManager.getQuickWithdrawValue(0) != Math.rint(BudgetManager.getQuickWithdrawValue(0))) {
+            quickButton1.setText("$" + moneyFormat.format(BudgetManager.getQuickWithdrawValue(0)));
         } else {
-            quickButton1.setText("$" + intFormat.format(BudgetHandler.getQuickWithdrawValue(0)));
+            quickButton1.setText("$" + intFormat.format(BudgetManager.getQuickWithdrawValue(0)));
         }
-        if(BudgetHandler.getQuickWithdrawValue(1) != Math.rint(BudgetHandler.getQuickWithdrawValue(1))) {
-            quickButton2.setText("$" + moneyFormat.format(BudgetHandler.getQuickWithdrawValue(1)));
+        if(BudgetManager.getQuickWithdrawValue(1) != Math.rint(BudgetManager.getQuickWithdrawValue(1))) {
+            quickButton2.setText("$" + moneyFormat.format(BudgetManager.getQuickWithdrawValue(1)));
         } else {
-            quickButton2.setText("$" + intFormat.format(BudgetHandler.getQuickWithdrawValue(1)));
+            quickButton2.setText("$" + intFormat.format(BudgetManager.getQuickWithdrawValue(1)));
         }
-        if(BudgetHandler.getQuickWithdrawValue(2) != Math.rint(BudgetHandler.getQuickWithdrawValue(2))) {
-            quickButton3.setText("$" + moneyFormat.format(BudgetHandler.getQuickWithdrawValue(2)));
+        if(BudgetManager.getQuickWithdrawValue(2) != Math.rint(BudgetManager.getQuickWithdrawValue(2))) {
+            quickButton3.setText("$" + moneyFormat.format(BudgetManager.getQuickWithdrawValue(2)));
         } else {
-            quickButton3.setText("$" + intFormat.format(BudgetHandler.getQuickWithdrawValue(2)));
+            quickButton3.setText("$" + intFormat.format(BudgetManager.getQuickWithdrawValue(2)));
         }
 
         quickButton1.setOnClickListener(new View.OnClickListener() {

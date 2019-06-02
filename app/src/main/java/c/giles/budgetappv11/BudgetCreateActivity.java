@@ -69,12 +69,12 @@ public class BudgetCreateActivity extends AppCompatActivity {
         partitionValue = Double.parseDouble(partitionValueView.getText().toString());
         amountBased = partitionTypeButton.isChecked();
 
-        if(partition && !amountBased && BudgetHandler.getTotalPercentPartitioned() + partitionValue > 100){
+        if(partition && !amountBased && BudgetManager.getTotalPercentPartitioned() + partitionValue > 100){
             Toast.makeText(getBaseContext(), "Please keep total partition percentage below 100%", Toast.LENGTH_LONG).show();
         } else {
             Budget newBudget = new Budget(budgetName, initialBudget, partition, amountBased, partitionValue);
-            BudgetHandler.addBudget(newBudget);
-            BudgetHandler.setModified(true);
+            BudgetManager.addBudget(newBudget);
+            BudgetManager.setModified(true);
             setResult(RESULT_OK);
             startMainActivity(view);
         }
