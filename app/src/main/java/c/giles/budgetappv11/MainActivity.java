@@ -808,3 +808,4 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         totalHistoryDataList.add(new HistoryData(totalFunds, totalFunds.getAmount(), (GregorianCalendar)Calendar.getInstance()));
     }
 }
+
