@@ -99,7 +99,8 @@ public class TrendsFragment extends Fragment {
             totalSet.setCircleRadius(3f);
             totalSet.setDrawCircleHole(false);
             totalSet.setValueTextSize(9f);
-            totalSet.setDrawFilled(true);
+//            totalSet.setDrawFilled(true);
+            totalSet.setDrawFilled(false);
             totalSet.setFormLineWidth(1f);
             totalSet.setFormLineDashEffect(new DashPathEffect(new float[]{10f, 5f}, 0f));
             totalSet.setFormSize(15.f);

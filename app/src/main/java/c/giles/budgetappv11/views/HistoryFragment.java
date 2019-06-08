@@ -140,8 +140,23 @@ public class HistoryFragment extends Fragment {
     public void refresh(){
         historyDataList = new ArrayList<>(HistoryManager.getHistoryDataList());
         historyList = new ArrayList<>();
-        for(HistoryData data : historyDataList){
-            historyList.add(new HistoryItem(getActivity(), data));
+        for (int i = historyDataList.size() - 1; i >= 0; i--) {
+            HistoryData data = historyDataList.get(i);
+
+            if(!data.isPaycheck() && !data.isFromPaycheck()) {
+                historyList.add(new HistoryItem(getActivity(), data));
+            } else if(data.isFromPaycheck()){
+                List<HistoryData> paycheckSublist = new ArrayList<>();
+                while(!historyDataList.get(i).isPaycheck()){
+                    paycheckSublist.add(historyDataList.get(i));
+                    i--;
+                }
+
+                historyList.add(new HistoryItem(getActivity(), historyDataList.get(i)));
+                for(int k = paycheckSublist.size()-1; k >= 0; k--){
+                    historyList.add(new HistoryItem(getActivity(), paycheckSublist.get(k)));
+                }
+            }
         }
 
         historyView.removeAllViews();
