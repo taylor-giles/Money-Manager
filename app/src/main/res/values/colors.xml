@@ -4,4 +4,18 @@
     <color name="colorPrimaryDark">#0E00AF</color>
     <color name="colorAccent">#f7b500</color>
     <color name="light_gray">#e8e8e8</color>
+
+
+    <color name="myRed">#d62117</color>
+    <color name="myRedOrange">#e24c22</color>
+    <color name="myOrange">#d67900</color>
+    <color name="myYellow">#fffb1c</color>
+    <color name="myYellowGreen">#9bea25</color>
+    <color name="myGreen">#06c600</color>
+    <color name="myAqua">#33ea9a</color>
+    <color name="myLightBlue">#14a5d1</color>
+    <color name="myDarkBlue">#0036c1</color>
+    <color name="myViolet">#8d00c1</color>
+    <color name="myPink">#ea54f2</color>
+    <color name="myMagenta">#f12e8c</color>
 </resources>

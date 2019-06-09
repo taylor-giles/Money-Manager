@@ -225,7 +225,7 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         List<HistoryData> historyTemp = new ArrayList<>();
         List<HistoryData> totalHistoryTemp = new ArrayList<>();
         historyTemp = gson.fromJson(loadedHistoryList, historyType);
-        totalHistoryTemp = gson.fromJson(loadedHistoryList, historyType);
+        totalHistoryTemp = gson.fromJson(loadedTotalHistoryList, historyType);
         if(historyTemp == null){
             historyDataList = new ArrayList<>();
         } else {
@@ -782,7 +782,7 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         Double remainingAmount = Double.parseDouble(amount);
         HistoryData paycheckData = new HistoryData(Double.parseDouble(amount), (GregorianCalendar) Calendar.getInstance());
         historyDataList.add(paycheckData);
-        totalHistoryDataList.add(new HistoryData(totalFunds, Double.parseDouble(amount), (GregorianCalendar)Calendar.getInstance()));
+        totalHistoryDataList.add(new HistoryData(totalFunds, totalFunds.getAmount() + Double.parseDouble(amount), (GregorianCalendar)Calendar.getInstance()));
         for(Budget budget : budgets){
             if(budget.isPartitioned()){
                 if(!budget.isAmountBased()){
@@ -805,7 +805,7 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
 
     public void addHistoryData(Budget budget, Double amount){
         historyDataList.add(new HistoryData(budget, amount, (GregorianCalendar) Calendar.getInstance()));
-        totalHistoryDataList.add(new HistoryData(totalFunds, totalFunds.getAmount(), (GregorianCalendar)Calendar.getInstance()));
+        totalHistoryDataList.add(new HistoryData(totalFunds, totalFunds.getAmount() + amount, (GregorianCalendar)Calendar.getInstance()));
     }
 }
 

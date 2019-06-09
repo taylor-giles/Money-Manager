@@ -1,4 +1,4 @@
-package c.giles.budgetappv11;
+package c.giles.budgetappv11.views;
 
 import android.content.Context;
 import android.widget.TextView;
@@ -9,6 +9,8 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.utils.MPPointF;
 import com.github.mikephil.charting.utils.Utils;
+
+import c.giles.budgetappv11.R;
 
 public class CustomMarkerView extends MarkerView {
     private TextView tvContent;

@@ -71,6 +71,7 @@ public class HistoryItem {
 
         } else {
             //nameView.setTextColor(context.getColor(android.R.color.holo_blue_dark));
+            //TODO: add a dropdown button to display paycheck sublist
 
             if (amount > 0) {
                 moneyView.setText(moneyFormat.format(Math.abs(amount)));
