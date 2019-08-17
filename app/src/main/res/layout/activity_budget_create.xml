@@ -24,154 +24,179 @@
         android:layout_width="match_parent"
         android:layout_height="20dp" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/textView8"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/budget_name_label"
-            android:textSize="16sp" />
-
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
-
-        <EditText
-            android:id="@+id/budget_name_entry"
-            android:layout_width="200dp"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="@string/enter_a_name"
-            android:inputType="textPersonName"
-            android:text="@string/new_budget" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/textView10"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/starting_budget"
-            android:textSize="16sp" />
-
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
-
-        <TextView
-            android:id="@+id/textView14"
-            android:layout_width="10dp"
-            android:layout_height="wrap_content"
-            android:text="@string/dollar_sign"
-            android:textAlignment="textEnd"
-            android:textColor="@android:color/black"
-            android:textSize="18sp" />
-
-        <EditText
-            android:id="@+id/initial_budget_entry"
-            android:layout_width="190dp"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="@string/initial_money_hint"
-            android:inputType="textPersonName"
-            android:text="@string/_0_00" />
-    </LinearLayout>
-
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="50dp" />
-
-    <Switch
-        android:id="@+id/partition_switch"
-        android:layout_width="250dp"
-        android:layout_height="wrap_content"
-        android:onClick="flipSwitch"
-        android:text="@string/partition_into_paycheck"
-        android:textAlignment="viewStart"
-        android:textSize="18sp" />
-
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="15dp" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/textView11"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/amount_of_paycheck"
-            android:textSize="16sp" />
-
-        <Space
-            android:layout_width="20dp"
-            android:layout_height="wrap_content" />
-
-        <TextView
-            android:id="@+id/dollar_sign_small"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/dollar_sign"
-            android:textColor="@android:color/black"
-            android:textSize="16sp"
-            android:visibility="invisible" />
-
-        <EditText
-            android:id="@+id/partition_value_entry"
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="@string/value"
-            android:inputType="numberDecimal"
-            android:text="@string/_0_00"
-            android:textAlignment="center"
-            android:textColor="@android:color/black"
-            android:textSize="16sp" />
-
-        <TextView
-            android:id="@+id/percent_sign_small"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/percent_sign_small"
-            android:textColor="@android:color/black"
-            android:textSize="16sp"
-            android:visibility="visible" />
-
-    </LinearLayout>
-
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="15dp" />
-
-    <ToggleButton
-        android:id="@+id/partition_basis_toggle_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:checked="false"
-        android:onClick="toggleBasis"
-        android:text="@string/toggle_partition_basis"
-        android:textOff="@string/switch_to_amount_based"
-        android:textOn="@string/switch_to_percent_based" />
-
-    <Space
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:id="@+id/scroll_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/textView8"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/budget_name_label"
+                    android:textSize="16sp" />
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <EditText
+                    android:id="@+id/budget_name_entry"
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="@string/enter_a_name"
+                    android:inputType="textPersonName"
+                    android:text="@string/new_budget" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/textView10"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/starting_budget"
+                    android:textSize="16sp" />
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <TextView
+                    android:id="@+id/textView14"
+                    android:layout_width="10dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/dollar_sign"
+                    android:textAlignment="textEnd"
+                    android:textColor="@android:color/black"
+                    android:textSize="18sp" />
+
+                <EditText
+                    android:id="@+id/initial_budget_entry"
+                    android:layout_width="190dp"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="@string/initial_money_hint"
+                    android:inputType="textPersonName"
+                    android:text="@string/_0_00" />
+            </LinearLayout>
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="50dp" />
+
+            <Switch
+                android:id="@+id/partition_switch"
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:onClick="flipSwitch"
+                android:text="@string/partition_into_paycheck"
+                android:textAlignment="viewStart"
+                android:textSize="18sp" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="15dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/textView11"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/amount_of_paycheck"
+                    android:textSize="16sp" />
+
+                <Space
+                    android:layout_width="20dp"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/dollar_sign_small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/dollar_sign"
+                    android:textColor="@android:color/black"
+                    android:textSize="16sp"
+                    android:visibility="invisible" />
+
+                <EditText
+                    android:id="@+id/partition_value_entry"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="@string/value"
+                    android:inputType="numberDecimal"
+                    android:text="@string/_0_00"
+                    android:textAlignment="center"
+                    android:textColor="@android:color/black"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/percent_sign_small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/percent_sign_small"
+                    android:textColor="@android:color/black"
+                    android:textSize="16sp"
+                    android:visibility="visible" />
+
+            </LinearLayout>
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="15dp" />
+
+            <ToggleButton
+                android:id="@+id/partition_basis_toggle_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="false"
+                android:onClick="toggleBasis"
+                android:text="@string/toggle_partition_basis"
+                android:textOff="@string/switch_to_amount_based"
+                android:textOn="@string/switch_to_percent_based" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="50dp" />
+
+            <Button
+                android:id="@+id/color_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="openColorDialog"
+                android:text="@string/pick_a_color" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+        </LinearLayout>
+    </ScrollView>
 
     <LinearLayout
         android:layout_width="match_parent"

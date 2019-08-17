@@ -1,13 +1,29 @@
 package c.giles.budgetappv11;
 
+import android.app.ActionBar;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.animation.AnimationUtils;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
+import android.widget.Space;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import c.giles.budgetappv11.views.ColorDialog;
+import c.giles.budgetappv11.views.DepositDialog;
 
 public class BudgetCreateActivity extends AppCompatActivity {
 
@@ -23,7 +39,8 @@ public class BudgetCreateActivity extends AppCompatActivity {
     ToggleButton partitionTypeButton;
     TextView dollarSignSmall;
     TextView percentSignSmall;
-
+    LinearLayout colorLayout;
+    Button colorButton;
 
 
     @Override
@@ -39,8 +56,10 @@ public class BudgetCreateActivity extends AppCompatActivity {
         partitionTypeButton = (ToggleButton)findViewById(R.id.partition_basis_toggle_button);
         dollarSignSmall = (TextView)findViewById(R.id.dollar_sign_small);
         percentSignSmall = (TextView)findViewById(R.id.percent_sign_small);
+        colorButton = (Button)findViewById(R.id.color_button);
 
         partitionValueView.setEnabled(partitionSwitch.isChecked());
+
     }
 
     public void startMainActivity(View view){
@@ -56,6 +75,11 @@ public class BudgetCreateActivity extends AppCompatActivity {
             dollarSignSmall.setVisibility(View.INVISIBLE);
             percentSignSmall.setVisibility(View.VISIBLE);
         }
+    }
+
+    public void openColorDialog(View view){
+        ColorDialog dialog = new ColorDialog();
+        dialog.show(getSupportFragmentManager(), "Color Dialog");
     }
 
     public void flipSwitch(View view){

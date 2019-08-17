@@ -37,6 +37,7 @@ public class HistoryActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
+        setTitle("History");
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.history_toolbar);
         setSupportActionBar(toolbar);

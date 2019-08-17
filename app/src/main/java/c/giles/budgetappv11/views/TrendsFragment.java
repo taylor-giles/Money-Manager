@@ -203,7 +203,6 @@ public class TrendsFragment extends Fragment {
 
 
 
-
     private class CurrencyValueFormatter extends ValueFormatter{
         private NumberFormat currencyFormat = NumberFormat.getCurrencyInstance();
 
@@ -216,7 +215,6 @@ public class TrendsFragment extends Fragment {
             return currencyFormat.format(value);
         }
     }
-
 
 
     private class XAxisValueFormatter extends ValueFormatter {

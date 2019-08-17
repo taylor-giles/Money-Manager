@@ -341,6 +341,7 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         BudgetManager.setTotalFunds(totalFunds.getAmount());
     }
 
+    //Adds a new budget to the list by adding its views, etc.
     public void addBudget(Budget newBudget, int index) {
         final int i = index;
 
@@ -783,17 +784,34 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         HistoryData paycheckData = new HistoryData(Double.parseDouble(amount), (GregorianCalendar) Calendar.getInstance());
         historyDataList.add(paycheckData);
         totalHistoryDataList.add(new HistoryData(totalFunds, totalFunds.getAmount() + Double.parseDouble(amount), (GregorianCalendar)Calendar.getInstance()));
+
+        //Process percent-based budgets
         for(Budget budget : budgets){
             if(budget.isPartitioned()){
                 if(!budget.isAmountBased()){
-                    budget.deposit((budget.getPartitionValue() / 100) * Double.parseDouble(amount));
-                    historyDataList.add(new HistoryData(budget, (budget.getPartitionValue() / 100) * Double.parseDouble(amount), (GregorianCalendar) Calendar.getInstance(), paycheckData));
-                    remainingAmount = remainingAmount - (budget.getPartitionValue() / 100) * Double.parseDouble(amount);
-                } else {
-                    budget.deposit(budget.getPartitionValue());
-                    historyDataList.add(new HistoryData(budget, budget.getPartitionValue(), (GregorianCalendar) Calendar.getInstance(), paycheckData));
-                    //TODO MAKE SURE THE AMOUNT-BASED PARTITIONS DON'T EXCEED PAYCHECK AMOUNT
-                    remainingAmount = remainingAmount - budget.getPartitionValue();
+                    budget.deposit((budget.getPartitionValue() / 100) * remainingAmount);
+                    historyDataList.add(new HistoryData(budget, (budget.getPartitionValue() / 100) * remainingAmount, (GregorianCalendar) Calendar.getInstance(), paycheckData));
+                    remainingAmount = remainingAmount - (budget.getPartitionValue() / 100) * remainingAmount;
+                }
+            }
+        }
+
+        //Process amount-based budgets
+        for(Budget budget : budgets){
+            if(budget.isPartitioned()){
+                if(budget.isAmountBased()){
+                    //If the user is trying to partition more money into this budget than they are putting in,
+                    //put in the total amount of the paycheck and NO MORE
+                    if(budget.getPartitionValue() > remainingAmount){
+                        budget.deposit(remainingAmount);
+                        historyDataList.add(new HistoryData(budget, remainingAmount, (GregorianCalendar) Calendar.getInstance(), paycheckData));
+                        Toast.makeText(this, "Insufficient funds. Only " + moneyFormat.format(remainingAmount) + " was put into \"" + budget.getBudgetName() + "\"", Toast.LENGTH_LONG).show();
+                        remainingAmount = 0.00;
+                    } else {
+                        budget.deposit(budget.getPartitionValue());
+                        historyDataList.add(new HistoryData(budget, budget.getPartitionValue(), (GregorianCalendar) Calendar.getInstance(), paycheckData));
+                        remainingAmount -= budget.getPartitionValue();
+                    }
                 }
             }
         }

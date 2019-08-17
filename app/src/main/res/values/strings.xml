@@ -72,5 +72,6 @@
     <string name="history">History</string>
     <string name="clear_history">Clear History</string>
     <string name="trends">Trends</string>
+    <string name="pick_a_color">Pick a Color</string>
 
 </resources>
