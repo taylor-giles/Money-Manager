@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -31,12 +32,13 @@ import java.util.List;
 import java.util.Calendar;
 import java.util.Locale;
 
+import c.giles.budgetappv11.views.ColorDialog;
 import c.giles.budgetappv11.views.DepositDialog;
 import c.giles.budgetappv11.views.EditDialog;
 import c.giles.budgetappv11.views.PaycheckDialog;
 import c.giles.budgetappv11.views.WithdrawDialog;
 
-public class MainActivity extends AppCompatActivity implements DepositDialog.DepositDialogListener, WithdrawDialog.WithdrawDialogListener, EditDialog.EditDialogListener, PaycheckDialog.PaycheckDialogListener {
+public class MainActivity extends AppCompatActivity implements DepositDialog.DepositDialogListener, WithdrawDialog.WithdrawDialogListener, EditDialog.EditDialogListener, PaycheckDialog.PaycheckDialogListener, ColorDialog.ColorDialogListener {
 
     List<Budget> budgets = new ArrayList<>();
     List<LinearLayout> budgetLayouts = new ArrayList<>();
@@ -249,16 +251,17 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
             for(LinearLayout layout : budgetLayouts){
                 layout.findViewWithTag(3).setVisibility(View.VISIBLE);
                 layout.findViewWithTag(4).setVisibility(View.VISIBLE);
+                //layout.findViewWithTag(5).setVisibility(View.VISIBLE);
                 layout.findViewWithTag(6).setVisibility(View.GONE);
                 layout.findViewWithTag(7).setVisibility(View.GONE);
                 layout.findViewWithTag(8).setVisibility(View.VISIBLE);
                 layout.findViewWithTag(9).setVisibility(View.VISIBLE);
-
             }
         } else {
             for(LinearLayout layout : budgetLayouts){
                 layout.findViewWithTag(3).setVisibility(View.GONE);
                 layout.findViewWithTag(4).setVisibility(View.GONE);
+                //layout.findViewWithTag(5).setVisibility(View.VISIBLE);
                 layout.findViewWithTag(6).setVisibility(View.VISIBLE);
                 layout.findViewWithTag(7).setVisibility(View.VISIBLE);
                 layout.findViewWithTag(8).setVisibility(View.GONE);
@@ -271,8 +274,11 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
             TextView nameDisplay = budgetLayouts.get(i).findViewWithTag(0);
             TextView amountDisplay = budgetLayouts.get(i).findViewWithTag(1);
             TextView partitionDisplay = budgetLayouts.get(i).findViewWithTag(2);
+            View colorDisplay = budgetLayouts.get(i).findViewWithTag(5);
+
             nameDisplay.setText(budgets.get(i).getBudgetName());
             amountDisplay.setText(moneyFormat.format(budgets.get(i).getAmount()));
+            colorDisplay.setBackgroundColor(budgets.get(i).getColor());
             if (budgets.get(i).isPartitioned()) {
                 String temp = "";
                 if (budgets.get(i).isAmountBased()) {
@@ -367,7 +373,7 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         ImageButton deleteButton = new ImageButton(this);
         deleteButton.setTag(4);
 
-        View colorView = new View(this); //TODO: Add color options to create & edit menus
+        View colorView = new View(this);
         colorView.setTag(5);
 
         Button depositButton = new Button(this);
@@ -380,15 +386,15 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         Button downButton = new Button(this);
         downButton.setTag(9);
 
-        //The name view and the innerInner layout go inside this layout
+        //The name view and the bottomLayout go inside this layout
         LinearLayout innerLayout = new LinearLayout(this);
         innerLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
         innerLayout.setOrientation(LinearLayout.VERTICAL);
 
         //The money and partition views go inside this layout
-        LinearLayout innerInnerLayout = new LinearLayout(this);
-        innerInnerLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-        innerInnerLayout.setOrientation(LinearLayout.HORIZONTAL);
+        LinearLayout bottomLayout = new LinearLayout(this);
+        bottomLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+        bottomLayout.setOrientation(LinearLayout.HORIZONTAL);
 
         //The deposit and withdraw buttons go inside this layout
         LinearLayout moneyButtonLayout = new LinearLayout(this);
@@ -500,15 +506,15 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
 
         nameView.setText(newBudget.getBudgetName());
         nameView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        nameView.setTextColor(getResources().getColor(android.R.color.black));
+        nameView.setTextColor(ContextCompat.getColor(this, android.R.color.black));
         nameView.setTextSize(18f);
         nameView.setTypeface(null, Typeface.BOLD);
 
         moneyView.setText(moneyFormat.format(newBudget.getAmount()));
         if(newBudget.getAmount() > 0) {
-            moneyView.setTextColor(getResources().getColor(android.R.color.black));
+            moneyView.setTextColor(ContextCompat.getColor(this, android.R.color.black));
         } else {
-            moneyView.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
+            moneyView.setTextColor(ContextCompat.getColor(this, android.R.color.holo_red_dark));
         }
         moneyView.setTextSize(18f);
 
@@ -528,7 +534,8 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         }
 
         //The color view displays the chosen color for this budget as a strip on the left side of the budget layout
-        colorView.setLayoutParams(new LinearLayout.LayoutParams(10, LinearLayout.LayoutParams.MATCH_PARENT));
+        colorView.setLayoutParams(new LinearLayout.LayoutParams(20, LinearLayout.LayoutParams.MATCH_PARENT));
+        colorView.setBackgroundColor(newBudget.getColor());
 
         //This cushion will go after the colorView
         Space cushion = new Space(this);
@@ -554,13 +561,13 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         space.setLayoutParams(new LinearLayout.LayoutParams(0, 0, 1));
 
         //Add all the views to their appropriate layouts
-        innerInnerLayout.addView(moneyView);
+        bottomLayout.addView(moneyView);
         if (newBudget.isPartitioned()) {
-            innerInnerLayout.addView(fillerText);
-            innerInnerLayout.addView(partitionView);
+            bottomLayout.addView(fillerText);
+            bottomLayout.addView(partitionView);
         }
         innerLayout.addView(nameView);
-        innerLayout.addView(innerInnerLayout);
+        innerLayout.addView(bottomLayout);
 
         moneyButtonLayout.addView(depositButton);
         moneyButtonLayout.addView(withdrawButton);
@@ -572,9 +579,10 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         buttonLayout.addView(moneyButtonLayout);
         buttonLayout.addView(reorderButtonLayout);
 
+        budgetLayout.addView(colorView);
+
         //budgetLayout.addView(topCushion);
         if (!editModeOn) {
-            budgetLayout.addView(colorView);
             budgetLayout.addView(cushion);
         }
         budgetLayout.addView(editButton);
@@ -591,7 +599,7 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         if (i != budgets.size() - 1) {
             View divider = new View(this);
             divider.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 1));
-            divider.setBackgroundColor(getResources().getColor(android.R.color.darker_gray));
+            divider.setBackgroundColor(ContextCompat.getColor(this, android.R.color.darker_gray));
             budgetsWindow.addView(divider);
         }
 
@@ -604,12 +612,12 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
 
 
     private void initDefaultBudgets(){
-        defaultBudget = new Budget(BudgetManager.getDefaultBudgetName(), 0, false, false, 0);
+        defaultBudget = new Budget(BudgetManager.getDefaultBudgetName(), 0, false, false, 0, null);
         defaultBudgetView = (TextView) findViewById(R.id.default_budget_money);
         defaultBudgetNameView = (TextView) findViewById(R.id.default_budget_name_view);
         defaultBudgetNameView.setText(BudgetManager.getDefaultBudgetName());
 
-        totalFunds = new Budget(getString(R.string.total_funds), 0, false, false, 0);
+        totalFunds = new Budget(getString(R.string.total_funds), 0, false, false, 0, null);
         totalFundsView = (TextView) findViewById(R.id.total_funds_money);
 
         //Initialize behavior for default budget
@@ -633,9 +641,9 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         });
 
         if(defaultBudget.getAmount() > 0) {
-            defaultBudgetView.setTextColor(getResources().getColor(android.R.color.black));
+            defaultBudgetView.setTextColor(ContextCompat.getColor(this, android.R.color.black));
         } else {
-            defaultBudgetView.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
+            defaultBudgetView.setTextColor(ContextCompat.getColor(this, android.R.color.holo_red_dark));
         }
     }
 
@@ -767,13 +775,14 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
     }
 
     @Override
-    public void applyEdits(String newName, String partitionValue, boolean isPartitioned, boolean isAmountBased){
+    public void applyEdits(String newName, String partitionValue, boolean isPartitioned, boolean isAmountBased, Integer newColor){
         budgets.get(placeholder).setName(newName);
         budgets.get(placeholder).setPartitioned(isPartitioned);
         if(isPartitioned) {
             budgets.get(placeholder).setPartitionValue(Double.parseDouble(partitionValue));
             budgets.get(placeholder).setAmountBased(isAmountBased);
         }
+        budgets.get(placeholder).setColor(newColor);
         BudgetManager.setModified(true);
         refresh();
     }
@@ -824,6 +833,11 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
     public void addHistoryData(Budget budget, Double amount){
         historyDataList.add(new HistoryData(budget, amount, (GregorianCalendar) Calendar.getInstance()));
         totalHistoryDataList.add(new HistoryData(totalFunds, totalFunds.getAmount() + amount, (GregorianCalendar)Calendar.getInstance()));
+    }
+
+    @Override
+    public void applyColor(Integer color) {
+
     }
 }
 

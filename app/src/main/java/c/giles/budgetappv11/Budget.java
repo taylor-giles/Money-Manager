@@ -1,5 +1,8 @@
 package c.giles.budgetappv11;
 
+import android.app.Activity;
+import android.app.Application;
+import android.support.v4.content.ContextCompat;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -16,6 +19,7 @@ public class Budget {
     boolean partition = false;
     boolean amountBased = true;
     double partitionValue = 0;
+    Integer color = 0;
 
 //    TextView nameDisplay;
 //    TextView amountDisplay;
@@ -28,12 +32,13 @@ public class Budget {
 
     public Budget(){}
 
-    public Budget(String budgetName, double initalBudget, boolean partition, boolean amountBased, double partitionValue){
+    public Budget(String budgetName, double initalBudget, boolean partition, boolean amountBased, double partitionValue, Integer color){
         this.budgetName = budgetName;
         this.amountBased = amountBased;
         this.money = initalBudget;
         this.partition = partition;
         this.partitionValue = partitionValue;
+        this.color = color;
     }
 
 //    public Budget(TextView nameDisplay, TextView moneyDisplay, TextView partitionDisplay, ImageButton renameButton, ImageButton deleteButton, Button depositButton, Button withdrawButton){
@@ -53,20 +58,23 @@ public class Budget {
         partition = Boolean.parseBoolean(list.get(2));
         amountBased = Boolean.parseBoolean(list.get(3));
         partitionValue = Double.parseDouble(list.get(4));
+        color = Integer.parseInt(list.get(5));
     }
 
     public Set<String> asStringSet(){
-        Double moneyTemp = money;
-        Boolean partitionTemp = partition;
-        Boolean amtBasedTemp = amountBased;
-        Double partitionValTemp = partitionValue;
+        double moneyTemp = money;
+        boolean partitionTemp = partition;
+        boolean amtBasedTemp = amountBased;
+        double partitionValTemp = partitionValue;
+        Integer colorTemp = color;
 
         List<String> list = new ArrayList<>();
         list.add(0, budgetName);
-        list.add(1, moneyTemp.toString());
-        list.add(2,partitionTemp.toString());
-        list.add(3,amtBasedTemp.toString());
-        list.add(4,partitionValTemp.toString());
+        list.add(1, Double.toString(moneyTemp));
+        list.add(2, Boolean.toString(partitionTemp));
+        list.add(3, Boolean.toString(amtBasedTemp));
+        list.add(4, Double.toString(partitionValTemp));
+        list.add(5, colorTemp.toString());
 
         Set<String> stringSet = new HashSet<>(list);
 
@@ -91,6 +99,13 @@ public class Budget {
 
     public String getBudgetName(){
         return budgetName;
+    }
+
+    public Integer getColor(){
+        return color;
+    }
+    public void setColor(Integer newColor){
+        color = newColor;
     }
 
     public Double getAmount(){

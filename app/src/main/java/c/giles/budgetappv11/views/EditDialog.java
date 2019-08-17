@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatDialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -21,18 +22,22 @@ import c.giles.budgetappv11.BudgetManager;
 import c.giles.budgetappv11.Budget;
 import c.giles.budgetappv11.R;
 
-public class EditDialog extends AppCompatDialogFragment {
+public class EditDialog extends AppCompatDialogFragment implements ColorDialog.ColorDialogListener {
     private EditText nameEntry;
     private Switch partitionSwitch;
     private EditText partitionValueEntry;
     private ToggleButton partitionToggle;
     private TextView dollarSign;
     private TextView percentSign;
+    private View colorPreview;
+    private Button colorButton;
 
     private EditDialogListener listener;
     private List<Budget> budgets = new ArrayList<>(BudgetManager.getBudgetList());
 
     NumberFormat format = NumberFormat.getNumberInstance();
+
+    Integer colorSelection = budgets.get(BudgetManager.getPlaceholder()).getColor();
 
 
     @Override
@@ -51,6 +56,7 @@ public class EditDialog extends AppCompatDialogFragment {
         partitionToggle = view.findViewById(R.id.editPartitionToggleButton);
         dollarSign = view.findViewById(R.id.editDollarSignSmall);
         percentSign = view.findViewById(R.id.editPercentSignSmall);
+        colorButton = view.findViewById(R.id.edit_color_button);
 
         nameEntry.setText(budgets.get(BudgetManager.getPlaceholder()).getBudgetName());
         partitionSwitch.setChecked(budgets.get(BudgetManager.getPlaceholder()).isPartitioned());
@@ -60,6 +66,13 @@ public class EditDialog extends AppCompatDialogFragment {
             @Override
             public void onClick(View v) {
                 partitionValueEntry.setEnabled(partitionSwitch.isChecked());
+            }
+        });
+
+        colorButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openColorDialog(v);
             }
         });
 
@@ -96,17 +109,23 @@ public class EditDialog extends AppCompatDialogFragment {
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        //Leave empty: nothing happens except dialog close
+                        //Nothing happens except dialog close
                     }
                 })
                 .setPositiveButton("Done", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        listener.applyEdits(nameEntry.getText().toString(), partitionValueEntry.getText().toString(), partitionSwitch.isChecked(), partitionToggle.isChecked());
+                        listener.applyEdits(nameEntry.getText().toString(), partitionValueEntry.getText().toString(), partitionSwitch.isChecked(), partitionToggle.isChecked(), colorSelection);
                     }
                 })
         ;
         return builder.create();
+    }
+
+    public void openColorDialog(View view){
+        ColorDialog dialog = new ColorDialog();
+        dialog.setSelectedColor(budgets.get(BudgetManager.getPlaceholder()).getColor());
+        dialog.show(getActivity().getSupportFragmentManager(), "Color Dialog");
     }
 
     @Override
@@ -119,7 +138,12 @@ public class EditDialog extends AppCompatDialogFragment {
         }
     }
 
+    @Override
+    public void applyColor(Integer color) {
+        colorSelection = color;
+    }
+
     public interface EditDialogListener{
-        void applyEdits(String newName, String partitionValue, boolean isPartitioned, boolean isAmountBased);
+        void applyEdits(String newName, String partitionValue, boolean isPartitioned, boolean isAmountBased, Integer newColor);
     }
 }

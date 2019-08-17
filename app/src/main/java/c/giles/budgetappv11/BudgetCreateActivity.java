@@ -1,29 +1,17 @@
 package c.giles.budgetappv11;
 
-import android.app.ActionBar;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.GradientDrawable;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.view.animation.AnimationUtils;
 import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
-import android.widget.Space;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import c.giles.budgetappv11.views.ColorDialog;
-import c.giles.budgetappv11.views.DepositDialog;
 
 public class BudgetCreateActivity extends AppCompatActivity implements ColorDialog.ColorDialogListener {
 
@@ -32,7 +20,7 @@ public class BudgetCreateActivity extends AppCompatActivity implements ColorDial
     boolean partition = false;
     boolean amountBased = true;
     double partitionValue = 0.0;
-    String colorName = "";
+    Integer color;
     TextView nameView;
     TextView initialBudgetView;
     Switch partitionSwitch;
@@ -40,8 +28,8 @@ public class BudgetCreateActivity extends AppCompatActivity implements ColorDial
     ToggleButton partitionTypeButton;
     TextView dollarSignSmall;
     TextView percentSignSmall;
-    LinearLayout colorLayout;
     Button colorButton;
+    View colorPreview;
 
 
     @Override
@@ -49,6 +37,7 @@ public class BudgetCreateActivity extends AppCompatActivity implements ColorDial
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_budget_create);
 
+        color = ContextCompat.getColor(this, R.color.myDefault);
 
         nameView = (TextView) findViewById(R.id.budget_name_entry);
         initialBudgetView = (TextView) findViewById(R.id.initial_budget_entry);
@@ -58,9 +47,10 @@ public class BudgetCreateActivity extends AppCompatActivity implements ColorDial
         dollarSignSmall = (TextView)findViewById(R.id.dollar_sign_small);
         percentSignSmall = (TextView)findViewById(R.id.percent_sign_small);
         colorButton = (Button)findViewById(R.id.color_button);
+        colorPreview = (View)findViewById(R.id.color_preview);
 
         partitionValueView.setEnabled(partitionSwitch.isChecked());
-
+        colorPreview.setBackgroundColor(color);
     }
 
     public void startMainActivity(View view){
@@ -80,6 +70,7 @@ public class BudgetCreateActivity extends AppCompatActivity implements ColorDial
 
     public void openColorDialog(View view){
         ColorDialog dialog = new ColorDialog();
+        dialog.setSelectedColor(color);
         dialog.show(getSupportFragmentManager(), "Color Dialog");
     }
 
@@ -87,7 +78,7 @@ public class BudgetCreateActivity extends AppCompatActivity implements ColorDial
         partitionValueView.setEnabled(partitionSwitch.isChecked());
     }
 
-    public void create(View view) {
+    public void createBudget(View view) {
         budgetName = nameView.getText().toString();
         initialBudget = Double.parseDouble(initialBudgetView.getText().toString());
         partition = partitionSwitch.isChecked();
@@ -97,7 +88,7 @@ public class BudgetCreateActivity extends AppCompatActivity implements ColorDial
         if(partition && !amountBased && BudgetManager.getTotalPercentPartitioned() + partitionValue > 100){
             Toast.makeText(getBaseContext(), "Please keep total partition percentage below 100%", Toast.LENGTH_LONG).show();
         } else {
-            Budget newBudget = new Budget(budgetName, initialBudget, partition, amountBased, partitionValue);
+            Budget newBudget = new Budget(budgetName, initialBudget, partition, amountBased, partitionValue, color);
             BudgetManager.addBudget(newBudget);
             BudgetManager.setModified(true);
             setResult(RESULT_OK);
@@ -110,7 +101,8 @@ public class BudgetCreateActivity extends AppCompatActivity implements ColorDial
     }
 
     @Override
-    public void applyColor(String color) {
-
+    public void applyColor(Integer color) {
+        this.color = color;
+        colorPreview.setBackgroundColor(color);
     }
 }

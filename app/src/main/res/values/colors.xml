@@ -6,6 +6,7 @@
     <color name="light_gray">#e8e8e8</color>
 
 
+    <color name="myDefault">#999999</color>
     <color name="myRed">#d62117</color>
     <color name="myRedOrange">#e24c22</color>
     <color name="myOrange">#d67900</color>

@@ -23,7 +23,7 @@ public class HistoryData {
     }
 
     public HistoryData(Double paycheckAmount, GregorianCalendar time){
-        this.budget = new Budget("Paycheck Logged", paycheckAmount,false,false,0);
+        this.budget = new Budget("Paycheck Logged", paycheckAmount,false,false,0,null);
         this.amount = paycheckAmount;
         this.time = time;
         paycheck = true;

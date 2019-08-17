@@ -182,7 +182,38 @@
 
             <Space
                 android:layout_width="match_parent"
-                android:layout_height="50dp" />
+                android:layout_height="35dp" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/edit_color_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/color_preview_label"
+                    android:textColor="@android:color/secondary_text_light" />
+                <Space
+                    android:layout_width="20dp"
+                    android:layout_height="wrap_content" />
+
+
+                <View
+                    android:id="@+id/color_preview"
+                    android:layout_width="50dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@color/myDefault" />
+
+
+            </LinearLayout>
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="5dp" />
 
             <Button
                 android:id="@+id/color_button"
@@ -223,7 +254,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:onClick="create"
+            android:onClick="createBudget"
             android:text="@string/create" />
     </LinearLayout>
 </LinearLayout>
