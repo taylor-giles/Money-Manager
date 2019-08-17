@@ -67,6 +67,7 @@ public class ColorDialog extends AppCompatDialogFragment {
 
         selectedList.set(0, true);
 
+
         for(int i = 0; i < colorButtons.size(); i++) {
             if(i % 2 == 0){
                 LinearLayout subLayout = new LinearLayout(getActivity());
@@ -137,6 +138,7 @@ public class ColorDialog extends AppCompatDialogFragment {
                 .setPositiveButton("Done", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
+
 
                     }
                 });

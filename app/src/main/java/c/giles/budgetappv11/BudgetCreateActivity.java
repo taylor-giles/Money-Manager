@@ -25,13 +25,14 @@ import java.util.List;
 import c.giles.budgetappv11.views.ColorDialog;
 import c.giles.budgetappv11.views.DepositDialog;
 
-public class BudgetCreateActivity extends AppCompatActivity {
+public class BudgetCreateActivity extends AppCompatActivity implements ColorDialog.ColorDialogListener {
 
     String budgetName = "New Budget";
     double initialBudget = 0.0;
     boolean partition = false;
     boolean amountBased = true;
     double partitionValue = 0.0;
+    String colorName = "";
     TextView nameView;
     TextView initialBudgetView;
     Switch partitionSwitch;
@@ -106,5 +107,10 @@ public class BudgetCreateActivity extends AppCompatActivity {
 
     public void cancel(View view) {
         startMainActivity(view);
+    }
+
+    @Override
+    public void applyColor(String color) {
+
     }
 }
