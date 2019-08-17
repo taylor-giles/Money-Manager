@@ -197,7 +197,7 @@
                     android:text="@string/color_preview_label"
                     android:textColor="@android:color/secondary_text_light" />
                 <Space
-                    android:layout_width="20dp"
+                    android:layout_width="15dp"
                     android:layout_height="wrap_content" />
 
 

@@ -34,11 +34,11 @@ import java.util.Locale;
 
 import c.giles.budgetappv11.views.ColorDialog;
 import c.giles.budgetappv11.views.DepositDialog;
-import c.giles.budgetappv11.views.EditDialog;
+import c.giles.budgetappv11.views.EditActivity;
 import c.giles.budgetappv11.views.PaycheckDialog;
 import c.giles.budgetappv11.views.WithdrawDialog;
 
-public class MainActivity extends AppCompatActivity implements DepositDialog.DepositDialogListener, WithdrawDialog.WithdrawDialogListener, EditDialog.EditDialogListener, PaycheckDialog.PaycheckDialogListener, ColorDialog.ColorDialogListener {
+public class MainActivity extends AppCompatActivity implements DepositDialog.DepositDialogListener, WithdrawDialog.WithdrawDialogListener, PaycheckDialog.PaycheckDialogListener, ColorDialog.ColorDialogListener {
 
     List<Budget> budgets = new ArrayList<>();
     List<LinearLayout> budgetLayouts = new ArrayList<>();
@@ -50,6 +50,9 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
     boolean editModeOn = false;
 
     final int DEFAULT_BUDGET_PLACEHOLDER = -1;
+
+    final int EDIT_REQUEST_CODE = 3;
+    final int CREATE_REQUEST_CODE = 1;
 
     Budget defaultBudget;
     TextView defaultBudgetView;
@@ -136,7 +139,7 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         Gson gson = new Gson();
 
         //Save budgets
-        List<Budget> temp = new ArrayList(budgets);
+        List<Budget> temp = new ArrayList<>(budgets);
         temp.add(0, defaultBudget);
 
         String jsonTemp = gson.toJson(temp);
@@ -610,7 +613,6 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         downButton.setVisibility(View.GONE);
     }
 
-
     private void initDefaultBudgets(){
         defaultBudget = new Budget(BudgetManager.getDefaultBudgetName(), 0, false, false, 0, null);
         defaultBudgetView = (TextView) findViewById(R.id.default_budget_money);
@@ -647,7 +649,6 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         }
     }
 
-
     public void openDepositDialog(){
         DepositDialog dialog = new DepositDialog();
         dialog.show(getSupportFragmentManager(), "Deposit Dialog");
@@ -659,8 +660,10 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
     }
 
     public void openEditDialog(){
-        EditDialog dialog = new EditDialog();
-        dialog.show(getSupportFragmentManager(), "Edit Dialog");
+        Intent edit = new Intent(this, EditActivity.class);
+        startActivityForResult(edit, EDIT_REQUEST_CODE);
+//        EditActivity dialog = new EditActivity();
+//        dialog.show(getSupportFragmentManager(), "Edit Dialog");
     }
 
     public void openPaycheckDialog(){
@@ -671,7 +674,7 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
 
     public void makeBudget(View view){
         Intent makeNewBudget = new Intent(this, BudgetCreateActivity.class);
-        startActivityForResult(makeNewBudget, 1);
+        startActivityForResult(makeNewBudget, CREATE_REQUEST_CODE);
     }
 
     public void openSettings(View view){
@@ -774,18 +777,18 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         refresh();
     }
 
-    @Override
-    public void applyEdits(String newName, String partitionValue, boolean isPartitioned, boolean isAmountBased, Integer newColor){
-        budgets.get(placeholder).setName(newName);
-        budgets.get(placeholder).setPartitioned(isPartitioned);
-        if(isPartitioned) {
-            budgets.get(placeholder).setPartitionValue(Double.parseDouble(partitionValue));
-            budgets.get(placeholder).setAmountBased(isAmountBased);
-        }
-        budgets.get(placeholder).setColor(newColor);
-        BudgetManager.setModified(true);
-        refresh();
-    }
+//    @Override
+//    public void applyEdits(String newName, String partitionValue, boolean isPartitioned, boolean isAmountBased, Integer newColor){
+//        budgets.get(placeholder).setName(newName);
+//        budgets.get(placeholder).setPartitioned(isPartitioned);
+//        if(isPartitioned) {
+//            budgets.get(placeholder).setPartitionValue(Double.parseDouble(partitionValue));
+//            budgets.get(placeholder).setAmountBased(isAmountBased);
+//        }
+//        budgets.get(placeholder).setColor(newColor);
+//        BudgetManager.setModified(true);
+//        refresh();
+//    }
 
     @Override
     public void logPaycheck(String amount){
@@ -838,6 +841,26 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
     @Override
     public void applyColor(Integer color) {
 
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // check that it is the SecondActivity with an OK result
+        if (requestCode == EDIT_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) { // Activity.RESULT_OK
+
+                budgets.get(placeholder).setName(data.getStringExtra("newName"));
+                budgets.get(placeholder).setPartitioned(Boolean.parseBoolean(data.getStringExtra("isPartitioned")));
+                if(Boolean.parseBoolean(data.getStringExtra("isPartitioned"))){
+                    budgets.get(placeholder).setPartitionValue(Double.parseDouble(data.getStringExtra("partitionValue")));
+                    budgets.get(placeholder).setAmountBased(Boolean.parseBoolean(data.getStringExtra("isAmountBased")));
+                }
+                budgets.get(placeholder).setColor(Integer.parseInt(data.getStringExtra("newColor")));
+                BudgetManager.setModified(true);
+                refresh();
+            }
+        }
     }
 }
 

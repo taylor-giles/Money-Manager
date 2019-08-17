@@ -26,6 +26,8 @@
         <activity android:name=".BudgetCreateActivity" />
         <activity android:name=".DepositActivity" />
         <activity android:name=".SettingsActivity" />
+        <activity android:name=".views.EditActivity"
+            android:theme="@style/Theme.AppCompat.Light.Dialog" />
     </application>
 
 </manifest>

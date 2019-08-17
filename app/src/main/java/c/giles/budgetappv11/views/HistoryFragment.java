@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -74,12 +75,12 @@ public class HistoryFragment extends Fragment {
                 leftLine.setLayoutParams(new LinearLayout.LayoutParams(0,2,1));
                 rightLine.setLayoutParams(new LinearLayout.LayoutParams(0,2,1));
 
-                leftLine.setBackgroundColor(getResources().getColor(android.R.color.darker_gray));
-                rightLine.setBackgroundColor(getResources().getColor(android.R.color.darker_gray));
+                leftLine.setBackgroundColor(ContextCompat.getColor(getActivity(), android.R.color.darker_gray));
+                rightLine.setBackgroundColor(ContextCompat.getColor(getActivity(), android.R.color.darker_gray));
 
                 dateView.setText(DateFormat.getDateInstance(DateFormat.MEDIUM).format(item.getCalendar().getTime()));
                 dateView.setTextSize(14);
-                dateView.setTextColor(getResources().getColor(android.R.color.darker_gray));
+                dateView.setTextColor(ContextCompat.getColor(getActivity(),android.R.color.darker_gray));
 
                 leftSpace.setLayoutParams(new LinearLayout.LayoutParams(50, LinearLayout.LayoutParams.MATCH_PARENT));
                 rightSpace.setLayoutParams(new LinearLayout.LayoutParams(50, LinearLayout.LayoutParams.MATCH_PARENT));
@@ -106,7 +107,7 @@ public class HistoryFragment extends Fragment {
 
             View divider = new View(getActivity());
             divider.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 2));
-            divider.setBackgroundColor(getResources().getColor(android.R.color.darker_gray));
+            divider.setBackgroundColor(ContextCompat.getColor(getActivity(),android.R.color.darker_gray));
 
             Space lastItemOfDaySpace = new Space(getActivity());
             lastItemOfDaySpace.setLayoutParams(new LinearLayout.LayoutParams(1,75));

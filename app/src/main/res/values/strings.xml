@@ -74,5 +74,6 @@
     <string name="trends">Trends</string>
     <string name="pick_a_color">Pick a Color</string>
     <string name="color_preview_label">Color Preview:</string>
+    <string name="done">Done</string>
 
 </resources>

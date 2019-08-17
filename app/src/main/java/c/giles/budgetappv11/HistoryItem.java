@@ -98,7 +98,7 @@ public class HistoryItem {
             //nameView.setTextColor(context.getColor(android.R.color.holo_blue_dark));
             moneyView.setTypeface(Typeface.defaultFromStyle(Typeface.ITALIC));
             nameView.setTypeface(Typeface.defaultFromStyle(Typeface.ITALIC));
-            leftPadding.setLayoutParams(new LinearLayout.LayoutParams(300, LinearLayout.LayoutParams.MATCH_PARENT));
+            leftPadding.setLayoutParams(new LinearLayout.LayoutParams(200, LinearLayout.LayoutParams.MATCH_PARENT));
             timePadding.setLayoutParams(new LinearLayout.LayoutParams(50, LinearLayout.LayoutParams.MATCH_PARENT));
             rightPadding.setLayoutParams(new LinearLayout.LayoutParams(20, LinearLayout.LayoutParams.MATCH_PARENT));
             fillerSpace.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT,1));
