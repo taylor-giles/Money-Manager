@@ -1,5 +1,6 @@
 package c.giles.budgetappv11;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -70,7 +71,7 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        budgetsWindow = (LinearLayout)findViewById(R.id.budgets_window);
+        budgetsWindow = findViewById(R.id.budgets_window);
         BudgetManager.setBudgetDisplayWindow(budgetsWindow);
 
         format.setMaximumFractionDigits(2);
@@ -103,7 +104,7 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
             }
         }
 
-        Button paycheckButton = (Button) findViewById(R.id.paycheck_button);
+        Button paycheckButton = findViewById(R.id.paycheck_button);
         paycheckButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
@@ -111,7 +112,7 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
             }
         });
 
-        Button addButton = (Button) findViewById(R.id.addBudgetButton);
+        Button addButton = findViewById(R.id.addBudgetButton);
         addButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
@@ -246,6 +247,7 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         HistoryManager.setTotalDataList(totalHistoryDataList);
     }
 
+    @SuppressLint("DefaultLocale")
     private void refresh(){
         updateLists();
 
@@ -287,7 +289,7 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
                 if (budgets.get(i).isAmountBased()) {
                     temp += "$";
                 }
-                temp += String.format("%.02f", budgets.get(i).getPartitionValue());
+                temp += String.format("%.02f", budgets .get(i).getPartitionValue());
                 if (!budgets.get(i).isAmountBased()) {
                     temp += "%";
                 }
