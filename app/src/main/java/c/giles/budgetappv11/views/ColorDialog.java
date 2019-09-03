@@ -23,6 +23,7 @@ import android.widget.Space;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import c.giles.budgetappv11.R;
 
@@ -36,13 +37,14 @@ public class ColorDialog extends AppCompatDialogFragment {
     List<LinearLayout> subLayouts = new ArrayList<>();
     LinearLayout colorLayout;
     Integer selectedColor = -1;
+    private final int BUTTONS_IN_COLUMN = 3;
 
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState){
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        LayoutInflater inflater = getActivity().getLayoutInflater();
+        LayoutInflater inflater = Objects.requireNonNull(getActivity()).getLayoutInflater();
 
         View view = inflater.inflate(R.layout.color_dialog, null);
 
@@ -51,9 +53,11 @@ public class ColorDialog extends AppCompatDialogFragment {
 
         //Set up color buttons selection
         colors.add(ContextCompat.getColor(getActivity(), R.color.myDefault));
+        colors.add(ContextCompat.getColor(getActivity(), R.color.myScarlet));
         colors.add(ContextCompat.getColor(getActivity(), R.color.myRed));
         colors.add(ContextCompat.getColor(getActivity(), R.color.myRedOrange));
         colors.add(ContextCompat.getColor(getActivity(), R.color.myOrange));
+        //colors.add(ContextCompat.getColor(getActivity(), R.color.myOrangeYellow));
         colors.add(ContextCompat.getColor(getActivity(), R.color.myYellow));
         colors.add(ContextCompat.getColor(getActivity(), R.color.myYellowGreen));
         colors.add(ContextCompat.getColor(getActivity(), R.color.myGreen));
@@ -62,6 +66,8 @@ public class ColorDialog extends AppCompatDialogFragment {
         colors.add(ContextCompat.getColor(getActivity(), R.color.myDarkBlue));
         colors.add(ContextCompat.getColor(getActivity(), R.color.myViolet));
         colors.add(ContextCompat.getColor(getActivity(), R.color.myPink));
+        colors.add(ContextCompat.getColor(getActivity(), R.color.myLavender));
+        colors.add(ContextCompat.getColor(getActivity(), R.color.myMagenta));
 
 
         //Initialize lists
@@ -86,7 +92,7 @@ public class ColorDialog extends AppCompatDialogFragment {
                 .setTitle("Choose a Color")
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialogInterface, int i) {
-
+                        //Do nothing - close dialog
                     }
                 })
                 .setPositiveButton("Done", new DialogInterface.OnClickListener() {
@@ -137,7 +143,7 @@ public class ColorDialog extends AppCompatDialogFragment {
             currentButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    currentButton.startAnimation(AnimationUtils.loadAnimation(getActivity().getBaseContext(), android.R.anim.fade_in));
+                    currentButton.startAnimation(AnimationUtils.loadAnimation(Objects.requireNonNull(getActivity()).getBaseContext(), android.R.anim.fade_in));
                     for(int k = 0; k < selectedList.size(); k++){
                         selectedList.set(k, false);
                     }
@@ -155,20 +161,18 @@ public class ColorDialog extends AppCompatDialogFragment {
         }
 
         //Add buttons to sublayouts
-        for(int i = 0; i < colorButtons.size(); i = i + 3){
+        for(int i = 0; i < colorButtons.size(); i = i + BUTTONS_IN_COLUMN){
             LinearLayout subLayout = new LinearLayout(getActivity());
             subLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
             subLayout.setOrientation(LinearLayout.VERTICAL);
 
-            Space space = new Space(getActivity());
-            space.setLayoutParams(new LinearLayout.LayoutParams(0, 20));
-            Space space2 = new Space(getActivity());
-            space2.setLayoutParams(new LinearLayout.LayoutParams(0, 20));
-            subLayout.addView(colorButtons.get(i));
-            subLayout.addView(space);
-            subLayout.addView(colorButtons.get(i+1));
-            subLayout.addView(space2);
-            subLayout.addView(colorButtons.get(i+2));
+            for(int j = 0; j < BUTTONS_IN_COLUMN; j++) {
+                Space space = new Space(getActivity());
+                space.setLayoutParams(new LinearLayout.LayoutParams(0, 20));
+                subLayout.addView(colorButtons.get(i + j));
+                subLayout.addView(space);
+            }
+
             subLayouts.add(subLayout);
         }
 
@@ -177,7 +181,9 @@ public class ColorDialog extends AppCompatDialogFragment {
             Space space = new Space(getActivity());
             space.setLayoutParams(new LinearLayout.LayoutParams(20,0));
             colorLayout.addView(subLayouts.get(i));
-            colorLayout.addView(space);
+            if(i!=subLayouts.size()-1) {
+                colorLayout.addView(space);
+            }
         }
 
 //        //Add a space at the end
@@ -190,7 +196,6 @@ public class ColorDialog extends AppCompatDialogFragment {
         selectedColor = color;
     }
 
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -200,7 +205,6 @@ public class ColorDialog extends AppCompatDialogFragment {
             throw new ClassCastException(context.toString() + " must implement ColorDialogListener");
         }
     }
-
 
     public interface ColorDialogListener {
         void applyColor(Integer color);

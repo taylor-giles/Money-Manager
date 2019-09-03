@@ -7,9 +7,11 @@
 
 
     <color name="myDefault">#999999</color>
-    <color name="myRed">#d62117</color>
-    <color name="myRedOrange">#e24c22</color>
-    <color name="myOrange">#d67900</color>
+    <color name="myScarlet">#7d0606</color>
+    <color name="myRed">#b80f0f</color>
+    <color name="myRedOrange">#ff2600</color>
+    <color name="myOrange">#ff5100</color>
+    <color name="myOrangeYellow">#d67900</color>
     <color name="myYellow">#fffb1c</color>
     <color name="myYellowGreen">#9bea25</color>
     <color name="myGreen">#06c600</color>
@@ -17,6 +19,8 @@
     <color name="myLightBlue">#14a5d1</color>
     <color name="myDarkBlue">#0036c1</color>
     <color name="myViolet">#8d00c1</color>
-    <color name="myPink">#ea54f2</color>
+    <color name="myPink">#ff00ff</color>
+    <color name="myLavender">#ea54f2</color>
     <color name="myMagenta">#f12e8c</color>
+
 </resources>

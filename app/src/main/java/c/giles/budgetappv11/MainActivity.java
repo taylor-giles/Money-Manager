@@ -33,13 +33,12 @@ import java.util.List;
 import java.util.Calendar;
 import java.util.Locale;
 
-import c.giles.budgetappv11.views.ColorDialog;
 import c.giles.budgetappv11.views.DepositDialog;
 import c.giles.budgetappv11.views.EditActivity;
 import c.giles.budgetappv11.views.PaycheckDialog;
 import c.giles.budgetappv11.views.WithdrawDialog;
 
-public class MainActivity extends AppCompatActivity implements DepositDialog.DepositDialogListener, WithdrawDialog.WithdrawDialogListener, PaycheckDialog.PaycheckDialogListener, ColorDialog.ColorDialogListener {
+public class MainActivity extends AppCompatActivity implements DepositDialog.DepositDialogListener, WithdrawDialog.WithdrawDialogListener, PaycheckDialog.PaycheckDialogListener{
 
     List<Budget> budgets = new ArrayList<>();
     List<LinearLayout> budgetLayouts = new ArrayList<>();
@@ -69,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         budgetsWindow = findViewById(R.id.budgets_window);
         BudgetManager.setBudgetDisplayWindow(budgetsWindow);
@@ -779,19 +778,6 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         refresh();
     }
 
-//    @Override
-//    public void applyEdits(String newName, String partitionValue, boolean isPartitioned, boolean isAmountBased, Integer newColor){
-//        budgets.get(placeholder).setName(newName);
-//        budgets.get(placeholder).setPartitioned(isPartitioned);
-//        if(isPartitioned) {
-//            budgets.get(placeholder).setPartitionValue(Double.parseDouble(partitionValue));
-//            budgets.get(placeholder).setAmountBased(isAmountBased);
-//        }
-//        budgets.get(placeholder).setColor(newColor);
-//        BudgetManager.setModified(true);
-//        refresh();
-//    }
-
     @Override
     public void logPaycheck(String amount){
         Double remainingAmount = Double.parseDouble(amount);
@@ -840,25 +826,21 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         totalHistoryDataList.add(new HistoryData(totalFunds, totalFunds.getAmount() + amount, (GregorianCalendar)Calendar.getInstance()));
     }
 
-    @Override
-    public void applyColor(Integer color) {
-
-    }
-
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        // check that it is the SecondActivity with an OK result
+        //Get results from Edit activity
         if (requestCode == EDIT_REQUEST_CODE) {
-            if (resultCode == RESULT_OK) { // Activity.RESULT_OK
-
-                budgets.get(placeholder).setName(data.getStringExtra("newName"));
-                budgets.get(placeholder).setPartitioned(Boolean.parseBoolean(data.getStringExtra("isPartitioned")));
-                if(Boolean.parseBoolean(data.getStringExtra("isPartitioned"))){
-                    budgets.get(placeholder).setPartitionValue(Double.parseDouble(data.getStringExtra("partitionValue")));
-                    budgets.get(placeholder).setAmountBased(Boolean.parseBoolean(data.getStringExtra("isAmountBased")));
+            if (resultCode == RESULT_OK) {
+                Bundle extras = data.getExtras();
+                assert extras != null;
+                budgets.get(placeholder).setName(extras.getString("newName"));
+                budgets.get(placeholder).setPartitioned(extras.getBoolean("isPartitioned"));
+                if(extras.getBoolean("isPartitioned")){
+                    budgets.get(placeholder).setPartitionValue(extras.getDouble("partitionValue"));
+                    budgets.get(placeholder).setAmountBased(extras.getBoolean("isAmountBased"));
                 }
-                budgets.get(placeholder).setColor(Integer.parseInt(data.getStringExtra("newColor")));
+                budgets.get(placeholder).setColor(extras.getInt("newColor"));
                 BudgetManager.setModified(true);
                 refresh();
             }

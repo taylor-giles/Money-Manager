@@ -94,10 +94,12 @@ public class EditActivity extends AppCompatActivity implements ColorDialog.Color
             public void onClick(View v) {
                 Intent intent = new Intent();
                 intent.putExtra("newName", nameEntry.getText().toString());
-                intent.putExtra("partitionValue", partitionValueEntry.getText().toString());
+                if(partitionValueEntry.getText().toString().length() > 0) {
+                    intent.putExtra("partitionValue", Double.parseDouble(partitionValueEntry.getText().toString()));
+                }
                 intent.putExtra("isPartitioned", partitionSwitch.isChecked());
                 intent.putExtra("isAmountBased", partitionToggle.isChecked());
-                intent.putExtra("newColor", colorSelection.toString());
+                intent.putExtra("newColor", colorSelection);
                 setResult(RESULT_OK, intent);
                 finish();
             }

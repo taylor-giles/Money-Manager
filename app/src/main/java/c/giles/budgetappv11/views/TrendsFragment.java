@@ -50,7 +50,7 @@ public class TrendsFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_trends, container, false);
         chart = view.findViewById(R.id.chart);
-        checkBoxLayout = view.findViewById(R.id.graph_select_layout);
+        checkBoxLayout = view.findViewById(R.id.chart_checkbox_layout);
 
         refresh();
         loadChart();
@@ -60,7 +60,6 @@ public class TrendsFragment extends Fragment {
 
 
     private void loadChart() {
-
         //Edit chart behavior
         chart.setTouchEnabled(true);
         chart.setPinchZoom(true);
@@ -177,15 +176,14 @@ public class TrendsFragment extends Fragment {
         chart.getAxisRight().setEnabled(false);
 
 
-
         for(ArrayList<Entry> entries : allEntries) {
             for(CheckBox checkBox : checkBoxList){
                 if(checkBox.isChecked()) {
                     if (budgetList.get(allEntries.indexOf(entries)).getBudgetName().equals(checkBox.getText().toString())) {
                         //Make and apply data set
                         LineDataSet dataSet;
-                        if (chart.getData() != null && chart.getData().getDataSetCount() > 0) {
-                            dataSet = (LineDataSet) chart.getData().getDataSetByIndex(0);
+                        if (chart.getData() != null && chart.getData().getDataSetByIndex(allEntries.indexOf(entries)) != null) {
+                            dataSet = (LineDataSet) chart.getData().getDataSetByIndex(allEntries.indexOf(entries));
                             dataSet.setValues(entries);
                             chart.getData().notifyDataChanged();
                             chart.notifyDataSetChanged();

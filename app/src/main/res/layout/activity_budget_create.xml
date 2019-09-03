@@ -96,7 +96,7 @@
                     android:layout_height="wrap_content"
                     android:ems="10"
                     android:hint="@string/initial_money_hint"
-                    android:inputType="textPersonName"
+                    android:inputType="numberDecimal"
                     android:text="@string/_0_00" />
             </LinearLayout>
 
