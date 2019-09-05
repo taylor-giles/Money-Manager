@@ -8,8 +8,6 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
-import android.widget.LinearLayout;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Legend;
@@ -24,10 +22,15 @@ import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Dictionary;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
-import c.giles.budgetappv11.Budget;
-import c.giles.budgetappv11.BudgetManager;
 import c.giles.budgetappv11.HistoryData;
 import c.giles.budgetappv11.HistoryManager;
 import c.giles.budgetappv11.R;
@@ -35,22 +38,15 @@ import c.giles.budgetappv11.R;
 public class TrendsFragment extends Fragment {
 
     private LineChart chart;
-    private LinearLayout checkBoxLayout;
-    private View view;
     private ArrayList<HistoryData> totalDataList = new ArrayList<>();
-    private ArrayList<HistoryData> historyList = new ArrayList<>();
+    private List<HistoryData> dataList = new ArrayList<>(HistoryManager.getHistoryDataList());
     private ArrayList<LineDataSet> dataSets = new ArrayList<>();
-    private ArrayList<Budget> budgetList = new ArrayList<>();
-    private ArrayList<CheckBox> checkBoxList = new ArrayList<>();
-
-
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_trends, container, false);
+        View view = inflater.inflate(R.layout.fragment_trends, container, false);
         chart = view.findViewById(R.id.chart);
-        checkBoxLayout = view.findViewById(R.id.chart_checkbox_layout);
 
         refresh();
         loadChart();
@@ -59,7 +55,8 @@ public class TrendsFragment extends Fragment {
     }
 
 
-    private void loadChart() {
+    private void loadChart(){
+
         //Edit chart behavior
         chart.setTouchEnabled(true);
         chart.setPinchZoom(true);
@@ -83,49 +80,62 @@ public class TrendsFragment extends Fragment {
         legend.setOrientation(Legend.LegendOrientation.HORIZONTAL);
         legend.setXEntrySpace(20);
 
-        ArrayList<ArrayList<Entry>> allEntries = new ArrayList<>();
-        ArrayList<Budget> entryBudgets = new ArrayList<>();
 
-        //Update values
-        for (Budget budget : budgetList){
-            ArrayList<Entry> entries = new ArrayList<>();
-            ArrayList<HistoryData> values = new ArrayList<>();
-            ArrayList<HistoryData> currentList = new ArrayList<>();
+        //Update total budget values and entries
+        ArrayList<Entry> totalEntries = new ArrayList<>();
+        ArrayList<HistoryData> totalValues = new ArrayList<>();
 
-            for(HistoryData data : historyList){
-                if(data.getBudget().equals(budget)) {
-                    currentList.add(data);
+        if(!totalDataList.isEmpty()){
+            totalValues.add(totalDataList.get(0));
+            for (HistoryData data : totalDataList) {
+                //Only make a point on the chart for the final total from each day
+                if (data.getTime().get(Calendar.YEAR) == totalValues.get(totalValues.size()-1).getTime().get(Calendar.YEAR) &&
+                        data.getTime().get(Calendar.MONTH) == totalValues.get(totalValues.size()-1).getTime().get(Calendar.MONTH) &&
+                        data.getTime().get(Calendar.DAY_OF_MONTH) == totalValues.get(totalValues.size()-1).getTime().get(Calendar.DAY_OF_MONTH)) {
+
+                    totalValues.remove(totalValues.size()-1);
                 }
+                totalValues.add(data);
             }
 
-            if (!currentList.isEmpty()) {
-                values.add(currentList.get(0));
-                for (HistoryData data : currentList) {
-                    //Only make a point on the chart for the final total from each day
-                    if (data.getTime().get(Calendar.YEAR) == values.get(values.size() - 1).getTime().get(Calendar.YEAR) &&
-                            data.getTime().get(Calendar.MONTH) == values.get(values.size() - 1).getTime().get(Calendar.MONTH) &&
-                            data.getTime().get(Calendar.DAY_OF_MONTH) == values.get(values.size() - 1).getTime().get(Calendar.DAY_OF_MONTH)) {
+            for(HistoryData data : totalValues) {
+                totalEntries.add(new Entry(data.getTime().getTimeInMillis(), Float.parseFloat(data.getAmount().toString())));
+            }
+        }
 
-                        values.remove(values.size() - 1);
-                    }
-                    values.add(data);
-                }
 
-                for (HistoryData data : values) {
-                    entries.add(new Entry(data.getTime().getTimeInMillis(), Float.parseFloat(data.getAmount().toString())));
+        //Update all other budget values and entries
+        Map<String, ArrayList<Entry>> entryMap = new HashMap<>();
+        Map<String, ArrayList<HistoryData>> valueMap = new HashMap<>();
+        ArrayList<HistoryData> currentList = new ArrayList<>();
+
+        if(!dataList.isEmpty()) {
+            for (HistoryData data : dataList) {
+                //If the current budget does not already have a list associated with it, make one.
+                if (entryMap.get(data.getBudget().getBudgetName()) == null) {
+                    entryMap.put(data.getBudget().getBudgetName(), new ArrayList<Entry>());
                 }
-                allEntries.add(entries);
-                entryBudgets.add(budget);
-                CheckBox checkBox = new CheckBox(view.getContext());
-                checkBox.setText(budget.getBudgetName());
-                checkBox.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        refresh();
-                    }
-                });
-                checkBoxList.add(checkBox);
-                checkBoxLayout.addView(checkBox);
+                if (valueMap.get(data.getBudget().getBudgetName()) == null) {
+                    valueMap.put(data.getBudget().getBudgetName(), new ArrayList<HistoryData>());
+                    Objects.requireNonNull(valueMap.get(data.getBudget().getBudgetName())).add(data);
+                }
+                currentList = Objects.requireNonNull(valueMap.get(data.getBudget().getBudgetName()));
+
+                //Only add the last value from each day
+                if (data.getTime().get(Calendar.YEAR) == currentList.get(currentList.size()-1).getTime().get(Calendar.YEAR) &&
+                        data.getTime().get(Calendar.MONTH) == currentList.get(currentList.size()-1).getTime().get(Calendar.MONTH) &&
+                        data.getTime().get(Calendar.DAY_OF_MONTH) == currentList.get(currentList.size()-1).getTime().get(Calendar.DAY_OF_MONTH)) {
+
+                    currentList.remove(currentList.size()-1);
+                }
+                currentList.add(data);
+            }
+
+            //Put the values into entries
+            for (String key : valueMap.keySet()){
+                for(HistoryData data : Objects.requireNonNull(valueMap.get(key))){
+                    Objects.requireNonNull(entryMap.get(key)).add(new Entry(data.getTime().getTimeInMillis(), Float.parseFloat(data.getAmount().toString())));
+                }
             }
         }
 
@@ -137,7 +147,7 @@ public class TrendsFragment extends Fragment {
         //Find max/min x values
         float xMax = Float.MIN_VALUE;
         float xMin = Float.MAX_VALUE;
-        for(HistoryData data : historyList){
+        for(HistoryData data : totalValues){
             if(data.getTime().getTimeInMillis() > xMax){
                 xMax = data.getTime().getTimeInMillis();
             }
@@ -149,7 +159,6 @@ public class TrendsFragment extends Fragment {
         xAxis.setAxisMinimum(xMin - TimeUnit.DAYS.toMillis(1));
         xAxis.setDrawLimitLinesBehindData(true);
         xAxis.setValueFormatter(new XAxisValueFormatter());
-//        xAxis.setLabelCount(2 + (int)((values.get(values.size() - 1).getTime().getTimeInMillis() - values.get(0).getTime().getTimeInMillis()) / TimeUnit.DAYS.toMillis(1)), true);
 
         //Set and edit y-axis
         YAxis yAxis = chart.getAxisLeft();
@@ -158,7 +167,7 @@ public class TrendsFragment extends Fragment {
         //Find max/min y values
         float yMax = Float.MIN_VALUE;
         float yMin = Float.MAX_VALUE;
-        for(HistoryData data : historyList){
+        for(HistoryData data : totalValues){
             if(data.getAmount() > yMax){
                 yMax = Float.parseFloat(data.getAmount().toString());
             }
@@ -176,51 +185,53 @@ public class TrendsFragment extends Fragment {
         chart.getAxisRight().setEnabled(false);
 
 
-        for(ArrayList<Entry> entries : allEntries) {
-            for(CheckBox checkBox : checkBoxList){
-                if(checkBox.isChecked()) {
-                    if (budgetList.get(allEntries.indexOf(entries)).getBudgetName().equals(checkBox.getText().toString())) {
-                        //Make and apply data set
-                        LineDataSet dataSet;
-                        if (chart.getData() != null && chart.getData().getDataSetByIndex(allEntries.indexOf(entries)) != null) {
-                            dataSet = (LineDataSet) chart.getData().getDataSetByIndex(allEntries.indexOf(entries));
-                            dataSet.setValues(entries);
-                            chart.getData().notifyDataChanged();
-                            chart.notifyDataSetChanged();
-                        } else {
-                            dataSet = new LineDataSet(entries, budgetList.get(allEntries.indexOf(entries)).getBudgetName());
-                            dataSet.setDrawIcons(false);
-                            dataSet.setColor(Color.BLUE);
-                            dataSet.setCircleColor(Color.BLUE);
-                            dataSet.setLineWidth(2f);
-                            dataSet.setCircleRadius(3f);
-                            dataSet.setDrawCircleHole(false);
-                            dataSet.setValueTextSize(9f);
-                            dataSet.setDrawFilled(false);
-                            dataSet.setFormLineWidth(1f);
-                            dataSet.setFormSize(15.f);
+
+        //Make and apply total data set
+        LineDataSet totalSet;
+        if(chart.getData() != null && chart.getData().getDataSetCount() > 0){
+            totalSet = (LineDataSet)chart.getData().getDataSetByIndex(0);
+            totalSet.setValues(totalEntries);
+            chart.getData().notifyDataChanged();
+            chart.notifyDataSetChanged();
+        } else {
+            totalSet = new LineDataSet(totalEntries, "Total Funds");
+            totalSet.setDrawIcons(false);
+            totalSet.setColor(Color.BLUE);
+            totalSet.setCircleColor(Color.BLUE);
+            totalSet.setLineWidth(2f);
+            totalSet.setCircleRadius(3f);
+            totalSet.setDrawCircleHole(false);
+            totalSet.setValueTextSize(9f);
+            totalSet.setDrawFilled(false);
+            totalSet.setFormLineWidth(1f);
+            totalSet.setFormSize(15.f);
 
 
-                            ArrayList<ILineDataSet> dataSets = new ArrayList<>();
-                            dataSets.add(dataSet);
-                            LineData data = new LineData(dataSets);
-                            data.setValueFormatter(new CurrencyValueFormatter());
-                            chart.setData(data);
-                        }
-                    }
-                }
-            }
+            ArrayList<ILineDataSet> dataSets = new ArrayList<>();
+            dataSets.add(totalSet);
+            LineData data = new LineData(dataSets);
+            data.setValueFormatter(new CurrencyValueFormatter());
+            chart.setData(data);
         }
+
+
+        //TODO: This needs to be finished. Figure out how to reference the data set for each particular budget
+        //Make and apply all other data sets
+        ArrayList<LineDataSet> dataSets = new ArrayList<>();
+
         chart.invalidate();
     }
 
     //Called by HistoryActivity when history is cleared by user
     public void refresh(){
         totalDataList = new ArrayList<>(HistoryManager.getTotalDataList());
-        historyList = new ArrayList<>(HistoryManager.getHistoryDataList());
-        budgetList = new ArrayList<>(BudgetManager.getBudgetList());
+        dataList = new ArrayList<>(HistoryManager.getHistoryDataList());
         chart.clear();
     }
+
+
+
+
 
 
     private class CurrencyValueFormatter extends ValueFormatter{
@@ -236,6 +247,7 @@ public class TrendsFragment extends Fragment {
         }
     }
 
+
     private class XAxisValueFormatter extends ValueFormatter {
         @Override
         public String getFormattedValue(float timeInMillis) {
@@ -245,4 +257,3 @@ public class TrendsFragment extends Fragment {
         }
     }
 }
-
