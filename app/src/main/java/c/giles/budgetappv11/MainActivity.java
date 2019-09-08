@@ -754,10 +754,10 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
     public void applyDeposit(String amount) {
         if(placeholder == DEFAULT_BUDGET_PLACEHOLDER){
             defaultBudget.deposit(Double.parseDouble(amount));
-            addHistoryData(defaultBudget, Double.parseDouble(amount));
+            addHistoryData(defaultBudget, Double.parseDouble(amount), defaultBudget.getAmount());
         } else {
             budgets.get(placeholder).deposit(Double.parseDouble(amount));
-            addHistoryData(budgets.get(placeholder), Double.parseDouble(amount));
+            addHistoryData(budgets.get(placeholder), Double.parseDouble(amount), budgets.get(placeholder).getAmount());
         }
         Toast.makeText(this, "Deposit Successful", Toast.LENGTH_SHORT).show();
         BudgetManager.setModified(true);
@@ -768,10 +768,10 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
     public void applyWithdraw(String amount){
         if(placeholder == DEFAULT_BUDGET_PLACEHOLDER){
             defaultBudget.withdraw(Double.parseDouble(amount));
-            addHistoryData(defaultBudget, Double.parseDouble(amount) * -1);
+            addHistoryData(defaultBudget, Double.parseDouble(amount) * -1, defaultBudget.getAmount());
         } else {
             budgets.get(placeholder).withdraw(Double.parseDouble(amount));
-            addHistoryData(budgets.get(placeholder), Double.parseDouble(amount) * -1);
+            addHistoryData(budgets.get(placeholder), Double.parseDouble(amount) * -1, budgets.get(placeholder).getAmount());
         }
         Toast.makeText(this, "Withdrawal Successful", Toast.LENGTH_SHORT).show();
         BudgetManager.setModified(true);
@@ -783,14 +783,14 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
         Double remainingAmount = Double.parseDouble(amount);
         HistoryData paycheckData = new HistoryData(Double.parseDouble(amount), (GregorianCalendar) Calendar.getInstance());
         historyDataList.add(paycheckData);
-        totalHistoryDataList.add(new HistoryData(totalFunds, totalFunds.getAmount() + Double.parseDouble(amount), (GregorianCalendar)Calendar.getInstance()));
+        totalHistoryDataList.add(new HistoryData(totalFunds, totalFunds.getAmount() + Double.parseDouble(amount), totalFunds.getAmount() + Double.parseDouble(amount), (GregorianCalendar)Calendar.getInstance()));
 
         //Process percent-based budgets
         for(Budget budget : budgets){
             if(budget.isPartitioned()){
                 if(!budget.isAmountBased()){
                     budget.deposit((budget.getPartitionValue() / 100) * remainingAmount);
-                    historyDataList.add(new HistoryData(budget, (budget.getPartitionValue() / 100) * remainingAmount, (GregorianCalendar) Calendar.getInstance(), paycheckData));
+                    historyDataList.add(new HistoryData(budget, (budget.getPartitionValue() / 100) * remainingAmount, budget.getAmount(), (GregorianCalendar) Calendar.getInstance(), paycheckData));
                     remainingAmount = remainingAmount - (budget.getPartitionValue() / 100) * remainingAmount;
                 }
             }
@@ -804,26 +804,26 @@ public class MainActivity extends AppCompatActivity implements DepositDialog.Dep
                     //put in the total amount of the paycheck and NO MORE
                     if(budget.getPartitionValue() > remainingAmount){
                         budget.deposit(remainingAmount);
-                        historyDataList.add(new HistoryData(budget, remainingAmount, (GregorianCalendar) Calendar.getInstance(), paycheckData));
+                        historyDataList.add(new HistoryData(budget, remainingAmount, budget.getAmount(), (GregorianCalendar) Calendar.getInstance(), paycheckData));
                         Toast.makeText(this, "Insufficient funds. Only " + moneyFormat.format(remainingAmount) + " was put into \"" + budget.getBudgetName() + "\"", Toast.LENGTH_LONG).show();
                         remainingAmount = 0.00;
                     } else {
                         budget.deposit(budget.getPartitionValue());
-                        historyDataList.add(new HistoryData(budget, budget.getPartitionValue(), (GregorianCalendar) Calendar.getInstance(), paycheckData));
+                        historyDataList.add(new HistoryData(budget, budget.getPartitionValue(), budget.getAmount(), (GregorianCalendar) Calendar.getInstance(), paycheckData));
                         remainingAmount -= budget.getPartitionValue();
                     }
                 }
             }
         }
         defaultBudget.deposit(remainingAmount);
-        historyDataList.add(new HistoryData(defaultBudget, remainingAmount, (GregorianCalendar) Calendar.getInstance(), paycheckData));
+        historyDataList.add(new HistoryData(defaultBudget, remainingAmount, defaultBudget.getAmount(), (GregorianCalendar) Calendar.getInstance(), paycheckData));
         Toast.makeText(this, "Paycheck Logged", Toast.LENGTH_SHORT).show();
         refresh();
     }
 
-    public void addHistoryData(Budget budget, Double amount){
-        historyDataList.add(new HistoryData(budget, amount, (GregorianCalendar) Calendar.getInstance()));
-        totalHistoryDataList.add(new HistoryData(totalFunds, totalFunds.getAmount() + amount, (GregorianCalendar)Calendar.getInstance()));
+    public void addHistoryData(Budget budget, Double amount, Double total){
+        historyDataList.add(new HistoryData(budget, amount, total, (GregorianCalendar) Calendar.getInstance()));
+        totalHistoryDataList.add(new HistoryData(totalFunds, totalFunds.getAmount() + amount,totalFunds.getAmount() + amount, (GregorianCalendar)Calendar.getInstance()));
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

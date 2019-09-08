@@ -8,6 +8,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import java.text.NumberFormat;
@@ -95,7 +96,11 @@ public class EditActivity extends AppCompatActivity implements ColorDialog.Color
                 Intent intent = new Intent();
                 intent.putExtra("newName", nameEntry.getText().toString());
                 if(partitionValueEntry.getText().toString().length() > 0) {
-                    intent.putExtra("partitionValue", Double.parseDouble(partitionValueEntry.getText().toString()));
+                    if(partitionSwitch.isChecked() && !partitionToggle.isChecked() && BudgetManager.getTotalPercentPartitioned() + Double.parseDouble(partitionValueEntry.getText().toString()) > 100) {
+                        Toast.makeText(getBaseContext(), "Please keep total partition percentage below 100%", Toast.LENGTH_LONG).show();
+                    } else {
+                        intent.putExtra("partitionValue", Double.parseDouble(partitionValueEntry.getText().toString()));
+                    }
                 }
                 intent.putExtra("isPartitioned", partitionSwitch.isChecked());
                 intent.putExtra("isAmountBased", partitionToggle.isChecked());

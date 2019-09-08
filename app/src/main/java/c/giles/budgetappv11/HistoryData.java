@@ -5,6 +5,7 @@ import java.util.GregorianCalendar;
 public class HistoryData {
     private Budget budget;
     private Double amount;
+    private Double total;
     private GregorianCalendar time;
     private boolean paycheck = false;
     private boolean fromPaycheck = false;
@@ -16,8 +17,21 @@ public class HistoryData {
         this.time = time;
     }
 
+    public HistoryData(Budget budget, Double amount, Double total, GregorianCalendar time){
+        this.budget = budget;
+        this.amount = amount;
+        this.time = time;
+        this.total = total;
+    }
+
     public HistoryData(Budget budget, Double amount, GregorianCalendar time, HistoryData paycheckData){
         this(budget, amount, time);
+        this.paycheckData = paycheckData;
+        fromPaycheck = true;
+    }
+
+    public HistoryData(Budget budget, Double amount, Double total, GregorianCalendar time, HistoryData paycheckData){
+        this(budget, amount, total, time);
         this.paycheckData = paycheckData;
         fromPaycheck = true;
     }
@@ -54,4 +68,11 @@ public class HistoryData {
         return time;
     }
 
+    public Double getTotal() {
+        return total;
+    }
+
+    public void setTotal(Double total) {
+        this.total = total;
+    }
 }

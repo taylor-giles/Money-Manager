@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +23,7 @@ import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -30,7 +32,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
+import c.giles.budgetappv11.Budget;
 import c.giles.budgetappv11.HistoryData;
 import c.giles.budgetappv11.HistoryManager;
 import c.giles.budgetappv11.R;
@@ -39,7 +43,7 @@ public class TrendsFragment extends Fragment {
 
     private LineChart chart;
     private ArrayList<HistoryData> totalDataList = new ArrayList<>();
-    private List<HistoryData> dataList = new ArrayList<>(HistoryManager.getHistoryDataList());
+    private List<HistoryData> dataList;
     private ArrayList<LineDataSet> dataSets = new ArrayList<>();
 
     @Nullable
@@ -56,6 +60,13 @@ public class TrendsFragment extends Fragment {
 
 
     private void loadChart(){
+
+        //Make HistoryData list
+        for(HistoryData data : HistoryManager.getHistoryDataList()){
+            if(!data.isPaycheck()){
+                dataList.add(data);
+            }
+        }
 
         //Edit chart behavior
         chart.setTouchEnabled(true);
@@ -105,21 +116,21 @@ public class TrendsFragment extends Fragment {
 
 
         //Update all other budget values and entries
-        Map<String, ArrayList<Entry>> entryMap = new HashMap<>();
-        Map<String, ArrayList<HistoryData>> valueMap = new HashMap<>();
+        Map<Budget, ArrayList<Entry>> entryMap = new HashMap<>();
+        Map<Budget, ArrayList<HistoryData>> valueMap = new HashMap<>();
         ArrayList<HistoryData> currentList = new ArrayList<>();
 
         if(!dataList.isEmpty()) {
             for (HistoryData data : dataList) {
                 //If the current budget does not already have a list associated with it, make one.
-                if (entryMap.get(data.getBudget().getBudgetName()) == null) {
-                    entryMap.put(data.getBudget().getBudgetName(), new ArrayList<Entry>());
+                if (entryMap.get(data.getBudget()) == null) {
+                    entryMap.put(data.getBudget(), new ArrayList<Entry>());
                 }
-                if (valueMap.get(data.getBudget().getBudgetName()) == null) {
-                    valueMap.put(data.getBudget().getBudgetName(), new ArrayList<HistoryData>());
-                    Objects.requireNonNull(valueMap.get(data.getBudget().getBudgetName())).add(data);
+                if (valueMap.get(data.getBudget()) == null) {
+                    valueMap.put(data.getBudget(), new ArrayList<HistoryData>());
+                    Objects.requireNonNull(valueMap.get(data.getBudget())).add(data);
                 }
-                currentList = Objects.requireNonNull(valueMap.get(data.getBudget().getBudgetName()));
+                currentList = Objects.requireNonNull(valueMap.get(data.getBudget()));
 
                 //Only add the last value from each day
                 if (data.getTime().get(Calendar.YEAR) == currentList.get(currentList.size()-1).getTime().get(Calendar.YEAR) &&
@@ -132,9 +143,13 @@ public class TrendsFragment extends Fragment {
             }
 
             //Put the values into entries
-            for (String key : valueMap.keySet()){
+            for (Budget key : valueMap.keySet()){
                 for(HistoryData data : Objects.requireNonNull(valueMap.get(key))){
-                    Objects.requireNonNull(entryMap.get(key)).add(new Entry(data.getTime().getTimeInMillis(), Float.parseFloat(data.getAmount().toString())));
+                    try {
+                        Objects.requireNonNull(entryMap.get(key)).add(new Entry(data.getTime().getTimeInMillis(), Float.parseFloat(data.getTotal().toString())));
+                    }catch(NullPointerException e){
+                        Log.d("nullpointer1", data.isPaycheck() + " , " + data.isFromPaycheck());
+                    }
                 }
             }
         }
@@ -176,7 +191,8 @@ public class TrendsFragment extends Fragment {
             }
         }
         yAxis.setAxisMaximum(yMax + 50);
-        yAxis.setAxisMinimum(yMin - 50);
+        //yAxis.setAxisMinimum(yMin - 50);
+        yAxis.setAxisMinimum(0);
         yAxis.enableGridDashedLine(10f, 10f, 0f);
         yAxis.setDrawZeroLine(false);
         yAxis.setDrawLimitLinesBehindData(false);
@@ -188,6 +204,7 @@ public class TrendsFragment extends Fragment {
 
         //Make and apply total data set
         LineDataSet totalSet;
+        ArrayList<ILineDataSet> dataSets = new ArrayList<>();
         if(chart.getData() != null && chart.getData().getDataSetCount() > 0){
             totalSet = (LineDataSet)chart.getData().getDataSetByIndex(0);
             totalSet.setValues(totalEntries);
@@ -207,7 +224,6 @@ public class TrendsFragment extends Fragment {
             totalSet.setFormSize(15.f);
 
 
-            ArrayList<ILineDataSet> dataSets = new ArrayList<>();
             dataSets.add(totalSet);
             LineData data = new LineData(dataSets);
             data.setValueFormatter(new CurrencyValueFormatter());
@@ -217,7 +233,71 @@ public class TrendsFragment extends Fragment {
 
         //TODO: This needs to be finished. Figure out how to reference the data set for each particular budget
         //Make and apply all other data sets
-        ArrayList<LineDataSet> dataSets = new ArrayList<>();
+        //This map tells the index of the corresponding LineDataSet within the chart
+        Map<Budget, Integer> indexMap = new HashMap<>();
+
+        //Find the highest current index
+        int maxIndex = 0;
+        for(Integer index : indexMap.values()){
+            if(index > maxIndex){
+                maxIndex = index;
+            }
+        }
+
+        //Assign an index to any budgets that don't currently have one
+        for(Budget budget : entryMap.keySet()){
+            if(!indexMap.containsKey(budget)){
+                indexMap.put(budget, maxIndex + 1);
+                maxIndex++;
+            }
+        }
+
+        //Apply all other data sets
+        List<Budget> sortedKeys = new ArrayList<>();
+        List<Integer> temp = new ArrayList<>(indexMap.values());
+        Collections.sort(temp);
+
+        //Flip the map around so you can access budgets given their index
+        Map<Integer, Budget> swappedMap = indexMap.entrySet().stream().collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
+
+        //Make a sorted list of budgets, in order of index
+        for(Integer index : temp){
+            sortedKeys.add(swappedMap.get(index));
+        }
+        for(Budget budget : sortedKeys){
+            LineDataSet dataSet;
+            if(chart.getData() != null && chart.getData().getDataSetCount() > indexMap.get(budget)) {
+                dataSet = (LineDataSet) chart.getData().getDataSetByIndex(indexMap.get(budget));
+                dataSet.setValues(entryMap.get(budget));
+                chart.getData().notifyDataChanged();
+                chart.notifyDataSetChanged();
+            } else {
+                dataSet = new LineDataSet(entryMap.get(budget), budget.getBudgetName());
+                dataSet.setDrawIcons(false);
+                try {
+                    dataSet.setColor(
+                            budget
+                                    .getColor());
+                    dataSet.setCircleColor(budget.getColor());
+                }catch(NullPointerException e){
+                    Log.d("nullpointer2", budget.getBudgetName());
+                }
+                dataSet.setLineWidth(2f);
+                dataSet.setCircleRadius(3f);
+                dataSet.setDrawCircleHole(false);
+                dataSet.setValueTextSize(9f);
+                dataSet.setDrawFilled(false);
+                dataSet.setFormLineWidth(1f);
+                dataSet.setFormSize(15.f);
+
+            //Add this data set to the list of all data sets
+            dataSets.add(dataSet);
+
+        }
+            LineData data = new LineData(dataSets);
+            data.setValueFormatter(new CurrencyValueFormatter());
+            chart.setData(data);
+        }
 
         chart.invalidate();
     }
