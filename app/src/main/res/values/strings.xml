@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">Money-Manager</string>
+    <string name="action_add_budget">Add New Budget</string>
+    <string name="action_settings">Settings</string>
+    <string name="budgets">Budgets</string>
+</resources>
