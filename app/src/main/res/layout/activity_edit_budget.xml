@@ -96,7 +96,7 @@
                     app:layout_constraintTop_toBottomOf="@+id/layout_initial_amount">
 
                     <EditText
-                        android:id="@+id/editTextNumberDecimal2"
+                        android:id="@+id/text_edit_budget_partition"
                         android:layout_width="74dp"
                         android:layout_height="wrap_content"
                         android:ems="10"
@@ -117,9 +117,10 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/linearLayout"
+                    android:id="@+id/layout_color_text"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
                     android:orientation="horizontal"
                     app:layout_constraintEnd_toStartOf="@+id/colorpicker_edit_budget"
                     app:layout_constraintStart_toStartOf="@+id/textView8"
@@ -206,8 +207,8 @@
 
                 <com.madrapps.pikolo.HSLColorPicker
                     android:id="@+id/colorpicker_edit_budget"
-                    android:layout_width="180dp"
-                    android:layout_height="180dp"
+                    android:layout_width="160dp"
+                    android:layout_height="160dp"
                     android:layout_marginEnd="8dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/textView8"
@@ -223,9 +224,9 @@
                     android:gravity="center"
                     android:text="@string/color_preview"
                     app:layout_constraintBottom_toBottomOf="@+id/colorpicker_edit_budget"
-                    app:layout_constraintEnd_toEndOf="@+id/linearLayout"
+                    app:layout_constraintEnd_toStartOf="@+id/colorpicker_edit_budget"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+                    app:layout_constraintTop_toBottomOf="@+id/layout_color_text" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </LinearLayout>

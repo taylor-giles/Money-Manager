@@ -11,8 +11,11 @@ import giles.util.Expandable
 import android.graphics.PorterDuff
 import android.util.Log
 import android.widget.EditText
+import android.widget.Toast
 import com.madrapps.pikolo.listeners.SimpleColorSelectionListener
 import com.madrapps.pikolo.ColorPicker
+import giles.budgetapp.AppData
+import giles.budgetapp.Budget
 import giles.util.ColorUtils
 
 
@@ -21,11 +24,63 @@ class EditBudgetActivity : AppCompatActivity() {
     private lateinit var colorPicker: ColorPicker
     private lateinit var colorText: EditText
     private lateinit var colorPreviewText: TextView
-    private var budgetColor = 0
+    private lateinit var nameText: EditText
+    private lateinit var amountText: EditText
+    private lateinit var partitionText: EditText
+    private var budgetColor = Color.BLACK
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_budget)
+        nameText = findViewById(R.id.text_edit_budget_name)
+        amountText = findViewById(R.id.text_edit_initial_amount)
+        partitionText = findViewById(R.id.text_edit_budget_partition)
+
+        //TODO: Get budget being edited and handle it accordingly
+
+        //Cancel button action
+        findViewById<Button>(R.id.btn_cancel_edit_budget).setOnClickListener { finish() }
+
+        //Save button action
+        findViewById<Button>(R.id.btn_save_edit_budget).setOnClickListener {
+            var valid = true
+
+            //Get name
+            var name = nameText.text.toString()
+            if(name.isEmpty() || name == ""){
+                name = "Unnamed Budget"
+            }
+
+            //Get amount
+            var amt = amountText.text.toString().toDoubleOrNull()
+            if(amt == null){
+                amt = 0.0
+            }
+
+            //Get partition
+            val partition = partitionText.text.toString().toDoubleOrNull()
+            if(partition == null || partition < 0){
+                valid = false
+                Toast.makeText(applicationContext,
+                    "Partition must be between 0-100", Toast.LENGTH_SHORT).show()
+            } else if(partition > AppData.remainingPartition){
+                valid = false
+                Toast.makeText(applicationContext,
+                    "Total partitioning across all budgets may not exceed 100%. " +
+                            "${AppData.remainingPartition}% is available.", Toast.LENGTH_LONG).show()
+            }
+
+            if(valid){
+                AppData.addBudget(Budget(name, amt, partition!!, budgetColor))
+                finish()
+            }
+        }
+
+        //Make the partition help expandable
+        partitionExpandable = BasicExpandableView(
+            content = findViewById<TextView>(R.id.text_partition_help),
+            button = findViewById(R.id.btn_partition_help)
+        )
 
         //Color selector behavior
         colorText = findViewById(R.id.text_edit_budget_color)
@@ -42,20 +97,7 @@ class EditBudgetActivity : AppCompatActivity() {
             //Consume action
             true
         }
-
-        //Make the partition help expandable
-        partitionExpandable = BasicExpandableView(
-            content = findViewById<TextView>(R.id.text_partition_help),
-            button = findViewById(R.id.btn_partition_help)
-        )
-
-        //Cancel button action
-        findViewById<Button>(R.id.btn_cancel_edit_budget).setOnClickListener { finish() }
-
-        //Save button action
-        findViewById<Button>(R.id.btn_save_edit_budget).setOnClickListener {
-            //TODO: Save budget
-        }
+        setColor(budgetColor)
     }
 
 
