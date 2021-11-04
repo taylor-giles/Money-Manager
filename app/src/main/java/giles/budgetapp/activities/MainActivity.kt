@@ -1,6 +1,7 @@
 package giles.budgetapp.activities
 
 import android.content.Intent
+import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -9,6 +10,7 @@ import android.view.Menu
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import giles.budgetapp.AppData
+import giles.budgetapp.Budget
 import giles.budgetapp.R
 import giles.budgetapp.views.BudgetViewAdapter
 
@@ -55,9 +57,10 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume(){
         super.onResume()
+        adapter.dataSet = AppData.budgets
         adapter.notifyDataSetChanged()
         Log.d("LOGLOGLOGLOGLOG", "Here")
-        for (budget in AppData.budgets) {
+        for (budget in adapter.dataSet) {
             Log.d("LOGLOGLOGLOGLOG", budget.name)
         }
     }

@@ -1,7 +1,9 @@
 package giles.budgetapp.views
 
 import android.content.Context
+import android.content.res.ColorStateList
 import android.util.AttributeSet
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
@@ -10,6 +12,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import giles.budgetapp.Budget
 import giles.budgetapp.R
+import giles.util.ColorUtils
 
 class BudgetView @JvmOverloads constructor(
     context : Context,
@@ -30,25 +33,32 @@ class BudgetView @JvmOverloads constructor(
 
     init {
         inflate(context, R.layout.layout_budget_view, this)
+        this.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
 
         //Get components
-        depositButton = findViewById(R.id.btn_budget_item_deposit)
-        withdrawButton = findViewById(R.id.btn_budget_item_withdraw)
-        partitionText = findViewById(R.id.text_budget_item_partition)
-        nameText = findViewById(R.id.text_budget_item_name)
-        amountText = findViewById(R.id.text_budget_item_amount)
-        colorView = findViewById(R.id.view_budget_color)
+        depositButton = this.findViewById(R.id.btn_budget_item_deposit)
+        withdrawButton = this.findViewById(R.id.btn_budget_item_withdraw)
+        partitionText = this.findViewById(R.id.text_budget_item_partition)
+        nameText = this.findViewById(R.id.text_budget_item_name)
+        amountText = this.findViewById(R.id.text_budget_item_amount)
+        colorView = this.findViewById(R.id.view_budget_color)
 
         //Set budget if it is given
-        budget?.let { setBudget(it) }
+        if(budget != null){
+            setBudget(budget)
+        }
     }
 
     fun setBudget(budget: Budget){
         this.budget = budget
         nameText.text = budget.name
         partitionText.text = budget.partition.toString()
-        amountText.text = budget.amount.toString()
+        amountText.text = String.format("%.2f", budget.amount)
         colorView.setBackgroundColor(budget.color)
+        depositButton.backgroundTintList = ColorStateList.valueOf(budget.color)
+        withdrawButton.backgroundTintList = ColorStateList.valueOf(budget.color)
+        depositButton.setTextColor(ColorUtils.getContrastingTextColor(budget.color))
+        withdrawButton.setTextColor(ColorUtils.getContrastingTextColor(budget.color))
 
         //Button behaviors
         depositButton.setOnClickListener {
@@ -66,14 +76,14 @@ class BudgetView @JvmOverloads constructor(
  * A RecyclerView adapter for displaying budgets
  */
 class BudgetViewAdapter(
-    private var dataSet: ArrayList<Budget>,
+    var dataSet: List<Budget>
 ): RecyclerView.Adapter<BudgetViewAdapter.BudgetViewHolder>(){
 
     /**
      * A ViewHolder for views displaying budgets
      */
     class BudgetViewHolder constructor(
-        private val view: BudgetView,
+        private val view: BudgetView
     ) : RecyclerView.ViewHolder(view){
 
         fun setBudget(budget: Budget){
