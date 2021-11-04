@@ -24,4 +24,7 @@
     <string name="deposit">Deposit</string>
     <string name="total_funds_label">Total Funds:</string>
     <string name="_dollarsign_0_00">$0.00</string>
+    <string name="current_balance_label">Current Balance:</string>
+    <string name="withdraw">Withdraw</string>
+    <string name="partition_label">Partition:</string>
 </resources>
