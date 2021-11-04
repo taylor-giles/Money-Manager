@@ -1,9 +1,11 @@
-package giles.budgetapp
+package giles.budgetapp.activities
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.Menu
+import giles.budgetapp.R
 
 
 class MainActivity : AppCompatActivity() {
@@ -26,7 +28,9 @@ class MainActivity : AppCompatActivity() {
         }
 
         R.id.action_add_budget -> {
-            // TODO: Add a new budget
+            // Open activity to add new budget
+            val intent = Intent(this, EditBudgetActivity::class.java)
+            startActivity(intent)
             true
         }
 

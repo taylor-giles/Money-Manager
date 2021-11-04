@@ -10,10 +10,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MoneyManager">
         <activity
-            android:name=".EditBudgetActivity"
-            android:exported="true" />
+            android:name=".activities.EditBudgetActivity"
+            android:exported="true"
+            android:label="Edit Budget"/>
         <activity
-            android:name=".MainActivity"
+            android:name=".activities.MainActivity"
             android:exported="true"
             android:label="@string/budgets"
             android:theme="@style/Theme.AppCompat.DayNight.NoActionBar">

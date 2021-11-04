@@ -9,4 +9,16 @@
     <string name="_dollar_sign">$</string>
     <string name="_0_00">0.00</string>
     <string name="amount_in_dollars">Amount in Dollars</string>
+    <string name="_percent_sign">%</string>
+    <string name="partition">Partition</string>
+    <string name="partition_hint">Percentage for this budget</string>
+    <string name="_0_0">0.0</string>
+    <string name="help">Help</string>
+    <string name="finish_amp_save"><![CDATA[Finish & Save]]></string>
+    <string name="partition_help">A budget\'s partition is the percentage of globally deposited money that will be put into the budget.</string>
+    <string name="color">Color</string>
+    <string name="color_hex">Color (Hex)</string>
+    <string name="_pound_sign">#</string>
+    <string name="_000000">000000</string>
+    <string name="color_preview">Color Preview</string>
 </resources>
