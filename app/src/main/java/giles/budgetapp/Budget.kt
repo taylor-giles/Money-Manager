@@ -8,7 +8,9 @@ class Budget(
     var amount: Double = 0.0,
     var partition: Double = 0.0,
     var color: Int = Color.BLACK
-) : Serializable{
+) : Serializable {
 
-
+    fun deposit(amount: Double){
+        this.amount += amount
+    }
 }

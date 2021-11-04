@@ -21,4 +21,7 @@
     <string name="_pound_sign">#</string>
     <string name="_000000">000000</string>
     <string name="color_preview">Color Preview</string>
+    <string name="deposit">Deposit</string>
+    <string name="total_funds_label">Total Funds:</string>
+    <string name="_dollarsign_0_00">$0.00</string>
 </resources>
